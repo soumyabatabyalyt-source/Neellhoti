@@ -2,224 +2,680 @@
 
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
-import { motion, AnimatePresence } from "framer-motion"
-import { 
-  Wallet as WalletIcon, 
-  Send, 
-  History, 
-  IndianRupee, 
-  RefreshCw,
-  Building,
-  CreditCard
+import { motion } from "framer-motion"
+
+import {
+  Wallet,
+  IndianRupee,
+  AtSign,
+  Loader2,
+  ArrowRight,
+  CheckCircle2,
+  Clock3,
+  CreditCard,
+  Coins,
 } from "lucide-react"
 
-export default function Wallet() {
-  const [balance, setBalance] = useState(0)
-  const [activeTab, setActiveTab] = useState("wallet")
+type WithdrawMethod =
+  | "upi"
+  | "crypto"
 
-  const [amount, setAmount] = useState("")
-  const [method, setMethod] = useState("upi")
-  const [details, setDetails] = useState("")
-  const [isRefreshing, setIsRefreshing] = useState(false)
+export default function WalletPage() {
 
-  const fetchWallet = async () => {
-    setIsRefreshing(true)
-    const { data: userData } = await supabase.auth.getUser()
-    const user = userData.user
+  const [amount, setAmount] =
+    useState("")
 
-    const { data } = await supabase
-      .from("wallets")
-      .select("balance")
-      .eq("user_id", user.id)
-      .single()
+  const [upiId, setUpiId] =
+    useState("")
 
-    if (data) setBalance(data.balance)
-    setTimeout(() => setIsRefreshing(false), 500) // Fake slight delay for UI feedback
-  }
+  const [cryptoAddress, setCryptoAddress] =
+    useState("")
+
+  const [withdrawMethod, setWithdrawMethod] =
+    useState<WithdrawMethod>("upi")
+
+  const [loading, setLoading] =
+    useState(false)
+
+  const [statsLoading, setStatsLoading] =
+    useState(true)
+
+  // =========================================
+  // WALLET STATS
+  // =========================================
+
+  const [approvedBalance, setApprovedBalance] =
+    useState(0)
+
+  const [pendingBalance, setPendingBalance] =
+    useState(0)
+
+  const [withdrawnBalance, setWithdrawnBalance] =
+    useState(0)
+
+  // =========================================
+  // FETCH WALLET
+  // =========================================
 
   useEffect(() => {
+
     fetchWallet()
+
   }, [])
 
-  const withdraw = async () => {
-    if (!amount || !details) return alert("Fill all fields")
-    if (Number(amount) > balance) return alert("Insufficient balance")
+  async function fetchWallet() {
 
-    const { data: userData } = await supabase.auth.getUser()
-    const user = userData.user
+    setStatsLoading(true)
 
-    await supabase.from("withdrawals").insert({
-      user_id: user.id,
-      amount: Number(amount),
-      method,
-      details,
-      status: "pending",
-    })
+    const {
+      data: userData,
+    } = await supabase.auth.getUser()
 
-    alert("Withdrawal request sent ✅")
-    setAmount("")
-    setDetails("")
+    const user =
+      userData?.user
+
+    if (!user) {
+
+      setStatsLoading(false)
+
+      return
+    }
+
+    // APPROVED
+    const {
+      data: approvedClaims,
+    } = await supabase
+      .from("task_claims")
+      .select(`
+        tasks!task_claims_task_id_fkey (
+          reward
+        )
+      `)
+      .eq("user_id", user.id)
+      .eq("status", "approved")
+
+    // PENDING
+    const {
+      data: pendingClaims,
+    } = await supabase
+      .from("task_claims")
+      .select(`
+        tasks!task_claims_task_id_fkey (
+          reward
+        )
+      `)
+      .eq("user_id", user.id)
+      .in("status", [
+        "submitted",
+        "pending_review",
+      ])
+
+    // WITHDRAWALS
+    const {
+      data: withdrawals,
+    } = await supabase
+      .from("withdrawals")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("status", "approved")
+
+    // CALCULATE
+    const approved =
+      (approvedClaims || []).reduce(
+        (sum: number, item: any) =>
+          sum +
+          Number(
+            item.tasks?.reward || 0
+          ),
+        0
+      )
+
+    const pending =
+      (pendingClaims || []).reduce(
+        (sum: number, item: any) =>
+          sum +
+          Number(
+            item.tasks?.reward || 0
+          ),
+        0
+      )
+
+    const withdrawn =
+      (withdrawals || []).reduce(
+        (sum: number, item: any) =>
+          sum +
+          Number(item.amount || 0),
+        0
+      )
+
+    setApprovedBalance(approved)
+
+    setPendingBalance(pending)
+
+    setWithdrawnBalance(withdrawn)
+
+    setStatsLoading(false)
+  }
+
+  // =========================================
+  // AVAILABLE BALANCE
+  // =========================================
+
+  const rawAvailableBalance =
+    approvedBalance -
+    withdrawnBalance
+
+  // NEVER NEGATIVE
+  const availableBalance =
+    Math.max(
+      0,
+      rawAvailableBalance
+    )
+
+  // =========================================
+  // WITHDRAW
+  // =========================================
+
+  async function handleWithdraw() {
+
+    setLoading(true)
+
+    const {
+      data: userData,
+    } = await supabase.auth.getUser()
+
+    const user =
+      userData?.user
+
+    if (!user) {
+
+      alert("Not logged in")
+
+      setLoading(false)
+
+      return
+    }
+
+    if (
+      !amount ||
+      Number(amount) <= 0
+    ) {
+
+      alert("Enter valid amount")
+
+      setLoading(false)
+
+      return
+    }
+
+    if (
+      Number(amount) >
+      availableBalance
+    ) {
+
+      alert(
+        "Insufficient available balance"
+      )
+
+      setLoading(false)
+
+      return
+    }
+
+    if (
+      withdrawMethod === "upi" &&
+      !upiId
+    ) {
+
+      alert("Enter UPI ID")
+
+      setLoading(false)
+
+      return
+    }
+
+    if (
+      withdrawMethod === "crypto" &&
+      !cryptoAddress
+    ) {
+
+      alert(
+        "Enter Binance ID or wallet address"
+      )
+
+      setLoading(false)
+
+      return
+    }
+
+    try {
+
+      const res = await fetch(
+        "/api/withdraw",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body: JSON.stringify({
+            user_id: user.id,
+            amount: Number(amount),
+
+            method:
+              withdrawMethod,
+
+            upi_id:
+              withdrawMethod ===
+              "upi"
+                ? upiId
+                : null,
+
+            crypto_address:
+              withdrawMethod ===
+              "crypto"
+                ? cryptoAddress
+                : null,
+          }),
+        }
+      )
+
+      const data =
+        await res.json()
+
+      if (!res.ok) {
+
+        alert(
+          data.error ||
+          "Withdraw failed"
+        )
+
+        setLoading(false)
+
+        return
+      }
+
+      alert(
+        "Withdrawal request sent!"
+      )
+
+      setAmount("")
+      setUpiId("")
+      setCryptoAddress("")
+
+      fetchWallet()
+
+    } catch (err) {
+
+      console.error(
+        "ERROR:",
+        err
+      )
+
+      alert(
+        "Something went wrong"
+      )
+    }
+
+    setLoading(false)
   }
 
   return (
-    <div className="w-full font-sans text-slate-200">
-      
-      {/* Header */}
-      <div className="mb-8 text-center md:text-left">
-        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-3">
-          Your <span className="text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-indigo-500">Wallet</span>
-        </h1>
-        <p className="text-slate-400 font-light">Manage your funds and request withdrawals.</p>
+
+    <div className="max-w-4xl mx-auto p-6 md:p-8 w-full font-sans">
+
+      {/* HEADER */}
+      <motion.div
+        initial={{
+          opacity: 0,
+          y: -20,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          duration: 0.5,
+          ease: "easeOut",
+        }}
+        className="flex items-center gap-4 mb-8"
+      >
+
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-500/20 to-rose-500/10 border border-red-500/20 flex items-center justify-center text-red-400 shadow-lg shadow-red-500/5">
+
+          <Wallet size={24} />
+
+        </div>
+
+        <div>
+
+          <h1 className="text-3xl font-bold text-white tracking-tight">
+            Wallet
+          </h1>
+
+          <p className="text-slate-400 mt-1 text-sm">
+            Track earnings and withdraw your balance.
+          </p>
+
+        </div>
+
+      </motion.div>
+
+      {/* STATS */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+
+        <Card
+          icon={<Wallet size={22} />}
+          title="Available Balance"
+          value={`₹${availableBalance.toFixed(2)}`}
+          color="text-green-400"
+          loading={statsLoading}
+        />
+
+        <Card
+          icon={<CheckCircle2 size={22} />}
+          title="Approved Earnings"
+          value={`₹${approvedBalance.toFixed(2)}`}
+          color="text-emerald-400"
+          loading={statsLoading}
+        />
+
+        <Card
+          icon={<Clock3 size={22} />}
+          title="Pending Earnings"
+          value={`₹${pendingBalance.toFixed(2)}`}
+          color="text-yellow-400"
+          loading={statsLoading}
+        />
+
+        <Card
+          icon={<CreditCard size={22} />}
+          title="Total Withdrawn"
+          value={`₹${withdrawnBalance.toFixed(2)}`}
+          color="text-blue-400"
+          loading={statsLoading}
+        />
+
       </div>
 
-      {/* 🔁 SECTION SWITCH TABS */}
-      <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-8">
-        {[
-          { id: "wallet", label: "Balance", icon: WalletIcon },
-          { id: "withdraw", label: "Withdraw", icon: Send },
-          { id: "history", label: "History", icon: History }
-        ].map((tab) => {
-          const isActive = activeTab === tab.id;
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 border-2 ${
-                isActive 
-                  ? 'bg-blue-500/20 border-blue-400/40 text-blue-300 shadow-[inset_0_1px_0_rgba(96,165,250,0.3)]' 
-                  : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10 hover:border-white/20'
-              }`}
-            >
-              <Icon size={16} className={isActive ? 'text-blue-400' : 'opacity-70'} />
-              {tab.label}
-            </button>
-          )
-        })}
-      </div>
+      {/* WITHDRAW FORM */}
+      <motion.div
+        initial={{
+          opacity: 0,
+          y: 20,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          duration: 0.5,
+          delay: 0.1,
+        }}
+        className="bg-white/[0.02] border border-white/10 backdrop-blur-xl rounded-3xl p-6 sm:p-8 shadow-2xl shadow-black/40 relative overflow-hidden"
+      >
 
-      {/* 📦 CONTENT CONTAINER */}
-      <div className="w-full max-w-2xl">
-        <AnimatePresence mode="wait">
-          
-          {/* 💰 WALLET TAB */}
-          {activeTab === "wallet" && (
-            <motion.div
-              key="wallet"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.3 }}
-              className="p-8 md:p-10 rounded-[2rem] bg-blue-500/[0.04] border-2 border-white/20 backdrop-blur-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_8px_30px_rgba(0,0,0,0.2)] text-center flex flex-col items-center"
-            >
-              <div className="w-16 h-16 rounded-2xl bg-blue-500/10 border-2 border-blue-500/20 flex items-center justify-center mb-6">
-                <WalletIcon size={32} className="text-blue-400" />
-              </div>
-              <h3 className="text-lg font-medium text-slate-400 mb-2">Available Balance</h3>
-              <h1 className="text-6xl font-extrabold text-white mb-8 tracking-tighter flex items-center gap-2">
-                <span className="text-blue-500">₹</span>{balance}
-              </h1>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 rounded-full blur-[80px] pointer-events-none transform translate-x-1/2 -translate-y-1/2" />
 
-              <button 
-                onClick={fetchWallet} 
-                disabled={isRefreshing}
-                className="px-8 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 border-2 border-white/20 text-white text-sm font-bold transition-all duration-300 flex items-center gap-2 disabled:opacity-50"
+        <div className="space-y-6 relative z-10">
+
+          {/* METHOD */}
+          <div>
+
+            <label className="text-sm font-medium text-slate-400 mb-3 block">
+              Withdrawal Method
+            </label>
+
+            <div className="grid grid-cols-2 gap-4">
+
+              <button
+                onClick={() =>
+                  setWithdrawMethod(
+                    "upi"
+                  )
+                }
+                className={`rounded-2xl p-4 border transition-all flex items-center gap-3 ${
+                  withdrawMethod ===
+                  "upi"
+                    ? "bg-red-500/10 border-red-500/30 text-red-300"
+                    : "bg-white/[0.02] border-white/10 text-slate-400"
+                }`}
               >
-                <RefreshCw size={18} className={isRefreshing ? "animate-spin text-blue-400" : "text-blue-400"} />
-                Refresh Balance
+
+                <AtSign size={18} />
+
+                UPI
+
               </button>
-            </motion.div>
-          )}
 
-          {/* 💸 WITHDRAW TAB */}
-          {activeTab === "withdraw" && (
-            <motion.div
-              key="withdraw"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.3 }}
-              className="p-8 md:p-10 rounded-[2rem] bg-blue-500/[0.04] border-2 border-white/20 backdrop-blur-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_8px_30px_rgba(0,0,0,0.2)]"
-            >
-              <div className="flex items-center gap-3 mb-8 pb-6 border-b-2 border-white/10">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                  <Send size={20} className="text-emerald-400" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-white">Withdraw Funds</h3>
-                  <p className="text-sm text-slate-400 font-light">Transfer your earnings to your bank or wallet.</p>
-                </div>
+              <button
+                onClick={() =>
+                  setWithdrawMethod(
+                    "crypto"
+                  )
+                }
+                className={`rounded-2xl p-4 border transition-all flex items-center gap-3 ${
+                  withdrawMethod ===
+                  "crypto"
+                    ? "bg-purple-500/10 border-purple-500/30 text-purple-300"
+                    : "bg-white/[0.02] border-white/10 text-slate-400"
+                }`}
+              >
+
+                <Coins size={18} />
+
+                Crypto
+
+              </button>
+
+            </div>
+
+          </div>
+
+          {/* AMOUNT */}
+          <div className="space-y-2">
+
+            <label className="text-sm font-medium text-slate-400 pl-1">
+              Withdrawal Amount
+            </label>
+
+            <div className="relative">
+
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500">
+
+                <IndianRupee size={18} />
+
               </div>
 
-              <div className="space-y-5">
-                {/* Amount Input */}
-                <div className="relative group/input">
-                  <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/input:text-blue-400 transition-colors" size={18} />
-                  <input
-                    type="number"
-                    placeholder="Enter Amount"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    className="w-full bg-black/20 border-2 border-white/10 rounded-xl pl-12 pr-4 py-4 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-400/50 focus:bg-black/40 transition-all duration-300 font-medium"
-                  />
+              <input
+                type="number"
+                placeholder="0.00"
+                value={amount}
+                onChange={(e) =>
+                  setAmount(
+                    e.target.value
+                  )
+                }
+                disabled={loading}
+                className="w-full bg-black/30 border border-white/10 rounded-xl pl-11 pr-4 py-4 text-white placeholder:text-slate-600 outline-none focus:bg-black/50 focus:border-red-500/50 focus:ring-1 focus:ring-red-500/30"
+              />
+
+            </div>
+
+          </div>
+
+          {/* UPI */}
+          {withdrawMethod ===
+            "upi" && (
+
+            <div className="space-y-2">
+
+              <label className="text-sm font-medium text-slate-400 pl-1">
+                UPI ID
+              </label>
+
+              <div className="relative">
+
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500">
+
+                  <AtSign size={18} />
+
                 </div>
 
-                {/* Method Select */}
-                <div className="relative group/input">
-                  <Building className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/input:text-blue-400 transition-colors pointer-events-none" size={18} />
-                  <select
-                    value={method}
-                    onChange={(e) => setMethod(e.target.value)}
-                    className="w-full bg-black/20 border-2 border-white/10 rounded-xl pl-12 pr-4 py-4 text-slate-200 focus:outline-none focus:border-blue-400/50 focus:bg-black/40 transition-all duration-300 font-medium appearance-none cursor-pointer"
-                  >
-                    <option value="upi" className="bg-slate-900">UPI Transfer</option>
-                    <option value="crypto" className="bg-slate-900">Crypto Wallet</option>
-                  </select>
+                <input
+                  type="text"
+                  placeholder="username@bank"
+                  value={upiId}
+                  onChange={(e) =>
+                    setUpiId(
+                      e.target.value
+                    )
+                  }
+                  disabled={loading}
+                  className="w-full bg-black/30 border border-white/10 rounded-xl pl-11 pr-4 py-4 text-white placeholder:text-slate-600 outline-none focus:bg-black/50 focus:border-red-500/50 focus:ring-1 focus:ring-red-500/30"
+                />
+
+              </div>
+
+            </div>
+          )}
+
+          {/* CRYPTO */}
+          {withdrawMethod ===
+            "crypto" && (
+
+            <div className="space-y-3">
+
+              <div className="bg-purple-500/10 border border-purple-500/20 rounded-2xl p-4 text-sm text-purple-200 leading-relaxed">
+
+                Paste your Binance ID or crypto wallet address.
+                <br />
+                Network: <span className="font-semibold">
+                  USDT Polygon
+                </span>
+
+              </div>
+
+              <div className="relative">
+
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500">
+
+                  <Coins size={18} />
+
                 </div>
 
-                {/* Details Input */}
-                <div className="relative group/input">
-                  <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/input:text-blue-400 transition-colors" size={18} />
-                  <input
-                    type="text"
-                    placeholder={method === "upi" ? "Enter UPI ID (e.g., name@bank)" : "Enter Wallet Address"}
-                    value={details}
-                    onChange={(e) => setDetails(e.target.value)}
-                    className="w-full bg-black/20 border-2 border-white/10 rounded-xl pl-12 pr-4 py-4 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-400/50 focus:bg-black/40 transition-all duration-300 font-medium"
-                  />
-                </div>
+                <input
+                  type="text"
+                  placeholder="Binance ID or Wallet Address"
+                  value={cryptoAddress}
+                  onChange={(e) =>
+                    setCryptoAddress(
+                      e.target.value
+                    )
+                  }
+                  disabled={loading}
+                  className="w-full bg-black/30 border border-white/10 rounded-xl pl-11 pr-4 py-4 text-white placeholder:text-slate-600 outline-none focus:bg-black/50 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/30"
+                />
 
-                {/* Submit Button */}
-                <button 
-                  onClick={withdraw}
-                  className="w-full mt-4 px-6 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold transition-all duration-300 shadow-[0_0_20px_rgba(79,70,229,0.2)] hover:shadow-[0_0_30px_rgba(79,70,229,0.4)] hover:-translate-y-0.5 border-2 border-blue-400/30 flex items-center justify-center gap-2"
-                >
+              </div>
+
+            </div>
+          )}
+
+          {/* BUTTON */}
+          <motion.button
+            whileHover={{
+              y: -2,
+            }}
+            whileTap={{
+              y: 0,
+            }}
+            onClick={handleWithdraw}
+            disabled={
+              loading ||
+              !amount
+            }
+            className="w-full mt-4 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-400 hover:to-rose-500 text-white px-6 py-4 rounded-xl font-semibold shadow-lg shadow-red-500/20 hover:shadow-red-500/40 disabled:opacity-50 disabled:pointer-events-none transition-all duration-200 flex justify-center items-center gap-2 group"
+          >
+
+            {loading ? (
+
+              <>
+                <Loader2
+                  size={20}
+                  className="animate-spin text-white/80"
+                />
+
+                <span>
+                  Processing Request...
+                </span>
+              </>
+
+            ) : (
+
+              <>
+                <span>
                   Request Withdrawal
-                </button>
-              </div>
-            </motion.div>
-          )}
+                </span>
 
-          {/* 📊 HISTORY TAB */}
-          {activeTab === "history" && (
-            <motion.div
-              key="history"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.3 }}
-              className="p-8 md:p-10 rounded-[2rem] bg-blue-500/[0.04] border-2 border-white/20 backdrop-blur-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_8px_30px_rgba(0,0,0,0.2)] text-center flex flex-col items-center justify-center min-h-[300px]"
-            >
-              <div className="w-16 h-16 rounded-2xl bg-white/5 border-2 border-white/10 flex items-center justify-center mb-4">
-                <History size={32} className="text-slate-500" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">Transaction History</h3>
-              <p className="text-slate-400 font-light">Your past withdrawals will appear here soon.</p>
-            </motion.div>
-          )}
+                <ArrowRight
+                  size={18}
+                  className="text-white/80 group-hover:translate-x-1 transition-transform"
+                />
+              </>
+            )}
 
-        </AnimatePresence>
+          </motion.button>
+
+        </div>
+
+      </motion.div>
+
+    </div>
+  )
+}
+
+// =========================================
+// CARD
+// =========================================
+
+function Card({
+  icon,
+  title,
+  value,
+  color,
+  loading,
+}: any) {
+
+  return (
+
+    <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 backdrop-blur-xl shadow-xl">
+
+      <div className="flex items-center justify-between mb-4">
+
+        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center bg-white/5 ${color}`}>
+          {icon}
+        </div>
+
       </div>
+
+      <p className="text-slate-400 text-sm mb-2">
+        {title}
+      </p>
+
+      {loading ? (
+
+        <div className="h-8 w-32 rounded bg-white/5 animate-pulse" />
+
+      ) : (
+
+        <h2 className={`text-3xl font-bold ${color}`}>
+          {value}
+        </h2>
+      )}
+
     </div>
   )
 }

@@ -1,95 +1,143 @@
-import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
-import { getUserRole } from "@/lib/getUserRole"
+import {
+  createUserClient,
+  findTaskByClaimTaskId,
+  getTaskPrimaryId,
+} from "@/lib/taskLifecycle"
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+type ReviewAction = "approved" | "rejected"
 
 export async function POST(req: Request) {
   try {
     const token = req.headers.get("authorization")?.replace("Bearer ", "")
-
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    const supabase = createUserClient(token)
     const {
       data: { user },
+      error: authError,
     } = await supabase.auth.getUser(token)
 
-    if (!user) {
+    if (authError || !user) {
       return NextResponse.json({ error: "Invalid user" }, { status: 401 })
     }
 
-    // 🔥 ROLE CHECK
-    const role = await getUserRole(user.id)
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle()
 
-    if (role !== "admin" && role !== "manager") {
-      return NextResponse.json(
-        { error: "Access denied" },
-        { status: 403 }
-      )
+    if (profileError) throw profileError
+
+    if (profile?.role !== "admin" && profile?.role !== "manager") {
+      return NextResponse.json({ error: "Access denied" }, { status: 403 })
     }
 
-    const body = await req.json()
-    const { task_id, action } = body
+    const { claim_id, task_id, action } = await req.json()
+    if (action !== "approved" && action !== "rejected") {
+      return NextResponse.json({ error: "Invalid review action" }, { status: 400 })
+    }
 
-    // 🔥 GET TASK
-    const { data: task } = await supabase
-      .from("tasks")
+    let claimQuery = supabase
+      .from("task_claims")
       .select("*")
-      .eq("task_id", task_id)
-      .single()
+      .eq("status", "submitted")
+      .order("created_at", { ascending: false })
+      .limit(1)
 
-    if (!task) {
+    claimQuery = claim_id
+      ? claimQuery.eq("id", claim_id)
+      : claimQuery.eq("task_id", task_id)
+
+    const { data: claim, error: claimError } = await claimQuery.maybeSingle()
+    if (claimError) throw claimError
+
+    if (!claim) {
+      return NextResponse.json({ error: "Submission not found" }, { status: 404 })
+    }
+
+    const task = await findTaskByClaimTaskId(supabase, claim.task_id)
+    const reward = Number(task?.reward || 0)
+    const reviewedStatus = action as ReviewAction
+
+    const { data: reviewedClaim, error: updateClaimError } = await supabase
+      .from("task_claims")
+      .update({ status: reviewedStatus })
+      .eq("id", claim.id)
+      .eq("status", "submitted")
+      .select("*")
+      .maybeSingle()
+
+    if (updateClaimError) throw updateClaimError
+
+    if (!reviewedClaim) {
       return NextResponse.json(
-        { error: "Task not found" },
-        { status: 404 }
+        { error: "Submission was already reviewed" },
+        { status: 409 }
       )
     }
 
-    const userId = task.claimed_by
-    const reward = Number(task.reward || 0)
-
-    if (action === "approved") {
-      const { data: wallet } = await supabase
-        .from("wallets")
-        .select("*")
-        .eq("user_id", userId)
-        .maybeSingle()
-
-      if (!wallet) {
-        await supabase.from("wallets").insert({
-          user_id: userId,
-          balance: reward,
-        })
-      } else {
-        await supabase
+    if (reviewedStatus === "approved" && reward > 0) {
+      try {
+        const { data: wallet, error: walletError } = await supabase
           .from("wallets")
-          .update({
-            balance: Number(wallet.balance || 0) + reward,
-          })
-          .eq("user_id", userId)
-      }
+          .select("*")
+          .eq("user_id", claim.user_id)
+          .maybeSingle()
 
-      await supabase.from("earnings").insert({
-        user_id: userId,
-        task_id,
-        amount: reward,
-      })
+        if (walletError) throw walletError
+
+        if (!wallet) {
+          const { error } = await supabase.from("wallets").insert({
+            user_id: claim.user_id,
+            balance: reward,
+          })
+          if (error) throw error
+        } else {
+          const { error } = await supabase
+            .from("wallets")
+            .update({ balance: Number(wallet.balance || 0) + reward })
+            .eq("user_id", claim.user_id)
+
+          if (error) throw error
+        }
+
+        try {
+          const { error: earningError } = await supabase.from("earnings").insert({
+            user_id: claim.user_id,
+            task_id: claim.task_id,
+            amount: reward,
+          })
+
+          if (earningError) console.error("Earning insert failed:", earningError.message)
+        } catch (earningError) {
+          console.error("Earning insert skipped:", earningError)
+        }
+      } catch (creditError) {
+        await supabase
+          .from("task_claims")
+          .update({ status: "submitted" })
+          .eq("id", claim.id)
+        throw creditError
+      }
     }
 
-    await supabase
-      .from("tasks")
-      .update({ status: action })
-      .eq("task_id", task_id)
+    if (task) {
+      await supabase
+        .from("tasks")
+        .update({ status: reviewedStatus })
+        .eq("id", getTaskPrimaryId(task, claim.task_id))
+    }
 
     return NextResponse.json({ success: true })
-  } catch (err: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Review failed"
+    console.error("Review task error:", error)
     return NextResponse.json(
-      { error: err.message },
+      { error: message },
       { status: 500 }
     )
   }

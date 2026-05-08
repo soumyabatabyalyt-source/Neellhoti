@@ -1,23 +1,98 @@
-import { createClient } from "@supabase/supabase-js"
+"use client"
 
-export default async function Wallet() {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+import { useEffect, useState } from "react"
+import { supabase } from "@/lib/supabaseClient"
 
-  const userId = "af10f1c6-a07f-4ad0-9ab5-93a87d..." // SAME ID
+export default function WalletPage() {
+  const [balance, setBalance] = useState<number>(0)
+  const [loading, setLoading] = useState(true)
 
-  const { data } = await supabase
-    .from("wallets")
-    .select("*")
-    .eq("user_id", userId)
-    .single()
+  useEffect(() => {
+    async function fetchWallet() {
+      const { data: userData } = await supabase.auth.getUser()
+      const user = userData?.user
+      if (!user) return
+
+      const { data } = await supabase
+        .from("wallets")
+        .select("balance")
+        .eq("user_id", user.id)
+        .single()
+
+      if (data) {
+        setBalance(data.balance || 0)
+      }
+
+      setLoading(false)
+    }
+
+    fetchWallet()
+  }, [])
+
+  async function handleWithdraw() {
+    const { data: userData } = await supabase.auth.getUser()
+    const user = userData?.user
+
+    if (!user) {
+      alert("Not logged in")
+      return
+    }
+
+    if (balance <= 0) {
+      alert("No balance to withdraw")
+      return
+    }
+
+    console.log("Sending withdraw:", {
+      user_id: user.id,
+      amount: balance,
+    })
+
+    const res = await fetch("/api/withdraw", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_id: user.id,
+        amount: balance,
+      }),
+    })
+
+    const data = await res.json()
+
+    console.log("Response:", data)
+
+    if (!res.ok) {
+      alert(data.error || "Withdraw failed")
+      return
+    }
+
+    alert("Withdrawal request sent!")
+
+    // Optional: reset UI
+    setBalance(0)
+  }
+
+  if (loading) {
+    return <div className="p-6 text-white">Loading...</div>
+  }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>My Wallet</h1>
-      <h2>${data?.balance || 0}</h2>
+    <div className="p-6 text-white space-y-6">
+      <h1 className="text-2xl font-bold">Wallet</h1>
+
+      <div className="border border-white/20 rounded-xl p-6">
+        <p className="text-lg">Balance</p>
+        <p className="text-3xl font-bold text-emerald-400">₹{balance}</p>
+      </div>
+
+      <button
+        onClick={handleWithdraw}
+        className="w-full py-4 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 font-bold"
+      >
+        Withdraw Balance
+      </button>
     </div>
   )
 }

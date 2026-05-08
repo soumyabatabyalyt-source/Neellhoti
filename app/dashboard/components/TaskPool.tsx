@@ -1,32 +1,61 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
 
-export default function TaskPool({ user }: any) {
-  const [tasks, setTasks] = useState<any[]>([])
+type TaskRow = {
+  id: string
+  title?: string | null
+  post_title?: string | null
+  reward?: number | string | null
+}
 
-  const fetchTasks = async () => {
-    const { data } = await supabase
-      .from("tasks")
-      .select("*")
-      .eq("status", "available")
+export default function TaskPool() {
+  const [tasks, setTasks] = useState<TaskRow[]>([])
 
-    setTasks(data || [])
-  }
+  const fetchTasks = useCallback(async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
 
-  useEffect(() => {
-    fetchTasks()
+    if (!session) return
+
+    const res = await fetch("/api/tasks", {
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      cache: "no-store",
+    })
+    const payload = await res.json()
+
+    setTasks(res.ok ? payload.tasks || [] : [])
   }, [])
 
-  const claimTask = async (task_id: string) => {
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      void fetchTasks()
+    }, 0)
+
+    return () => window.clearTimeout(timeout)
+  }, [fetchTasks])
+
+  const claimTask = async (taskId: string) => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+
+    if (!session) {
+      alert("Login required")
+      return
+    }
+
     const res = await fetch("/api/claim-task", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        task_id,
-        user_id: user.id,
-      }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ task_id: taskId }),
     })
 
     const data = await res.json()
@@ -54,10 +83,10 @@ export default function TaskPool({ user }: any) {
             borderRadius: "10px"
           }}
         >
-          <h3>{task.post_title}</h3>
+          <h3>{task.title || task.post_title}</h3>
           <p>Reward: ${task.reward}</p>
 
-          <button onClick={() => claimTask(task.task_id)}>
+          <button onClick={() => claimTask(task.id)}>
             Claim Task
           </button>
         </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { usePathname, useRouter } from "next/navigation"
+import { motion } from "framer-motion"
 
 export default function DashboardLayout({
   children,
@@ -12,16 +13,20 @@ export default function DashboardLayout({
   const router = useRouter()
 
   const [dark, setDark] = useState(true)
+  const [mounted, setMounted] = useState(false)
 
   // persist theme
   useEffect(() => {
+    setMounted(true)
     const saved = localStorage.getItem("theme")
     if (saved === "light") setDark(false)
   }, [])
 
   useEffect(() => {
-    localStorage.setItem("theme", dark ? "dark" : "light")
-  }, [dark])
+    if (mounted) {
+      localStorage.setItem("theme", dark ? "dark" : "light")
+    }
+  }, [dark, mounted])
 
   const navItems = [
     { name: "Tasks", path: "/dashboard/tasks" },
@@ -30,119 +35,132 @@ export default function DashboardLayout({
     { name: "Account", path: "/dashboard/account" },
   ]
 
+  // Prevent hydration mismatch on theme render
+  if (!mounted) return null
+
   return (
-    <div style={dark ? styles.darkBg : styles.lightBg}>
-      
+    <div 
+      className={`min-h-screen w-full transition-colors duration-500 font-sans overflow-x-hidden ${
+        dark 
+          ? "bg-[#05070A] text-white selection:bg-red-500/30" 
+          : "bg-slate-50 text-slate-900 selection:bg-red-500/20"
+      }`}
+    >
+      {/* 🌟 AMBIENT GLOWS */}
+      {dark && (
+        <>
+          <div className="fixed w-[600px] h-[600px] bg-red-600/5 rounded-full blur-[120px] top-[-20%] left-[-10%] pointer-events-none" />
+          <div className="fixed w-[500px] h-[500px] bg-rose-500/5 rounded-full blur-[100px] bottom-[-10%] right-[-5%] pointer-events-none" />
+        </>
+      )}
+
       {/* 🔥 NAVBAR */}
-      <div style={navBar(dark)}>
-        <div style={navContent}>
-          <h2 style={{ margin: 0 }}>Nillohit</h2>
+      <nav 
+        className={`fixed top-0 left-0 w-full z-50 backdrop-blur-2xl transition-all duration-300 ${
+          dark 
+            ? "bg-[#05070A]/80 border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.5)]" 
+            : "bg-white/80 border-b border-slate-200 shadow-sm"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex justify-between items-center gap-4">
+          
+          {/* LEFT: BRAND LOGO */}
+          <motion.div 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex-shrink-0 flex items-center gap-2 cursor-pointer group w-32"
+            onClick={() => router.push("/dashboard/tasks")}
+          >
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center transform group-hover:rotate-12 transition-all duration-300 ${
+              dark ? "bg-red-500 text-white" : "bg-red-500 text-white shadow-lg shadow-red-500/20"
+            }`}>
+              <span className="font-bold text-lg">N</span>
+            </div>
+            <h2 className="font-bold text-xl tracking-tight hidden sm:block">
+              Nillohit
+            </h2>
+          </motion.div>
 
-          <div style={navItemsWrap}>
-            {navItems.map((item) => {
-              const active = pathname === item.path
+          {/* CENTER: NAV ITEMS (Centered Dock) */}
+          <div className="flex-1 flex justify-center overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className={`flex items-center gap-1.5 p-1.5 rounded-2xl border transition-colors ${
+              dark ? "bg-white/[0.02] border-white/10" : "bg-slate-100/50 border-slate-200"
+            }`}>
+              {navItems.map((item) => {
+                const active = pathname === item.path
 
-              return (
-                <div
-                  key={item.name}
-                  onClick={() => router.push(item.path)}
-                  style={navCard(active, dark)}
-                >
-                  {item.name}
-                </div>
-              )
-            })}
-
-            {/* 🌙 THEME */}
-            <div onClick={() => setDark(!dark)} style={toggleCard(dark)}>
-              {dark ? "🌙" : "☀️"}
+                return (
+                  <button
+                    key={item.name}
+                    onClick={() => router.push(item.path)}
+                    className={`relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 whitespace-nowrap outline-none border ${
+                      active 
+                        ? (dark ? "border-white/10 text-white" : "border-slate-300 text-slate-900 shadow-sm") 
+                        : (dark ? "border-transparent text-slate-400 hover:text-slate-200 hover:border-white/5 hover:bg-white/5" : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-200 hover:bg-white/50")
+                    }`}
+                  >
+                    {active && (
+                      <motion.div
+                        layoutId="active-nav-pill"
+                        className={`absolute inset-0 rounded-xl border ${
+                          dark ? "bg-white/10 border-white/10 shadow-inner shadow-white/5" : "bg-white border-slate-200"
+                        }`}
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+                    <span className="relative z-10">{item.name}</span>
+                  </button>
+                )
+              })}
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* 📦 CONTENT */}
-      <div style={container}>{children}</div>
+          {/* RIGHT: THEME TOGGLE */}
+          <div className="flex-shrink-0 flex items-center justify-end w-32">
+            <motion.button 
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setDark(!dark)} 
+              className={`p-2 sm:p-2.5 rounded-xl border flex items-center justify-center transition-all shadow-sm ${
+                dark 
+                  ? "bg-white/5 border-white/10 hover:bg-white/10 text-yellow-400 hover:border-white/20" 
+                  : "bg-white border-slate-200 hover:bg-slate-50 text-slate-700 hover:border-slate-300"
+              }`}
+              aria-label="Toggle theme"
+            >
+              <motion.div
+                initial={false}
+                animate={{ rotate: dark ? 0 : 180, scale: dark ? 1 : 0.8 }}
+                transition={{ type: "spring", stiffness: 200, damping: 10 }}
+              >
+                {dark ? (
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                )}
+              </motion.div>
+            </motion.button>
+          </div>
+
+        </div>
+      </nav>
+
+      {/* 📦 CONTENT WRAPPER */}
+      <main className="relative z-10 pt-28 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <motion.div
+          key={pathname}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+        >
+          {children}
+        </motion.div>
+      </main>
+      
     </div>
   )
-}
-
-//
-// 🎨 STYLES (THIS WAS MISSING / BROKEN)
-//
-
-const styles = {
-  darkBg: {
-    minHeight: "100vh",
-    background: "linear-gradient(135deg, #0a0a0a, #151515)",
-    color: "#fff",
-  },
-  lightBg: {
-    minHeight: "100vh",
-    background: "#f5f5f5",
-    color: "#111",
-  },
-}
-
-const navBar = (dark: boolean) => ({
-  position: "fixed" as const,
-  top: 0,
-  left: 0,
-  width: "100%",
-  zIndex: 1000,
-  backdropFilter: "blur(14px)",
-  background: dark
-    ? "rgba(10,10,10,0.85)"
-    : "rgba(255,255,255,0.85)",
-  borderBottom: dark ? "1px solid #222" : "1px solid #ddd",
-})
-
-const navContent = {
-  maxWidth: "1100px",
-  margin: "auto",
-  padding: "12px 20px",
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-}
-
-const navItemsWrap = {
-  display: "flex",
-  gap: "10px",
-  alignItems: "center",
-}
-
-const navCard = (active: boolean, dark: boolean) => ({
-  padding: "8px 14px",
-  borderRadius: "14px",
-  cursor: "pointer",
-  fontSize: "14px",
-  background: active
-    ? dark
-      ? "#fff"
-      : "#111"
-    : dark
-    ? "#1c1c1c"
-    : "#eaeaea",
-  color: active
-    ? dark
-      ? "#000"
-      : "#fff"
-    : dark
-    ? "#aaa"
-    : "#333",
-  transition: "all 0.2s ease",
-})
-
-const toggleCard = (dark: boolean) => ({
-  padding: "8px 12px",
-  borderRadius: "14px",
-  cursor: "pointer",
-  background: dark ? "#222" : "#ddd",
-})
-
-const container = {
-  maxWidth: "900px",
-  margin: "auto",
-  padding: "100px 20px 20px", // 👈 important
 }
