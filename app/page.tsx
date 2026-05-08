@@ -12,9 +12,6 @@ import {
 
 import {
   ArrowRight,
-  Zap,
-  Shield,
-  Trophy,
 } from "lucide-react"
 
 import {
@@ -51,8 +48,7 @@ function useCounter(
     ) => {
 
       if (!startTime)
-        startTime =
-          timestamp
+        startTime = timestamp
 
       const progress =
         Math.min(
@@ -223,17 +219,11 @@ function Ticker() {
 
     "Verified bounties",
 
-    "Karma multipliers",
-
     "Community-powered",
 
-    "Zero waiting periods",
-
-    "Premium tiers",
+    "Exclusive tasks",
 
     "Real-world rewards",
-
-    "Exclusive tasks",
   ]
 
   const doubled = [
@@ -482,7 +472,7 @@ export default function Home() {
 
       <CursorOrb />
 
-      {/* MAIN CONTENT */}
+      {/* HERO */}
 
       <motion.section
         ref={heroRef}
@@ -665,9 +655,7 @@ export default function Home() {
           {/* BUTTONS */}
 
           <motion.div
-            variants={
-              itemVariants
-            }
+            variants={itemVariants}
             className="
               flex
               flex-col
@@ -678,107 +666,10 @@ export default function Home() {
             "
           >
 
-           {/* BUTTONS */}
+            {/* PRIMARY BUTTON */}
 
-<motion.div
-  variants={
-    itemVariants
-  }
-  className="
-    flex
-    flex-col
-    sm:flex-row
-    items-center
-    justify-center
-    gap-4
-  "
->
-
-  {/* PRIMARY CTA */}
-
-  <MagneticButton
-    onClick={() =>
-      router.push(
-        "/auth"
-      )
-    }
-    className="
-      group
-      relative
-      w-full
-      sm:w-auto
-      px-10
-      py-4
-      rounded-full
-      overflow-hidden
-      cursor-pointer
-    "
-  >
-
-    <div className="
-      absolute
-      inset-0
-      bg-gradient-to-b
-      from-orange-500
-      to-red-600
-      rounded-full
-    " />
-
-    <div className="
-      relative
-      flex
-      items-center
-      gap-2
-      text-white
-      font-semibold
-      tracking-wide
-      text-sm
-    ">
-
-      Start Earning Now
-
-      <ArrowRight
-        size={16}
-      />
-
-    </div>
-
-  </MagneticButton>
-
-  {/* SECONDARY CTA */}
-
-  <button
-    onClick={() =>
-      router.push(
-        "/auth"
-      )
-    }
-    className="
-      group
-      relative
-      w-full
-      sm:w-auto
-      px-10
-      py-4
-      rounded-full
-      border
-      border-white/[0.07]
-      text-slate-400
-      hover:text-slate-200
-      text-sm
-      font-medium
-      tracking-wide
-      transition-all
-      duration-300
-      backdrop-blur-md
-    "
-  >
-
-    Login / Register
-
-  </button>
-
-</motion.div>
+            <MagneticButton
+              onClick={() => router.push("/auth")}
               className="
                 group
                 relative
@@ -792,42 +683,42 @@ export default function Home() {
               "
             >
 
-              <div className="
-                absolute
-                inset-0
-                bg-gradient-to-b
-                from-orange-500
-                to-red-600
-                rounded-full
-              " />
+              <div
+                className="
+                  absolute
+                  inset-0
+                  bg-gradient-to-b
+                  from-orange-500
+                  to-red-600
+                  rounded-full
+                "
+              />
 
-              <div className="
-                relative
-                flex
-                items-center
-                gap-2
-                text-white
-                font-semibold
-                tracking-wide
-                text-sm
-              ">
+              <div
+                className="
+                  relative
+                  flex
+                  items-center
+                  gap-2
+                  text-white
+                  font-semibold
+                  tracking-wide
+                  text-sm
+                "
+              >
 
                 Start Earning Now
 
-                <ArrowRight
-                  size={16}
-                />
+                <ArrowRight size={16} />
 
               </div>
 
             </MagneticButton>
 
+            {/* SECONDARY BUTTON */}
+
             <button
-              onClick={() =>
-                router.push(
-                  "/auth"
-                )
-              }
+              onClick={() => router.push("/auth")}
               className="
                 group
                 relative
@@ -849,7 +740,7 @@ export default function Home() {
               "
             >
 
-              View Available Tasks
+              Login / Register
 
             </button>
 
