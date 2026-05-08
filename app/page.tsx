@@ -678,12 +678,107 @@ export default function Home() {
             "
           >
 
-            <MagneticButton
-              onClick={() =>
-                router.push(
-                  "/dashboard/tasks"
-                )
-              }
+           {/* BUTTONS */}
+
+<motion.div
+  variants={
+    itemVariants
+  }
+  className="
+    flex
+    flex-col
+    sm:flex-row
+    items-center
+    justify-center
+    gap-4
+  "
+>
+
+  {/* PRIMARY CTA */}
+
+  <MagneticButton
+    onClick={() =>
+      router.push(
+        "/auth"
+      )
+    }
+    className="
+      group
+      relative
+      w-full
+      sm:w-auto
+      px-10
+      py-4
+      rounded-full
+      overflow-hidden
+      cursor-pointer
+    "
+  >
+
+    <div className="
+      absolute
+      inset-0
+      bg-gradient-to-b
+      from-orange-500
+      to-red-600
+      rounded-full
+    " />
+
+    <div className="
+      relative
+      flex
+      items-center
+      gap-2
+      text-white
+      font-semibold
+      tracking-wide
+      text-sm
+    ">
+
+      Start Earning Now
+
+      <ArrowRight
+        size={16}
+      />
+
+    </div>
+
+  </MagneticButton>
+
+  {/* SECONDARY CTA */}
+
+  <button
+    onClick={() =>
+      router.push(
+        "/auth"
+      )
+    }
+    className="
+      group
+      relative
+      w-full
+      sm:w-auto
+      px-10
+      py-4
+      rounded-full
+      border
+      border-white/[0.07]
+      text-slate-400
+      hover:text-slate-200
+      text-sm
+      font-medium
+      tracking-wide
+      transition-all
+      duration-300
+      backdrop-blur-md
+    "
+  >
+
+    Login / Register
+
+  </button>
+
+</motion.div>
               className="
                 group
                 relative
