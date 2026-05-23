@@ -114,8 +114,7 @@ export default function WithdrawalsPage() {
           <p className="text-sm mt-1">All payout requests have been processed.</p>
         </div>
       ) : (
-        <div  className="grid gap-4">
-          <AnimatePresence mode="popLayout">
+        <div className="grid gap-4">
             {withdrawals.map((w) => (
               <div
                 
@@ -212,7 +211,6 @@ export default function WithdrawalsPage() {
 
               </div>
             ))}
-          
         </div>
       )}
     </div>
