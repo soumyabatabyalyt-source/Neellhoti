@@ -719,23 +719,7 @@ export default function ManagerLayout({
         flex-col
       ">
 
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-
-          transition={{
-            duration: 0.5,
-            type: "spring",
-            stiffness: 80,
-          }}
-
+        <div
           className={`
             flex-1
             p-6
@@ -756,7 +740,7 @@ export default function ManagerLayout({
 
           {children}
 
-        </motion.div>
+        </div>
 
       </main>
 

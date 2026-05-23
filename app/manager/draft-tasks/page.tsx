@@ -477,15 +477,7 @@ export default function
 
       {/* HEADER */}
 
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: -20,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
+      <div
         className="
           mb-8
         "
@@ -548,16 +540,8 @@ export default function
 
           return (
 
-            <motion.div
+            <div
               key={task.id}
-              initial={{
-                opacity: 0,
-                y: 20,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
               className="
                 border-2
                 border-white/15
@@ -1173,7 +1157,7 @@ export default function
                 </div>
               )}
 
-            </motion.div>
+            </div>
           )
         })}
 

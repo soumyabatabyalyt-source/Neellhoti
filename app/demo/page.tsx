@@ -1,6 +1,5 @@
 "use client"
 
-import { motion } from "framer-motion"
 import {
   Zap, Users, TrendingUp, Award, Shield, Clock,
   ArrowRight, Check, AlertCircle, Heart, Star,

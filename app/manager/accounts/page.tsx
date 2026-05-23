@@ -197,7 +197,7 @@ export default function Accounts() {
                   </button>
                 </div>
 
-              </motion.div>
+              </div>
             ))}
         </div>
       )}

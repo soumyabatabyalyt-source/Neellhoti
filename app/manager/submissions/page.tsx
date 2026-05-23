@@ -495,7 +495,7 @@ export default function SubmissionsPage() {
           }
         />
 
-      </motion.div>
+      </div>
 
       {/* PAGE INFO */}
       <div className="

@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
 import { Loader2, Banknote, DollarSign, User, Clock, AtSign, Check, X } from "lucide-react"
 
 type Withdrawal = {

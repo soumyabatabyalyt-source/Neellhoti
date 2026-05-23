@@ -11,10 +11,6 @@ import {
 } from "@supabase/supabase-js"
 
 import {
-  motion
-} from "framer-motion"
-
-import {
   PlayCircle,
   Clock,
   CheckCircle2,
