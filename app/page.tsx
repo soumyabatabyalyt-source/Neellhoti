@@ -4,8 +4,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { ArrowRight, CheckCircle, Zap, Users, TrendingUp, Award, Shield, Clock } from "lucide-react"
 
-export default function LandingPage() {
-  const router = useRouter()
+V3 Live  const router = useRouter()
 
   return (
     <main className="relative min-h-screen bg-[#0a0a14] text-white overflow-hidden">
@@ -20,7 +19,6 @@ export default function LandingPage() {
         {/* Content */}
         <div className="relative z-10 max-w-4xl text-center mx-auto">
           <div className="inline-block mb-6 px-4 py-2 bg-red-500/10 border border-red-500/30 rounded-full">
-            <span className="text-red-400 text-sm font-semibold">The Platform V3 Live</span>
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
