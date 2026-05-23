@@ -2,7 +2,6 @@
 
 import { useEffect } from "react"
 import { AlertTriangle, RotateCcw, Shield } from "lucide-react"
-import { motion } from "framer-motion"
 
 export default function AdminError({
   error,
@@ -17,22 +16,14 @@ export default function AdminError({
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-md w-full"
-      >
+      <div className="max-w-md w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="rounded-3xl border border-amber-500/20 bg-amber-500/[0.03] backdrop-blur-xl p-8 text-center">
-          <motion.div
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
+          <div className="animate-pulse">
             <div className="flex items-center justify-center gap-2 mb-6">
               <Shield className="w-6 h-6 text-amber-500" />
               <AlertTriangle className="w-12 h-12 text-amber-500" />
             </div>
-          </motion.div>
+          </div>
 
           <h2 className="text-2xl font-bold text-white mb-3">
             Admin Panel Error
@@ -56,7 +47,7 @@ export default function AdminError({
             </p>
           )}
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }

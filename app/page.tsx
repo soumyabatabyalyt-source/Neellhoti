@@ -1,1068 +1,219 @@
 "use client"
 
+import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
-import Image from "next/image"
 import { ArrowRight, CheckCircle, Zap, Users, TrendingUp, Award, Shield, Clock } from "lucide-react"
-import { useEffect, useState } from "react"
 
-// =========================================
-// STAR BACKGROUND
-// =========================================
-
-function StarField() {
-
-  const [stars, setStars] = useState<
-    {
-      id: number
-      left: string
-      top: string
-      size: number
-      duration: number
-      delay: number
-    }[]
-  >([])
-
-  useEffect(() => {
-
-    const generated = Array.from({
-      length: 120,
-    }).map((_, i) => ({
-      id: i,
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      size: Math.random() * 3 + 1,
-      duration: Math.random() * 4 + 2,
-      delay: Math.random() * 5,
-    }))
-
-    setStars(generated)
-
-  }, [])
-
-  return (
-
-    <div className="absolute inset-0 overflow-hidden z-0">
-
-      {stars.map((star) => (
-
-        <motion.div
-          key={star.id}
-          className="absolute rounded-full bg-white"
-          style={{
-            left: star.left,
-            top: star.top,
-            width: star.size,
-            height: star.size,
-          }}
-          animate={{
-            opacity: [0.2, 1, 0.2],
-            scale: [1, 1.5, 1],
-          }}
-          transition={{
-            duration: star.duration,
-            repeat: Infinity,
-            delay: star.delay,
-          }}
-        />
-
-      ))}
-
-      <div className="
-        absolute
-        top-[-10%]
-        left-[-10%]
-        w-[500px]
-        h-[500px]
-        bg-red-500/8
-        rounded-full
-        blur-[120px]
-      " />
-
-      <div className="
-        absolute
-        bottom-[-20%]
-        right-[-10%]
-        w-[500px]
-        h-[500px]
-        bg-red-600/6
-        rounded-full
-        blur-[120px]
-      " />
-
-    </div>
-  )
-}
-
-// =========================================
-// GLASS CARD
-// =========================================
-
-function GlassCard({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-
-  return (
-
-    <div className="
-      relative
-      backdrop-blur-xl
-      bg-[#1a0a2e]/80
-      border-2
-      border-red-500/40
-      shadow-[0_0_40px_rgba(239,68,68,0.3)]
-      rounded-3xl
-      hover:border-red-500/60
-      hover:shadow-[0_0_60px_rgba(239,68,68,0.5)]
-      transition-all duration-300
-    ">
-
-      {children}
-
-    </div>
-  )
-}
-
-// =========================================
-// LOGO
-// =========================================
-
-function BrandLogo() {
-
-  return (
-
-    <div className="flex items-center gap-3">
-
-      <div className="
-        relative
-        w-11
-        h-11
-        rounded-2xl
-        overflow-hidden
-        border
-        border-white/10
-        bg-white/5
-      ">
-
-        <Image
-          src="/logo.png"
-          alt="Neellohit Logo"
-          fill
-          className="object-cover"
-          priority
-        />
-
-      </div>
-
-      <span className="
-        text-white
-        font-semibold
-        text-lg
-        tracking-[0.15em]
-      ">
-
-        NEELLOHIT
-
-      </span>
-
-    </div>
-  )
-}
-
-// =========================================
-// MAIN PAGE
-// =========================================
-
-export default function Home() {
-
+export default function LandingPage() {
   const router = useRouter()
 
   return (
-
-    <main className="
-      relative
-      min-h-screen
-      overflow-hidden
-      bg-[#0a0a14]
-      text-[#f5f5f0]
-      font-sans
-    ">
-
-      <StarField />
-
-      {/* NAVBAR */}
-
-      <header className="
-        fixed
-        top-0
-        left-0
-        right-0
-        z-50
-        px-4
-        md:px-8
-        pt-4
-      ">
-
-        <GlassCard>
-
-          <div className="
-            flex
-            items-center
-            justify-between
-            px-5
-            py-4
-            flex-wrap
-            gap-4
-          ">
-
-            <BrandLogo />
-
-            {/* NAV LINKS - Hidden on mobile, shown on md+ */}
-
-            <nav className="
-              hidden
-              md:flex
-              items-center
-              gap-8
-              text-sm
-              text-slate-300
-            ">
-
-              <button
-                onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
-                className="hover:text-white transition"
-              >
-                Features
-              </button>
-
-              <button
-                onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
-                className="hover:text-white transition"
-              >
-                How It Works
-              </button>
-
-              <button
-                onClick={() => router.push("/client")}
-                className="hover:text-white transition"
-              >
-                For Clients
-              </button>
-
-            </nav>
-
-            {/* CTA */}
-
-            <button
-              onClick={() => router.push("/auth")}
-              className="
-                px-5
-                py-2.5
-                rounded-full
-                bg-white
-                text-black
-                text-sm
-                font-medium
-                hover:scale-105
-                transition
-              "
-            >
-
-              Get Started
-
-            </button>
-
-          </div>
-
-        </GlassCard>
-
-      </header>
-
-      {/* HERO */}
-
-      <section className="
-        relative
-        z-10
-        flex
-        items-center
-        justify-center
-        min-h-screen
-        px-4
-        pt-32
-        pb-20
-      ">
-
-        <div className="max-w-6xl mx-auto w-full">
-
-          <GlassCard>
-
-            <div className="
-              px-6
-              py-14
-              md:px-14
-              md:py-20
-              text-center
-            ">
-
-
-              {/* HEADLINE */}
-
-              <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="
-                  text-[2.8rem]
-                  sm:text-[4.5rem]
-                  md:text-[6.5rem]
-                  leading-[0.95]
-                  font-black
-                  tracking-tight
-                  mb-6
-                "
-              >
-
-                Your online
-
-                <br />
-
-                <span className="
-                  text-transparent
-                  bg-clip-text
-                  bg-gradient-to-r
-                  from-red-500
-                  to-white
-                ">
-
-                  presence
-
-                </span>
-
-                {" "}has value.
-
-              </motion.h1>
-
-              {/* DESCRIPTION */}
-
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1 }}
-                className="
-                  max-w-2xl
-                  mx-auto
-                  text-slate-300
-                  text-base
-                  md:text-xl
-                  leading-relaxed
-                  mb-12
-                "
-              >
-
-                Neellohit transforms digital influence into real-world earnings.
-                Complete bounties, grow communities, and earn through your online presence.
-
-              </motion.p>
-
-              {/* BUTTONS */}
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1.2 }}
-                className="
-                  flex
-                  flex-col
-                  sm:flex-row
-                  items-center
-                  justify-center
-                  gap-4
-                "
-              >
-
-                {/* PRIMARY */}
-
-                <button
-                  onClick={() => router.push("/auth")}
-                  className="
-                    group
-                    relative
-                    overflow-hidden
-                    px-8
-                    py-4
-                    rounded-full
-                    bg-gradient-to-r
-                    from-red-600
-                    to-red-500
-                    text-white
-                    font-bold
-                    text-sm
-                    tracking-wide
-                    shadow-2xl
-                    shadow-red-600/50
-                    hover:scale-110
-                    transition-all
-                    duration-300
-                    w-full
-                    sm:w-auto
-                  "
-                >
-
-                  <span className="
-                    flex
-                    items-center
-                    justify-center
-                    gap-2
-                  ">
-
-                    Start Earning
-
-                    <ArrowRight size={16} />
-
-                  </span>
-
-                </button>
-
-                {/* CLIENT BUTTON */}
-
-                <button
-                  onClick={() => router.push("/client")}
-                  className="
-                    px-8
-                    py-4
-                    rounded-full
-                    border-2
-                    border-red-500/60
-                    bg-red-500/10
-                    text-red-300
-                    text-sm
-                    font-semibold
-                    hover:bg-red-500/20
-                    transition-all
-                    duration-300
-                    w-full
-                    sm:w-auto
-                    shadow-lg
-                    shadow-red-500/20
-                  "
-                >
-
-                  Become a Client
-
-                </button>
-
-              </motion.div>
-
-            </div>
-
-          </GlassCard>
-
+    <main className="relative min-h-screen bg-[#0a0a14] text-white overflow-hidden">
+      {/* Hero Section */}
+      <section className="relative h-screen flex items-center justify-center px-4 md:px-8">
+        {/* Background Elements */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-red-600/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl" />
         </div>
 
+        {/* Content */}
+        <div className="relative z-10 max-w-4xl text-center mx-auto">
+          <div className="inline-block mb-6 px-4 py-2 bg-red-500/10 border border-red-500/30 rounded-full">
+            <span className="text-red-400 text-sm font-semibold">The Platform V3 Live</span>
+          </div>
+
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+            Turn Tasks Into{" "}
+            <span className="bg-gradient-to-r from-red-500 to-white bg-clip-text text-transparent">
+              Real Money
+            </span>
+          </h1>
+
+          <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
+            Complete tasks, earn rewards, and withdraw funds instantly. The simplest platform for task workers and managers.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/signup"
+              className="px-8 py-4 bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-red-500/50 transition-all duration-300 flex items-center justify-center gap-2"
+            >
+              Get Started
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <button
+              onClick={() => router.push("/login")}
+              className="px-8 py-4 border-2 border-red-500/50 text-white font-semibold rounded-xl hover:bg-red-500/10 transition-all duration-300"
+            >
+              Sign In
+            </button>
+          </div>
+        </div>
       </section>
 
-      {/* ========================================
-          FEATURES SECTION
-          ======================================== */}
-
-      <section
-        id="features"
-        className="
-          relative
-          z-10
-          py-20
-          md:py-32
-          px-4
-        ">
-
+      {/* Features Section */}
+      <section id="features" className="py-20 px-4 md:px-8 relative z-10">
         <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Why Choose Neellohit?</h2>
+            <p className="text-gray-400 text-lg">Everything you need to manage tasks and earnings</p>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-
-            <h2 className="
-              text-4xl
-              md:text-5xl
-              font-black
-              mb-4
-              text-white
-            ">
-              Why Choose Neellohit?
-            </h2>
-
-            <p className="
-              text-lg
-              text-slate-300
-              max-w-2xl
-              mx-auto
-            ">
-              Everything you need to monetize your online presence
-            </p>
-
-          </motion.div>
-
-          {/* FEATURE GRID */}
-
-          <div className="
-            grid
-            grid-cols-1
-            md:grid-cols-2
-            lg:grid-cols-3
-            gap-6
-          ">
-
+          <div className="grid md:grid-cols-3 gap-8">
             {[
               {
                 icon: Zap,
-                title: "Instant Payouts",
-                description: "Get paid quickly and reliably for completed tasks"
+                title: "Lightning Fast",
+                description: "Instant task posting and payment processing. No waiting, no delays.",
+              },
+              {
+                icon: Shield,
+                title: "Secure & Verified",
+                description: "Bank-level security with identity verification for all users.",
               },
               {
                 icon: Users,
                 title: "Growing Community",
-                description: "Join thousands of creators earning real money"
+                description: "Join thousands of workers and managers earning real money daily.",
               },
               {
                 icon: TrendingUp,
-                title: "Track Your Growth",
-                description: "Real-time analytics and performance metrics"
+                title: "Smart Analytics",
+                description: "Track your earnings, task history, and growth with detailed insights.",
               },
               {
                 icon: Award,
-                title: "Quality Tasks",
-                description: "Carefully curated opportunities from verified clients"
-              },
-              {
-                icon: Shield,
-                title: "Secure & Safe",
-                description: "Your data and earnings are protected with security"
+                title: "Top Performers",
+                description: "Earn badges and reputation bonuses as you complete quality tasks.",
               },
               {
                 icon: Clock,
-                title: "Work Your Schedule",
-                description: "Complete tasks whenever you want, at your own pace"
-              }
+                title: "24/7 Available",
+                description: "Work anytime, anywhere. Your schedule, your rules.",
+              },
             ].map((feature, idx) => {
-
               const Icon = feature.icon
-
               return (
-
-                <motion.div
+                <div
                   key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  className="
-                    group
-                    p-6
-                    rounded-2xl
-                    backdrop-blur-xl
-                    bg-white/[0.05]
-                    border
-                    border-white/10
-                    hover:border-red-500/30
-                    hover:bg-white/[0.08]
-                    transition-all
-                    duration-300
-                  "
+                  className="p-8 rounded-2xl border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 transition-all duration-300"
                 >
-
-                  <div className="
-                    w-12
-                    h-12
-                    rounded-xl
-                    bg-gradient-to-br
-                    from-red-600
-                    to-red-500
-                    flex
-                    items-center
-                    justify-center
-                    mb-4
-                    group-hover:scale-110
-                    transition-transform
-                    shadow-lg
-                    shadow-red-600/50
-                  ">
-
-                    <Icon
-                      size={24}
-                      className="text-black"
-                    />
-
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-600 to-red-500 flex items-center justify-center mb-4">
+                    <Icon className="w-6 h-6 text-white" />
                   </div>
-
-                  <h3 className="
-                    text-lg
-                    font-semibold
-                    mb-2
-                    text-white
-                  ">
-                    {feature.title}
-                  </h3>
-
-                  <p className="
-                    text-slate-400
-                    text-sm
-                  ">
-                    {feature.description}
-                  </p>
-
-                </motion.div>
+                  <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                  <p className="text-gray-400">{feature.description}</p>
+                </div>
               )
             })}
-
           </div>
-
         </div>
-
       </section>
 
-      {/* ========================================
-          HOW IT WORKS SECTION
-          ======================================== */}
-
-      <section
-        id="how-it-works"
-        className="
-          relative
-          z-10
-          py-20
-          md:py-32
-          px-4
-        ">
-
+      {/* How It Works Section */}
+      <section id="how-it-works" className="py-20 px-4 md:px-8 relative z-10">
         <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">How It Works</h2>
+            <p className="text-gray-400 text-lg">Three simple steps to start earning</p>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-
-            <h2 className="
-              text-4xl
-              md:text-5xl
-              font-black
-              mb-4
-              text-white
-            ">
-              How It Works
-            </h2>
-
-            <p className="
-              text-lg
-              text-slate-300
-              max-w-2xl
-              mx-auto
-            ">
-              Simple steps to start earning today
-            </p>
-
-          </motion.div>
-
-          {/* STEPS */}
-
-          <div className="
-            grid
-            grid-cols-1
-            md:grid-cols-4
-            gap-6
-          ">
-
+          <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                number: 1,
-                title: "Sign Up",
-                description: "Create your free account in minutes"
+                step: "1",
+                title: "Create Your Account",
+                description: "Sign up in seconds with your email. Complete verification to start.",
               },
               {
-                number: 2,
-                title: "Browse Tasks",
-                description: "Browse available tasks from clients"
+                step: "2",
+                title: "Find & Complete Tasks",
+                description: "Browse available tasks, select ones that match your skills, and complete them.",
               },
               {
-                number: 3,
-                title: "Complete Task",
-                description: "Complete the task according to guidelines"
+                step: "3",
+                title: "Get Paid Instantly",
+                description: "Earn rewards immediately upon task completion. Withdraw anytime.",
               },
-              {
-                number: 4,
-                title: "Get Paid",
-                description: "Receive payment upon approval"
-              }
-            ].map((step, idx) => (
-
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="
-                  relative
-                  text-center
-                "
-              >
-
-                {/* CONNECTOR LINE */}
-                {idx < 3 && (
-                  <div className="
-                    hidden
-                    md:block
-                    absolute
-                    top-8
-                    left-[60%]
-                    w-[40%]
-                    h-0.5
-                    bg-gradient-to-r
-                    from-red-500
-                    to-transparent
-                  " />
-                )}
-
-                {/* NUMBER CIRCLE */}
-                <div className="
-                  relative
-                  z-10
-                  w-16
-                  h-16
-                  rounded-full
-                  mx-auto
-                  mb-4
-                  bg-gradient-to-br
-                  from-red-600
-                  to-red-500
-                  flex
-                  items-center
-                  justify-center
-                  text-2xl
-                  font-black
-                  text-white
-                  shadow-lg
-                  shadow-red-600/60
-                ">
-
-                  {step.number}
-
+            ].map((item, idx) => (
+              <div key={idx} className="text-center">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-600 to-red-500 flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
+                  {item.step}
                 </div>
-
-                <h3 className="
-                  text-xl
-                  font-semibold
-                  mb-2
-                  text-white
-                ">
-                  {step.title}
-                </h3>
-
-                <p className="
-                  text-slate-400
-                  text-sm
-                ">
-                  {step.description}
-                </p>
-
-              </motion.div>
+                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+                <p className="text-gray-400">{item.description}</p>
+              </div>
             ))}
-
           </div>
-
         </div>
-
       </section>
 
-      {/* ========================================
-          STATS SECTION
-          ======================================== */}
-
-      <section className="
-        relative
-        z-10
-        py-20
-        md:py-32
-        px-4
-      ">
-
+      {/* Stats Section */}
+      <section className="py-20 px-4 md:px-8 relative z-10">
         <div className="max-w-6xl mx-auto">
-
-          <GlassCard>
-
-            <div className="
-              px-6
-              py-12
-              md:px-14
-              md:py-16
-              grid
-              grid-cols-1
-              md:grid-cols-3
-              gap-8
-              text-center
-            ">
-
-              {[
-                { label: "Active Users", value: "5,000+" },
-                { label: "Tasks Completed", value: "50,000+" },
-                { label: "Total Earnings", value: "$2M+" }
-              ].map((stat, idx) => (
-
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: idx * 0.1 }}
-                >
-
-                  <div className="
-                    text-5xl
-                    md:text-6xl
-                    font-black
-                    bg-gradient-to-r
-                    from-red-500
-                    to-white
-                    bg-clip-text
-                    text-transparent
-                    mb-2
-                  ">
-
-                    {stat.value}
-
-                  </div>
-
-                  <p className="
-                    text-slate-400
-                    text-lg
-                  ">
-
-                    {stat.label}
-
-                  </p>
-
-                </motion.div>
-              ))}
-
-            </div>
-
-          </GlassCard>
-
+          <div className="grid md:grid-cols-4 gap-8 text-center">
+            {[
+              { label: "Active Workers", value: "10K+" },
+              { label: "Tasks Completed", value: "50K+" },
+              { label: "Total Payouts", value: "$250K+" },
+              { label: "Countries", value: "45+" },
+            ].map((stat, idx) => (
+              <div key={idx} className="p-6">
+                <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-red-500 to-white bg-clip-text text-transparent mb-2">
+                  {stat.value}
+                </div>
+                <p className="text-gray-400">{stat.label}</p>
+              </div>
+            ))}
+          </div>
         </div>
-
       </section>
 
-      {/* ========================================
-          CTA SECTION
-          ======================================== */}
-
-      <section className="
-        relative
-        z-10
-        py-20
-        md:py-32
-        px-4
-      ">
-
-        <div className="max-w-4xl mx-auto">
-
-          <GlassCard>
-
-            <div className="
-              px-6
-              py-14
-              md:px-14
-              md:py-20
-              text-center
-            ">
-
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="
-                  text-3xl
-                  md:text-5xl
-                  font-black
-                  mb-6
-                  text-white
-                "
-              >
-
-                Ready to Start Earning?
-
-              </motion.h2>
-
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7 }}
-                className="
-                  text-lg
-                  text-slate-300
-                  mb-8
-                  max-w-2xl
-                  mx-auto
-                "
-              >
-
-                Join thousands of creators turning their online presence into real money.
-                No experience required, just your genuine engagement.
-
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="
-                  flex
-                  flex-col
-                  sm:flex-row
-                  gap-4
-                  justify-center
-                "
-              >
-
-                <button
-                  onClick={() => router.push("/auth")}
-                  className="
-                    px-8
-                    py-4
-                    rounded-full
-                    bg-gradient-to-r
-                    from-red-600
-                    to-red-500
-                    text-white
-                    font-bold
-                    hover:scale-110
-                    transition-all
-                    shadow-xl
-                    shadow-red-600/50
-                  "
-                >
-
-                  <span className="flex items-center justify-center gap-2">
-                    Start Earning Now
-                    <ArrowRight size={18} />
-                  </span>
-
-                </button>
-
-                <button
-                  onClick={() => router.push("/client")}
-                  className="
-                    px-8
-                    py-4
-                    rounded-full
-                    border-2
-                    border-red-500/60
-                    bg-red-500/10
-                    text-red-300
-                    font-semibold
-                    hover:bg-red-500/20
-                    transition-all
-                    shadow-lg
-                    shadow-red-500/30
-                  "
-                >
-
-                  I'm a Client
-
-                </button>
-
-              </motion.div>
-
-            </div>
-
-          </GlassCard>
-
+      {/* CTA Section */}
+      <section className="py-20 px-4 md:px-8 relative z-10">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Start Earning?</h2>
+          <p className="text-gray-400 text-lg mb-8">Join thousands of workers making real money on Neellohit today.</p>
+          <Link
+            href="/signup"
+            className="inline-block px-8 py-4 bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-red-500/50 transition-all duration-300"
+          >
+            Get Started Now
+          </Link>
         </div>
-
       </section>
 
-      {/* FOOTER */}
-
-      <footer className="
-        relative
-        z-10
-        px-4
-        pb-10
-        pt-20
-      ">
-
+      {/* Footer */}
+      <footer className="border-t border-red-500/20 py-12 px-4 md:px-8 relative z-10">
         <div className="max-w-6xl mx-auto">
-
-          <GlassCard>
-
-            <div className="
-              px-6
-              py-8
-              md:py-10
-              flex
-              flex-col
-              md:flex-row
-              items-center
-              justify-between
-              gap-6
-            ">
-
-              <div className="
-                text-sm
-                text-slate-400
-                text-center
-                md:text-left
-              ">
-
-                © 2026 Neellohit. Transforming digital influence into real earnings.
-
-              </div>
-
-              <div className="
-                flex
-                flex-wrap
-                items-center
-                justify-center
-                gap-4
-                md:gap-6
-                text-sm
-                text-slate-400
-              ">
-
-                <button
-                  onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
-                  className="hover:text-white transition"
-                >
-                  Features
-                </button>
-
-                <button
-                  onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
-                  className="hover:text-white transition"
-                >
-                  How It Works
-                </button>
-
-                <button
-                  onClick={() => router.push("/client")}
-                  className="hover:text-white transition"
-                >
-                  For Clients
-                </button>
-
-              </div>
-
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            <div>
+              <h3 className="text-xl font-bold mb-4">Neellohit</h3>
+              <p className="text-gray-400">The platform for task workers and managers to connect and grow.</p>
             </div>
-
-          </GlassCard>
-
+            <div>
+              <h4 className="font-semibold mb-4">Quick Links</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="/signup" className="hover:text-white transition">Sign Up</Link></li>
+                <li><Link href="/login" className="hover:text-white transition">Login</Link></li>
+                <li><a href="#features" className="hover:text-white transition">Features</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#" className="hover:text-white transition">Terms</a></li>
+                <li><a href="#" className="hover:text-white transition">Privacy</a></li>
+                <li><a href="#" className="hover:text-white transition">Contact</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-red-500/20 pt-8 text-center text-gray-400">
+            <p>© 2026 Neellohit. All rights reserved.</p>
+          </div>
         </div>
-
       </footer>
-
     </main>
   )
 }

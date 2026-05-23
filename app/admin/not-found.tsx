@@ -1,16 +1,10 @@
 import Link from "next/link"
-import { motion } from "framer-motion"
 import { ArrowLeft, Shield } from "lucide-react"
 
 export default function AdminNotFound() {
   return (
     <div className="min-h-screen bg-black flex items-center justify-center px-4 py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-md w-full text-center"
-      >
+      <div className="max-w-md w-full text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="flex items-center justify-center gap-2 mb-6">
           <Shield className="w-8 h-8 text-amber-500" />
         </div>
@@ -34,7 +28,7 @@ export default function AdminNotFound() {
           <ArrowLeft size={18} />
           Back to Admin
         </Link>
-      </motion.div>
+      </div>
     </div>
   )
 }
