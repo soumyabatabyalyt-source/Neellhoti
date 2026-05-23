@@ -24,8 +24,6 @@ import {
 
 import { supabase } from "@/lib/supabaseClient"
 
-import { motion } from "framer-motion"
-
 // =========================================
 // TYPES
 // =========================================
@@ -958,19 +956,12 @@ export default function ActiveTasksPage() {
 
             return (
 
-              <motion.div
+              <div
                 key={
                   item.claim.id
                 }
-                initial={{
-                  opacity: 0,
-                  y: 20,
-                }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                }}
                 className="
+                  animate-in fade-in slide-in-from-bottom-4 duration-300
                   bg-white/[0.03]
                   border
                   border-white/10
@@ -1578,7 +1569,7 @@ export default function ActiveTasksPage() {
                   </div>
                 )}
 
-              </motion.div>
+              </div>
             )
           }
         )}
@@ -1662,4 +1653,4 @@ function CopyButton({
 
     </button>
   )
-}
+}                                                                                                                                                                                               

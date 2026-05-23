@@ -87,9 +87,9 @@ export default function WithdrawalsPage() {
     <div className="p-6 md:p-10 max-w-6xl mx-auto w-full font-sans text-white">
       
       {/* HEADER */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
+      <div 
+        
+        
         className="mb-8"
       >
         <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
@@ -99,13 +99,13 @@ export default function WithdrawalsPage() {
           </span>
         </h1>
         <p className="text-slate-400 mt-1 text-sm">Review and process user payout requests.</p>
-      </motion.div>
+      </div>
 
       {/* WITHDRAWAL LIST */}
       {withdrawals.length === 0 ? (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+        <div 
+          
+          
           className="py-16 px-6 border-2 border-dashed border-white/5 rounded-3xl flex flex-col items-center justify-center text-slate-500 bg-white/[0.01]"
         >
           <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 border border-white/10 shadow-inner">
@@ -113,17 +113,17 @@ export default function WithdrawalsPage() {
           </div>
           <p className="text-lg font-medium text-slate-300">No pending withdrawals</p>
           <p className="text-sm mt-1">All payout requests have been processed.</p>
-        </motion.div>
+        </div>
       ) : (
-        <motion.div layout className="grid gap-4">
+        <div  className="grid gap-4">
           <AnimatePresence mode="popLayout">
             {withdrawals.map((w) => (
-              <motion.div
-                layout
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98, filter: "blur(4px)" }}
-                transition={{ duration: 0.2 }}
+              <div
+                
+                
+                
+                
+                
                 key={w.id}
                 className="
                   bg-white/[0.03]
@@ -211,10 +211,10 @@ export default function WithdrawalsPage() {
                   </button>
                 </div>
 
-              </motion.div>
+              </div>
             ))}
-          </AnimatePresence>
-        </motion.div>
+          
+        </div>
       )}
     </div>
   )

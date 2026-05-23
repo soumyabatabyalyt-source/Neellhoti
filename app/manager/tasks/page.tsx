@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
 import {
   Search,
   Trash2,
@@ -173,7 +172,7 @@ export default function ManagerTasksPage() {
     <div className="p-6 md:p-10 max-w-7xl mx-auto w-full font-sans">
 
       {/* HEADER */}
-      <motion.div
+      <div
         initial={{
           opacity: 0,
           y: -20,
@@ -226,12 +225,12 @@ export default function ManagerTasksPage() {
 
         </div>
 
-      </motion.div>
+      </div>
 
       {/* TASK LIST */}
       {filteredTasks.length === 0 ? (
 
-        <motion.div
+        <div
           initial={{
             opacity: 0,
           }}
@@ -258,12 +257,12 @@ export default function ManagerTasksPage() {
             Try adjusting your search criteria.
           </p>
 
-        </motion.div>
+        </div>
 
       ) : (
 
-        <motion.div
-          layout
+        <div
+          
           className="grid gap-4"
         >
 
@@ -280,8 +279,8 @@ export default function ManagerTasksPage() {
 
                 return (
 
-                  <motion.div
-                    layout
+                  <div
+                    
                     initial={{
                       opacity: 0,
                       scale: 0.95,
@@ -430,16 +429,16 @@ export default function ManagerTasksPage() {
 
                     </div>
 
-                  </motion.div>
+                  </div>
                 )
               }
             )}
 
-          </AnimatePresence>
+          
 
-        </motion.div>
+        </div>
       )}
 
     </div>
   )
-}
+}                                                         

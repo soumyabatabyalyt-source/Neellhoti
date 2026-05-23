@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { usePathname, useRouter } from "next/navigation"
-import { motion } from "framer-motion"
 import { supabase } from "@/lib/supabaseClient"
 import { Loader2 } from "lucide-react"
 
@@ -69,10 +68,8 @@ export default function DashboardLayout({
     return (
       <div className={`min-h-screen w-full flex items-center justify-center px-4 ${dark ? "bg-[#0f0814]" : "bg-[#fafaf8]"}`}>
         <div className="text-center">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className={`w-12 h-12 rounded-xl border-2 mx-auto mb-4 ${dark ? "border-red-500/30 border-t-red-500" : "border-red-500/50 border-t-red-500"}`}
+          <div
+            className={`w-12 h-12 rounded-xl border-2 mx-auto mb-4 animate-spin ${dark ? "border-red-500/30 border-t-red-500" : "border-red-500/50 border-t-red-500"}`}
           />
           <p className={`animate-pulse ${dark ? "text-gray-300" : "text-gray-600"}`}>
             Verifying session...
@@ -124,10 +121,8 @@ export default function DashboardLayout({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex justify-between items-center gap-4">
           
           {/* LEFT: BRAND LOGO */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex-shrink-0 flex items-center gap-2 cursor-pointer group w-32"
+          <div
+            className="flex-shrink-0 flex items-center gap-2 cursor-pointer group w-32 hover:scale-105 transition-transform"
             onClick={() => router.push("/")}
           >
             <div className={`w-8 h-8 rounded-xl flex items-center justify-center transform group-hover:rotate-12 transition-all duration-300 bg-red-500 text-white ${
@@ -138,7 +133,7 @@ export default function DashboardLayout({
             <h2 className="font-bold text-xl tracking-tight hidden sm:block">
               Nillohit
             </h2>
-          </motion.div>
+          </div>
 
           {/* CENTER: NAV ITEMS (Centered Dock) */}
           <div className="flex-1 flex justify-center overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -159,12 +154,10 @@ export default function DashboardLayout({
                     }`}
                   >
                     {active && (
-                      <motion.div
-                        layoutId="active-nav-pill"
+                      <div
                         className={`absolute inset-0 rounded-xl border ${
                           dark ? "bg-red-500/10 border-red-500/30 shadow-[0_0_15px_rgba(239,68,68,0.2)]" : "bg-[#7f1d1d] border-black shadow-[0_0_15px_rgba(239,68,68,0.15)]"
                         }`}
-                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                       />
                     )}
                     <span className="relative z-10">{item.name}</span>
@@ -176,21 +169,17 @@ export default function DashboardLayout({
 
           {/* RIGHT: THEME TOGGLE */}
           <div className="flex-shrink-0 flex items-center justify-end w-32">
-            <motion.button 
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => setDark(!dark)} 
-              className={`p-2 sm:p-2.5 rounded-xl border flex items-center justify-center transition-all shadow-sm ${
-                dark 
-                  ? "bg-white/5 border-white/10 hover:bg-white/10 text-yellow-400 hover:border-white/20" 
+            <button
+              onClick={() => setDark(!dark)}
+              className={`p-2 sm:p-2.5 rounded-xl border flex items-center justify-center transition-all shadow-sm hover:scale-110 ${
+                dark
+                  ? "bg-white/5 border-white/10 hover:bg-white/10 text-yellow-400 hover:border-white/20"
                   : "bg-white border-slate-200 hover:bg-slate-50 text-slate-700 hover:border-slate-300"
               }`}
               aria-label="Toggle theme"
             >
-              <motion.div
-                initial={false}
-                animate={{ rotate: dark ? 0 : 180, scale: dark ? 1 : 0.8 }}
-                transition={{ type: "spring", stiffness: 200, damping: 10 }}
+              <div
+                className="transition-transform duration-200" style={{ transform: `rotate(${dark ? 0 : 180}deg) scale(${dark ? 1 : 0.8})` }}
               >
                 {dark ? (
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -201,8 +190,8 @@ export default function DashboardLayout({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                   </svg>
                 )}
-              </motion.div>
-            </motion.button>
+              </div>
+            </button>
           </div>
 
         </div>
@@ -210,16 +199,14 @@ export default function DashboardLayout({
 
       {/* 📦 CONTENT WRAPPER */}
       <main className="relative z-10 pt-28 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <motion.div
+        <div
           key={pathname}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="animate-in fade-in slide-in-from-bottom-4 duration-400"
         >
           {children}
-        </motion.div>
+        </div>
       </main>
       
     </div>
   )
-}
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  

@@ -24,14 +24,14 @@ export default function ThemeDemo() {
       </header>
 
       {/* AMBIENT GLOWS - ANIMATED */}
-      <motion.div
-        animate={{ scale: [1, 1.1, 1], opacity: [0.15, 0.25, 0.15] }}
-        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+      <div
+        
+        
         className="fixed w-[600px] h-[600px] bg-red-500/8 rounded-full blur-[120px] top-[-20%] left-[-10%] pointer-events-none"
       />
-      <motion.div
-        animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.15, 0.1] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+      <div
+        
+        
         className="fixed w-[500px] h-[500px] bg-red-600/6 rounded-full blur-[120px] bottom-[-10%] right-[-5%] pointer-events-none"
       />
 
@@ -41,13 +41,13 @@ export default function ThemeDemo() {
 
           {/* SECTION 1: HERO CARDS */}
           <motion.section
-            initial={{ opacity: 0, y: 20 }}
+            
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            
             viewport={{ once: true }}
           >
             <h2 className="text-4xl font-bold mb-8">Glass Cards with Red Accents</h2>
-            <motion.div
+            <div
               className="grid grid-cols-1 md:grid-cols-3 gap-6"
               variants={{
                 hidden: { opacity: 0 },
@@ -70,7 +70,7 @@ export default function ThemeDemo() {
               ].map((item, i) => {
                 const Icon = item.icon
                 return (
-                  <motion.div
+                  <div
                     key={i}
                     variants={{
                       hidden: { opacity: 0, y: 20 },
@@ -84,10 +84,10 @@ export default function ThemeDemo() {
                     </div>
                     <h3 className="text-2xl font-bold mb-2">{item.title}</h3>
                     <p className="text-gray-300">{item.desc}</p>
-                  </motion.div>
+                  </div>
                 )
               })}
-            </motion.div>
+            </div>
           </motion.section>
 
           {/* SECTION 2: BUTTONS */}
@@ -137,7 +137,7 @@ export default function ThemeDemo() {
                 { title: "Create Reddit Post", reward: "$50", time: "2 days" },
                 { title: "Write Product Review", reward: "$75", time: "3 days" },
               ].map((task, i) => (
-                <motion.div
+                <div
                   key={i}
                   whileHover={{ borderColor: "rgba(0, 0, 0, 1)" }}
                   className="backdrop-blur-xl bg-[#7f1d1d] border-2 border-black rounded-2xl p-6 hover:shadow-[0_0_30px_rgba(239,68,68,0.2)] transition-all group"
@@ -161,7 +161,7 @@ export default function ThemeDemo() {
                   >
                     Claim Task
                   </motion.button>
-                </motion.div>
+                </div>
               ))}
             </div>
           </section>
@@ -176,7 +176,7 @@ export default function ThemeDemo() {
                 { label: "Total Spent", value: "$2.4K", trend: "+$500" },
                 { label: "Active Taskers", value: "156", trend: "+12" },
               ].map((stat, i) => (
-                <motion.div
+                <div
                   key={i}
                   whileHover={{ borderColor: "rgba(0, 0, 0, 1)" }}
                   className="backdrop-blur-xl bg-[#7f1d1d] border-2 border-black rounded-2xl p-6 hover:shadow-[0_0_20px_rgba(239,68,68,0.2)] transition-all"
@@ -184,7 +184,7 @@ export default function ThemeDemo() {
                   <p className="text-gray-300 text-sm mb-2">{stat.label}</p>
                   <h3 className="text-3xl font-bold mb-2">{stat.value}</h3>
                   <p className="text-red-300 text-xs font-semibold">{stat.trend} today</p>
-                </motion.div>
+                </div>
               ))}
             </div>
           </section>
@@ -216,9 +216,9 @@ export default function ThemeDemo() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Loading Spinner */}
               <div className="backdrop-blur-xl bg-[#7f1d1d] border-2 border-black rounded-2xl p-8 flex flex-col items-center">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                <div
+                  
+                  
                   className="w-12 h-12 rounded-xl border-2 border-red-500/30 border-t-red-500 mb-4"
                 />
                 <p className="text-gray-300">Loading...</p>

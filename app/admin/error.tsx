@@ -45,9 +45,4 @@ export default function AdminError({
             <p className="text-xs text-slate-500 mt-6 font-mono">
               Error ID: {error.digest}
             </p>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}
+          )

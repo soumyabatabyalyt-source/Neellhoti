@@ -12,11 +12,6 @@ import { supabase } from "@/lib/supabaseClient"
 import ReviewActions from "./ReviewActions"
 
 import {
-  motion,
-  AnimatePresence,
-} from "framer-motion"
-
-import {
   Loader2,
   Clock,
   CheckCircle,
@@ -344,15 +339,8 @@ export default function SubmissionsPage() {
     ">
 
       {/* HEADER */}
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: -20,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
+      <div
+        className="animate-in fade-in slide-in-from-top-4 duration-300"
       >
 
         <div className="
@@ -440,26 +428,16 @@ export default function SubmissionsPage() {
 
         </div>
 
-      </motion.div>
+      </div>
 
       {/* TABS */}
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: 10,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        transition={{
-          delay: 0.1,
-        }}
+      <div
         className="
           grid
           grid-cols-1
           sm:grid-cols-3
           gap-4
+          animate-in fade-in slide-in-from-bottom-4 duration-300
         "
       >
 
@@ -650,25 +628,12 @@ export default function SubmissionsPage() {
       </div>
 
       {/* CONTENT */}
-      <AnimatePresence
-        mode="wait"
+      <div
+        key={activeTab}
+        className="animate-in fade-in slide-in-from-bottom-4 duration-300"
       >
-
-        <motion.div
-          key={activeTab}
-          initial={{
-            opacity: 0,
-            y: 10,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          exit={{
-            opacity: 0,
-            y: -10,
-          }}
-          transition={{
+        <div
+          style={{
             duration: 0.2,
           }}
           className="
@@ -1135,9 +1100,9 @@ export default function SubmissionsPage() {
             )
           )}
 
-        </motion.div>
+        </div>
 
-      </AnimatePresence>
+      </div>
 
     </div>
   )
@@ -1265,4 +1230,4 @@ function formatAge(
     return `${hours}h ${minutes}m ago`
 
   return `${minutes}m ago`
-}
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               

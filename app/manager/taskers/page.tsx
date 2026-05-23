@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
-import { motion, AnimatePresence } from "framer-motion"
 import { Search, User, Mail, Shield, Clock, Timer, Loader2, Save, ExternalLink } from "lucide-react"
 
 type Tasker = {
@@ -99,10 +98,8 @@ export default function Taskers() {
     <div className="p-6 md:p-10 max-w-5xl mx-auto w-full font-sans text-white">
       
       {/* HEADER & SEARCH */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8"
+      <div
+        className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 animate-in fade-in slide-in-from-top-4 duration-300"
       >
         <div>
           <h2 className="text-3xl font-bold tracking-tight flex items-center gap-3">
@@ -129,24 +126,21 @@ export default function Taskers() {
             className="w-full bg-black/30 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-white placeholder:text-slate-500 outline-none focus:bg-black/50 focus:border-red-500/50 focus:ring-1 focus:ring-red-500/30 transition-all duration-300"
           />
         </div>
-      </motion.div>
+      </div>
 
       {/* TASKER LIST */}
       {filteredUsers.length === 0 ? (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="py-16 px-6 border-2 border-dashed border-white/5 rounded-3xl flex flex-col items-center justify-center text-slate-500 bg-white/[0.01]"
+        <div
+          className="py-16 px-6 border-2 border-dashed border-white/5 rounded-3xl flex flex-col items-center justify-center text-slate-500 bg-white/[0.01] animate-in fade-in duration-300"
         >
           <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 border border-white/10 shadow-inner">
             <User className="text-slate-500" size={32} />
           </div>
           <p className="text-lg font-medium text-slate-300">No taskers found</p>
           <p className="text-sm mt-1">Try a different search term.</p>
-        </motion.div>
+        </div>
       ) : (
-        <motion.div layout className="grid gap-5">
-          <AnimatePresence mode="popLayout">
+        <div className="grid gap-5">
             {filteredUsers.map((user) => (
               <TaskerCard
                 key={user.id}
@@ -155,8 +149,7 @@ export default function Taskers() {
                 saveCooldown={saveCooldown}
               />
             ))}
-          </AnimatePresence>
-        </motion.div>
+        </div>
       )}
     </div>
   )
@@ -182,12 +175,9 @@ function TaskerCard({
   const isCooldownActive = formatCooldownUntil(user.cooldown_until) !== "None"
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.98, filter: "blur(4px)" }}
+    <div
       className="
+        animate-in fade-in zoom-in-98 duration-200
         bg-white/[0.03]
         border-2
         border-white/15
@@ -301,7 +291,7 @@ function TaskerCard({
         </div>
       </div>
 
-    </motion.div>
+    </div>
   )
 }
 
@@ -316,4 +306,4 @@ function formatCooldownUntil(value?: string | null) {
   const minutes = totalMinutes % 60
 
   return `${hours}h ${minutes}m remaining`
-}
+}                                                                                                                                                                                                                                                                                                                                                                                  

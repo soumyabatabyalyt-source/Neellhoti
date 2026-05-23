@@ -4,11 +4,6 @@ import { useCallback, useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
 
 import {
-  motion,
-  AnimatePresence,
-} from "framer-motion"
-
-import {
   Hash,
 } from "lucide-react"
 
@@ -377,15 +372,7 @@ export default function TasksPage() {
         min-h-[50vh]
       ">
 
-        <motion.div
-          initial={{
-            opacity: 0,
-            scale: 0.95,
-          }}
-          animate={{
-            opacity: 1,
-            scale: 1,
-          }}
+        <div
           className="
             bg-red-500/10
             border
@@ -395,6 +382,7 @@ export default function TasksPage() {
             rounded-3xl
             max-w-md
             text-center
+            animate-in fade-in zoom-in-95 duration-300
           "
         >
 
@@ -405,7 +393,7 @@ export default function TasksPage() {
             {errorMsg}
           </p>
 
-        </motion.div>
+        </div>
 
       </div>
     )
@@ -427,17 +415,10 @@ export default function TasksPage() {
 
       {/* HEADER */}
 
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: -20,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
+      <div
         className="
           mb-8
+          animate-in fade-in slide-in-from-top-4 duration-300
         "
       >
 
@@ -457,51 +438,36 @@ export default function TasksPage() {
           Browse and claim available tasks.
         </p>
 
-      </motion.div>
+      </div>
 
       {/* COOLDOWN */}
 
-      <AnimatePresence>
+      {cooldownMsg && (
 
-        {cooldownMsg && (
+        <div
+          className="
+            overflow-hidden
+            mb-6
+            animate-in fade-in slide-in-from-top-4 duration-300
+          "
+        >
 
-          <motion.div
-            initial={{
-              opacity: 0,
-              height: 0,
-            }}
-            animate={{
-              opacity: 1,
-              height: "auto",
-            }}
-            exit={{
-              opacity: 0,
-              height: 0,
-            }}
-            className="
-              overflow-hidden
-              mb-6
-            "
-          >
+          <div className="
+            rounded-2xl
+            border
+            border-amber-500/30
+            bg-amber-500/10
+            px-5
+            py-4
+            text-amber-300
+          ">
 
-            <div className="
-              rounded-2xl
-              border
-              border-amber-500/30
-              bg-amber-500/10
-              px-5
-              py-4
-              text-amber-300
-            ">
+            {cooldownMsg}
 
-              {cooldownMsg}
+          </div>
 
-            </div>
-
-          </motion.div>
-        )}
-
-      </AnimatePresence>
+        </div>
+      )}
 
       {/* EMPTY */}
 
@@ -536,28 +502,16 @@ export default function TasksPage() {
 
       ) : (
 
-        <motion.div
+        <div
           className="
             grid
             grid-cols-1
             lg:grid-cols-2
             gap-5
           "
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: {
-                staggerChildren: 0.1,
-                delayChildren: 0.15,
-              },
-            },
-          }}
-          initial="hidden"
-          animate="visible"
         >
 
-          {tasks.map((task) => {
+          {tasks.map((task, index) => {
 
             const isComment =
               task.task_type ===
@@ -565,13 +519,8 @@ export default function TasksPage() {
 
             return (
 
-              <motion.div
+              <div
                 key={task.id}
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0 },
-                }}
-                whileHover={{ scale: 1.02, boxShadow: "0 0 30px rgba(239, 68, 68, 0.2)" }}
                 className="
                   border
                   border-white/10
@@ -583,7 +532,8 @@ export default function TasksPage() {
                   flex-col
                   justify-between
                   min-h-[340px]
-                "
+                  animate-in fade-in slide-in-from-bottom-4 duration-400 hover:scale-102 hover:shadow-[0_0_30px_rgba(239,68,68,0.2)] transition-all"
+                  style={{ animationDelay: `${index * 100}ms` }}
               >
 
                 {/* TOP */}
@@ -774,11 +724,11 @@ export default function TasksPage() {
 
                 </div>
 
-              </motion.div>
+              </div>
             )
           })}
 
-        </motion.div>
+        </div>
       )}
 
     </div>
@@ -831,4 +781,4 @@ function Detail({
 
     </div>
   )
-}
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           

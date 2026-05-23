@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
-import { motion } from "framer-motion"
 
 import {
   Loader2,
@@ -123,20 +122,8 @@ export default function Account() {
       </div>
 
       {/* PROFILE CARD */}
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: 20,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        transition={{
-          type: "spring",
-          stiffness: 80,
-        }}
-        className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.02] backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.35)]"
+      <div
+        className="animate-in fade-in slide-in-from-bottom-4 duration-600 relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.02] backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.35)]"
       >
 
         {/* GLOW */}
@@ -328,8 +315,8 @@ export default function Account() {
 
         </div>
 
-      </motion.div>
+      </div>
 
     </div>
   )
-}
+}                                                                                                                                                                                                                                        

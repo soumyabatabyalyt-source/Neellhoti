@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
-import { motion } from "framer-motion"
 
 import {
   Wallet,
@@ -327,20 +326,8 @@ export default function WalletPage() {
     <div className="max-w-4xl mx-auto p-6 md:p-8 w-full font-sans">
 
       {/* HEADER */}
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: -20,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        transition={{
-          duration: 0.5,
-          ease: "easeOut",
-        }}
-        className="flex items-center gap-4 mb-8"
+      <div
+        className="flex items-center gap-4 mb-8 animate-in fade-in slide-in-from-top-4 duration-500"
       >
 
         <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-500/20 to-rose-500/10 border border-red-500/20 flex items-center justify-center text-red-400 shadow-lg shadow-red-500/5">
@@ -361,7 +348,7 @@ export default function WalletPage() {
 
         </div>
 
-      </motion.div>
+      </div>
 
       {/* STATS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
@@ -401,20 +388,8 @@ export default function WalletPage() {
       </div>
 
       {/* WITHDRAW FORM */}
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: 20,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        transition={{
-          duration: 0.5,
-          delay: 0.1,
-        }}
-        className="bg-white/[0.02] border border-white/10 backdrop-blur-xl rounded-3xl p-6 sm:p-8 shadow-2xl shadow-black/40 relative overflow-hidden"
+      <div
+        className="bg-white/[0.02] border border-white/10 backdrop-blur-xl rounded-3xl p-6 sm:p-8 shadow-2xl shadow-black/40 relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500"
       >
 
         <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 rounded-full blur-[80px] pointer-events-none transform translate-x-1/2 -translate-y-1/2" />
@@ -585,19 +560,13 @@ export default function WalletPage() {
           )}
 
           {/* BUTTON */}
-          <motion.button
-            whileHover={{
-              y: -2,
-            }}
-            whileTap={{
-              y: 0,
-            }}
+          <button
             onClick={handleWithdraw}
             disabled={
               loading ||
               !amount
             }
-            className="w-full mt-4 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-400 hover:to-rose-500 text-white px-6 py-4 rounded-xl font-semibold shadow-lg shadow-red-500/20 hover:shadow-red-500/40 disabled:opacity-50 disabled:pointer-events-none transition-all duration-200 flex justify-center items-center gap-2 group"
+            className="w-full mt-4 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-400 hover:to-rose-500 text-white px-6 py-4 rounded-xl font-semibold shadow-lg shadow-red-500/20 hover:shadow-red-500/40 disabled:opacity-50 disabled:pointer-events-none transition-all duration-200 flex justify-center items-center gap-2 group hover:-translate-y-0.5 active:translate-y-0"
           >
 
             {loading ? (
@@ -627,11 +596,11 @@ export default function WalletPage() {
               </>
             )}
 
-          </motion.button>
+          </button>
 
         </div>
 
-      </motion.div>
+      </div>
 
     </div>
   )
@@ -678,4 +647,4 @@ function Card({
 
     </div>
   )
-}
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          

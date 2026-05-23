@@ -30,10 +30,10 @@ export default function StartCampaignPage() {
       <div className="absolute bottom-0 right-1/4 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
 
       <section className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-6 py-20">
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+        <div
+          
+          
+          
           className="text-center"
         >
           <h1 className="text-5xl font-bold md:text-7xl">
@@ -43,12 +43,12 @@ export default function StartCampaignPage() {
           <p className="mt-6 text-lg text-gray-300 md:text-xl">
             Select your preferred communication method to begin onboarding.
           </p>
-        </motion.div>
+        </div>
 
         {/* Cards */}
         <div className="mt-16 grid w-full gap-6 md:grid-cols-3">
           {/* Telegram */}
-          <motion.div
+          <div
             whileHover={{ y: -5 }}
             className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-2xl"
           >
@@ -70,10 +70,10 @@ export default function StartCampaignPage() {
               Open Telegram
               <ArrowRight className="h-4 w-4" />
             </Link>
-          </motion.div>
+          </div>
 
           {/* Discord */}
-          <motion.div
+          <div
             whileHover={{ y: -5 }}
             className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-2xl"
           >
@@ -94,10 +94,10 @@ export default function StartCampaignPage() {
               Copy Username
               <ArrowRight className="h-4 w-4" />
             </button>
-          </motion.div>
+          </div>
 
           {/* X */}
-          <motion.div
+          <div
             whileHover={{ y: -5 }}
             className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-2xl"
           >
@@ -119,7 +119,7 @@ export default function StartCampaignPage() {
               Open X Profile
               <ArrowRight className="h-4 w-4" />
             </Link>
-          </motion.div>
+          </div>
         </div>
       </section>
 

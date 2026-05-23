@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
-import { motion } from "framer-motion"
 
 import {
   ListTodo,
@@ -431,18 +430,7 @@ export default function ManagerLayout({
       />
 
       {/* GLOW 1 */}
-      <motion.div
-        animate={{
-          scale: [1, 1.1, 1],
-          opacity: dark
-            ? [0.15, 0.25, 0.15]
-            : [0.05, 0.1, 0.05],
-        }}
-        transition={{
-          duration: 15,
-          repeat: Infinity,
-          ease: "linear",
-        }}
+      <div
         className="
           absolute
           top-[-20%]
@@ -456,22 +444,12 @@ export default function ManagerLayout({
           blur-[120px]
           pointer-events-none
           fixed
+          animate-pulse
         "
       />
 
       {/* GLOW 2 */}
-      <motion.div
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: dark
-            ? [0.1, 0.15, 0.1]
-            : [0.05, 0.08, 0.05],
-        }}
-        transition={{
-          duration: 20,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
+      <div
         className="
           absolute
           bottom-[10%]
@@ -483,6 +461,7 @@ export default function ManagerLayout({
           blur-[150px]
           pointer-events-none
           fixed
+          animate-pulse
         "
       />
 
@@ -783,4 +762,4 @@ export default function ManagerLayout({
 
     </div>
   )
-}
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      

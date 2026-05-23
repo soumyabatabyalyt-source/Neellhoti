@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { motion } from "framer-motion"
 import { Mail, Lock, MessageSquare, Sparkles, UserCircle } from "lucide-react"
 import { useTheme } from "@/lib/useTheme"
 
@@ -61,22 +60,15 @@ export default function Signup() {
         : "bg-[#fafaf8] text-slate-800 selection:bg-red-500/20"
     }`}>
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none mix-blend-screen bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
-      <motion.div
-        animate={{ scale: [1, 1.1, 1], opacity: [0.15, 0.25, 0.15] }}
-        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-        className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-gradient-to-br from-orange-600/30 to-rose-600/10 rounded-full blur-[120px] pointer-events-none"
+      <div
+        className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-gradient-to-br from-orange-600/30 to-rose-600/10 rounded-full blur-[120px] pointer-events-none animate-pulse"
       />
-      <motion.div
-        animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.15, 0.1] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[150px] pointer-events-none"
+      <div
+        className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[150px] pointer-events-none animate-pulse"
       />
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: "spring", stiffness: 80, damping: 20 }}
-        className={`relative z-10 w-full max-w-md p-8 md:p-10 rounded-[2rem] border-2 backdrop-blur-2xl flex flex-col transition-all duration-500 ${
+      <div
+        className={`relative z-10 w-full max-w-md p-8 md:p-10 rounded-[2rem] border-2 backdrop-blur-2xl flex flex-col transition-all duration-500 animate-in fade-in slide-in-from-bottom-4 duration-400 ${
           dark
             ? "bg-[#7f1d1d] border-black shadow-[0_0_40px_rgba(239,68,68,0.2)] hover:shadow-[0_0_60px_rgba(239,68,68,0.3)]"
             : "bg-[#7f1d1d] border-black shadow-[0_8px_32px_0_rgba(0,0,0,0.2)]"
@@ -178,7 +170,8 @@ export default function Signup() {
         >
           {loading ? "Creating account..." : "Sign Up"}
         </button>
-      </motion.div>
+      </div>
     </div>
   )
 }
+                                                                                                                                                                                                                                                                                                                                                                                                                                

@@ -492,7 +492,7 @@ function Section({
         {claims.map(
           (claim: any) => (
 
-            <motion.div
+            <div
               key={claim.id}
               initial={{
                 opacity: 0,
@@ -680,7 +680,7 @@ function Section({
 
               </div>
 
-            </motion.div>
+            </div>
           )
         )}
 
