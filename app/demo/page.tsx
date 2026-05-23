@@ -1,11 +1,9 @@
 "use client"
-
 import {
   Zap, Users, TrendingUp, Award, Shield, Clock,
   ArrowRight, Check, AlertCircle, Heart, Star,
   Loader2
 } from "lucide-react"
-
 export default function ThemeDemo() {
   return (
     <main className="min-h-screen bg-[#0f0814] text-[#ffffff] font-sans">
@@ -21,46 +19,21 @@ export default function ThemeDemo() {
           <div className="text-sm text-gray-300">Red & White with Dark Purple</div>
         </div>
       </header>
-
       {/* AMBIENT GLOWS - ANIMATED */}
       <div
-        
-        
         className="fixed w-[600px] h-[600px] bg-red-500/8 rounded-full blur-[120px] top-[-20%] left-[-10%] pointer-events-none"
       />
       <div
-        
-        
         className="fixed w-[500px] h-[500px] bg-red-600/6 rounded-full blur-[120px] bottom-[-10%] right-[-5%] pointer-events-none"
       />
-
       {/* CONTENT */}
       <div className="relative z-10 pt-24 pb-20">
         <div className="max-w-7xl mx-auto px-6 space-y-16">
-
           {/* SECTION 1: HERO CARDS */}
-          <motion.section
-            
-            whileInView={{ opacity: 1, y: 0 }}
-            
-            viewport={{ once: true }}
+          <section
           >
             <h2 className="text-4xl font-bold mb-8">Glass Cards with Red Accents</h2>
             <div
-              className="grid grid-cols-1 md:grid-cols-3 gap-6"
-              variants={{
-                hidden: { opacity: 0 },
-                visible: {
-                  opacity: 1,
-                  transition: {
-                    staggerChildren: 0.1,
-                    delayChildren: 0.1,
-                  },
-                },
-              }}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
             >
               {[
                 { icon: Zap, title: "Fast", desc: "Quick task completion" },
@@ -70,12 +43,6 @@ export default function ThemeDemo() {
                 const Icon = item.icon
                 return (
                   <div
-                    key={i}
-                    variants={{
-                      hidden: { opacity: 0, y: 20 },
-                      visible: { opacity: 1, y: 0 },
-                    }}
-                    whileHover={{ scale: 1.05, borderColor: "rgba(0, 0, 0, 1)" }}
                     className="backdrop-blur-xl bg-[#7f1d1d] border-2 border-black rounded-3xl p-8 hover:shadow-[0_0_40px_rgba(239,68,68,0.3)] transition-all duration-300"
                   >
                     <div className="w-14 h-14 rounded-xl bg-red-500/20 flex items-center justify-center mb-4">
@@ -87,47 +54,38 @@ export default function ThemeDemo() {
                 )
               })}
             </div>
-          </motion.section>
-
+          </section>
           {/* SECTION 2: BUTTONS */}
           <section>
             <h2 className="text-4xl font-bold mb-8">Button Variations</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Primary Button */}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+              <button
+
                 className="bg-[#7f1d1d] hover:bg-[#991b1b] text-white font-semibold py-3 rounded-xl border border-black shadow-[0_0_20px_rgba(239,68,68,0.2)] hover:shadow-[0_0_30px_rgba(239,68,68,0.3)] transition-all"
               >
                 Primary Deep Red
-              </motion.button>
-
+              </button>
               {/* Secondary Button */}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
+              <button
                 className="border-2 border-red-500/60 text-red-300 hover:text-red-200 hover:bg-red-500/10 py-3 rounded-xl transition-all"
               >
                 Secondary Red
-              </motion.button>
-
+              </button>
               {/* Success Button */}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
+              <button
                 className="bg-green-500/30 hover:bg-green-500/40 text-green-300 border border-green-500/50 py-3 rounded-xl transition-all"
               >
                 Success
-              </motion.button>
-
+              </button>
               {/* Icon Button */}
-              <motion.button
-                whileHover={{ scale: 1.1 }}
+              <button
                 className="p-3 rounded-xl bg-red-500/10 border border-red-500/40 hover:bg-red-500/20 text-red-300 flex items-center justify-center"
               >
                 <ArrowRight className="w-6 h-6" />
-              </motion.button>
+              </button>
             </div>
           </section>
-
           {/* SECTION 3: DASHBOARD CARDS */}
           <section>
             <h2 className="text-4xl font-bold mb-8">Dashboard Task Cards</h2>
@@ -138,7 +96,6 @@ export default function ThemeDemo() {
               ].map((task, i) => (
                 <div
                   key={i}
-                  whileHover={{ borderColor: "rgba(0, 0, 0, 1)" }}
                   className="backdrop-blur-xl bg-[#7f1d1d] border-2 border-black rounded-2xl p-6 hover:shadow-[0_0_30px_rgba(239,68,68,0.2)] transition-all group"
                 >
                   <div className="flex justify-between items-start mb-4">
@@ -154,17 +111,15 @@ export default function ThemeDemo() {
                       <span className="text-sm">{task.time}</span>
                     </div>
                   </div>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
+                  <button
                     className="w-full bg-red-500/30 hover:bg-red-500/40 border border-red-500/60 text-white font-semibold py-2 rounded-lg shadow-[0_0_15px_rgba(239,68,68,0.2)] group-hover:shadow-[0_0_25px_rgba(239,68,68,0.3)] transition-all"
                   >
                     Claim Task
-                  </motion.button>
+                  </button>
                 </div>
               ))}
             </div>
           </section>
-
           {/* SECTION 4: MANAGER STATS */}
           <section>
             <h2 className="text-4xl font-bold mb-8">Manager Statistics</h2>
@@ -177,7 +132,6 @@ export default function ThemeDemo() {
               ].map((stat, i) => (
                 <div
                   key={i}
-                  whileHover={{ borderColor: "rgba(0, 0, 0, 1)" }}
                   className="backdrop-blur-xl bg-[#7f1d1d] border-2 border-black rounded-2xl p-6 hover:shadow-[0_0_20px_rgba(239,68,68,0.2)] transition-all"
                 >
                   <p className="text-gray-300 text-sm mb-2">{stat.label}</p>
@@ -187,14 +141,13 @@ export default function ThemeDemo() {
               ))}
             </div>
           </section>
-
           {/* SECTION 5: NAVIGATION TABS */}
           <section>
             <h2 className="text-4xl font-bold mb-8">Navigation Tabs</h2>
             <div className="backdrop-blur-xl bg-white/[0.02] border border-red-500/20 rounded-3xl p-2 w-fit">
               <div className="flex gap-2">
                 {["Tasks", "My Tasks", "Wallet", "Account"].map((tab, i) => (
-                  <motion.button
+                  <button
                     key={i}
                     className={`px-6 py-3 rounded-2xl font-medium transition-all ${
                       i === 1
@@ -203,12 +156,11 @@ export default function ThemeDemo() {
                     }`}
                   >
                     {tab}
-                  </motion.button>
+                  </button>
                 ))}
               </div>
             </div>
           </section>
-
           {/* SECTION 6: LOADING & STATES */}
           <section>
             <h2 className="text-4xl font-bold mb-8">Loading & State Indicators</h2>
@@ -216,13 +168,10 @@ export default function ThemeDemo() {
               {/* Loading Spinner */}
               <div className="backdrop-blur-xl bg-[#7f1d1d] border-2 border-black rounded-2xl p-8 flex flex-col items-center">
                 <div
-                  
-                  
                   className="w-12 h-12 rounded-xl border-2 border-red-500/30 border-t-red-500 mb-4"
                 />
                 <p className="text-gray-300">Loading...</p>
               </div>
-
               {/* Success State */}
               <div className="backdrop-blur-xl bg-white/[0.05] border-2 border-green-500/30 rounded-2xl p-8 flex flex-col items-center">
                 <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
@@ -230,7 +179,6 @@ export default function ThemeDemo() {
                 </div>
                 <p className="text-green-300 font-semibold">Success</p>
               </div>
-
               {/* Error State */}
               <div className="backdrop-blur-xl bg-[#7f1d1d] border-2 border-black rounded-2xl p-8 flex flex-col items-center">
                 <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center mb-4">
@@ -240,7 +188,6 @@ export default function ThemeDemo() {
               </div>
             </div>
           </section>
-
           {/* SECTION 7: BADGES */}
           <section>
             <h2 className="text-4xl font-bold mb-8">Badges & Status Indicators</h2>
@@ -264,7 +211,6 @@ export default function ThemeDemo() {
               ))}
             </div>
           </section>
-
           {/* SECTION 8: FORM ELEMENTS */}
           <section>
             <h2 className="text-4xl font-bold mb-8">Form Elements</h2>
@@ -278,7 +224,6 @@ export default function ThemeDemo() {
                   className="w-full px-4 py-3 rounded-lg bg-[#111111] border border-red-500/30 text-white placeholder-gray-400 focus:border-red-500 focus:ring-1 focus:ring-red-500/50 outline-none transition-all"
                 />
               </div>
-
               {/* Textarea */}
               <div>
                 <label className="block text-sm font-semibold mb-2">Textarea</label>
@@ -289,7 +234,6 @@ export default function ThemeDemo() {
               </div>
             </div>
           </section>
-
           {/* SECTION 9: HERO SECTION */}
           <section>
             <h2 className="text-4xl font-bold mb-8">Hero Section Example</h2>
@@ -301,22 +245,19 @@ export default function ThemeDemo() {
                 Join Neellohit and complete tasks to earn real money. Start today and grow your income.
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
+                <button
                   className="bg-red-500/30 hover:bg-red-500/40 border border-black text-white px-8 py-3 rounded-lg font-semibold shadow-[0_0_20px_rgba(239,68,68,0.2)] hover:shadow-[0_0_30px_rgba(239,68,68,0.3)] transition-all"
                 >
                   Become a Tasker
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
+                </button>
+                <button
                   className="border-2 border-red-500/50 text-red-300 hover:text-red-200 px-8 py-3 rounded-lg font-semibold hover:bg-red-500/10 transition-all"
                 >
                   Create Campaign
-                </motion.button>
+                </button>
               </div>
             </div>
           </section>
-
           {/* COLOR REFERENCE */}
           <section>
             <h2 className="text-4xl font-bold mb-8">Color Reference</h2>
@@ -343,7 +284,6 @@ export default function ThemeDemo() {
               </div>
             </div>
           </section>
-
         </div>
       </div>
     </main>

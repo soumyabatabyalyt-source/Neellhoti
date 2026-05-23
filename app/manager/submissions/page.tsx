@@ -633,9 +633,6 @@ export default function SubmissionsPage() {
         className="animate-in fade-in slide-in-from-bottom-4 duration-300"
       >
         <div
-          style={{
-            duration: 0.2,
-          }}
           className="
             grid
             gap-4

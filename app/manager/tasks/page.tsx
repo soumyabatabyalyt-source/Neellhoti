@@ -172,17 +172,7 @@ export default function ManagerTasksPage() {
     <div className="p-6 md:p-10 max-w-7xl mx-auto w-full font-sans">
 
       {/* HEADER */}
-      <div
-        initial={{
-          opacity: 0,
-          y: -20,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8"
-      >
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
 
         <div>
 
@@ -230,15 +220,7 @@ export default function ManagerTasksPage() {
       {/* TASK LIST */}
       {filteredTasks.length === 0 ? (
 
-        <div
-          initial={{
-            opacity: 0,
-          }}
-          animate={{
-            opacity: 1,
-          }}
-          className="py-16 px-6 border-2 border-dashed border-white/5 rounded-3xl flex flex-col items-center justify-center text-slate-500 bg-white/[0.01]"
-        >
+        <div className="py-16 px-6 border-2 border-dashed border-white/5 rounded-3xl flex flex-col items-center justify-center text-slate-500 bg-white/[0.01]">
 
           <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
 
@@ -262,11 +244,9 @@ export default function ManagerTasksPage() {
       ) : (
 
         <div
-          
+
           className="grid gap-4"
         >
-
-          <AnimatePresence mode="popLayout">
 
             {filteredTasks.map(
               (task) => {
@@ -417,8 +397,10 @@ export default function ManagerTasksPage() {
               }
             )}
 
-        </div>
+          </div>
+
+      )}
 
     </div>
   )
-}                                                         
+}

@@ -1,15 +1,12 @@
 "use client"
-
 import {
   useCallback,
   useEffect,
   useState,
 } from "react"
-
 import {
   createClient
 } from "@supabase/supabase-js"
-
 import {
   PlayCircle,
   Clock,
@@ -18,16 +15,13 @@ import {
   ExternalLink,
   Send
 } from "lucide-react"
-
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
-
 // ======================================================
 // COUNTDOWN TIMER
 // ======================================================
-
 function CountdownTimer({
   expiresAt,
   onExpire
@@ -35,44 +29,31 @@ function CountdownTimer({
   expiresAt: string
   onExpire: () => void
 }) {
-
   const [timeLeft, setTimeLeft] =
     useState("--:--")
-
   useEffect(() => {
-
     const updateTimer = () => {
-
       const now =
         new Date().getTime()
-
       const expiry =
         new Date(expiresAt).getTime()
-
       const distance =
         expiry - now
-
       if (distance <= 0) {
-
         setTimeLeft("00:00")
-
         onExpire()
-
         return
       }
-
       const minutes =
         Math.floor(
           (distance % (1000 * 60 * 60)) /
           (1000 * 60)
         )
-
       const seconds =
         Math.floor(
           (distance % (1000 * 60)) /
           1000
         )
-
       setTimeLeft(
         `${minutes
           .toString()
@@ -81,25 +62,19 @@ function CountdownTimer({
           .padStart(2, "0")}`
       )
     }
-
     updateTimer()
-
     const intervalId =
       setInterval(
         updateTimer,
         1000
       )
-
     return () =>
       clearInterval(intervalId)
-
   }, [
     expiresAt,
     onExpire
   ])
-
   return (
-
     <span className="
       font-mono
       text-orange-400
@@ -116,32 +91,23 @@ function CountdownTimer({
     </span>
   )
 }
-
 // ======================================================
 // MAIN PAGE
 // ======================================================
-
 export default function MyTasksPage() {
-
   const [claims, setClaims] =
     useState<any[]>([])
-
   // ======================================================
   // FETCH TASKS
   // ======================================================
-
   const fetchTasks =
     useCallback(async () => {
-
       const {
         data: { session },
       } = await supabase.auth.getSession()
-
       if (!session) return
-
       const userId =
         session.user.id
-
       const {
         data,
         error
@@ -167,52 +133,36 @@ export default function MyTasksPage() {
             ascending: false
           }
         )
-
       if (error) {
-
         console.error(error)
-
         return
       }
-
       setClaims(data || [])
-
     }, [])
-
   useEffect(() => {
     fetchTasks()
   }, [fetchTasks])
-
   // ======================================================
   // SUBMIT TASK
   // ======================================================
-
   const submitTask =
     async (task_id: string) => {
-
       const submission_link =
         prompt(
           "Paste your Reddit submission link"
         )
-
       if (!submission_link)
         return
-
       const {
         data: { session },
       } = await supabase.auth.getSession()
-
       if (!session) {
-
         alert(
           "Not logged in ❌"
         )
-
         return
       }
-
       // INSERT SUBMISSION
-
       const {
         error: submissionError
       } = await supabase
@@ -227,18 +177,13 @@ export default function MyTasksPage() {
               "pending"
           }
         ])
-
       if (submissionError) {
-
         alert(
           submissionError.message
         )
-
         return
       }
-
       // UPDATE TASK STATUS
-
       const {
         error: taskError
       } = await supabase
@@ -251,71 +196,55 @@ export default function MyTasksPage() {
           "id",
           task_id
         )
-
       if (taskError) {
-
         alert(
           taskError.message
         )
-
         return
       }
-
       alert(
         "Task submitted successfully ✅"
       )
-
       fetchTasks()
     }
-
   // ======================================================
   // FILTERS
   // ======================================================
-
   const active =
     claims.filter(
       c => c.status ===
         "active"
     )
-
   const pending =
     claims.filter(
       c => c.status ===
         "submitted"
     )
-
   const approved =
     claims.filter(
       c => c.status ===
         "approved"
     )
-
   const failed =
     claims.filter(
       c => c.status ===
         "rejected"
     )
-
   // ======================================================
   // UI
   // ======================================================
-
   return (
-
     <div className="
       w-full
       font-sans
       text-slate-200
     ">
-
       {/* HEADER */}
-
       <div className="
         mb-10
         text-center
         md:text-left
       ">
-
         <h1 className="
           text-4xl
           md:text-5xl
@@ -324,9 +253,7 @@ export default function MyTasksPage() {
           text-white
           mb-3
         ">
-
           Mission{" "}
-
           <span className="
             text-transparent
             bg-clip-text
@@ -336,24 +263,18 @@ export default function MyTasksPage() {
           ">
             Control
           </span>
-
         </h1>
-
         <p className="
           text-slate-400
           font-light
         ">
           Manage your claimed tasks and submissions.
         </p>
-
       </div>
-
       {/* SECTIONS */}
-
       <div className="
         space-y-12
       ">
-
         <Section
           title="Active Tasks"
           claims={active}
@@ -373,7 +294,6 @@ export default function MyTasksPage() {
           "
           onExpire={fetchTasks}
         />
-
         <Section
           title="Pending Approval"
           claims={pending}
@@ -391,7 +311,6 @@ export default function MyTasksPage() {
             text-blue-400
           "
         />
-
         <Section
           title="Approved Tasks"
           claims={approved}
@@ -409,7 +328,6 @@ export default function MyTasksPage() {
             text-emerald-400
           "
         />
-
         <Section
           title="Rejected Tasks"
           claims={failed}
@@ -427,17 +345,13 @@ export default function MyTasksPage() {
             text-rose-400
           "
         />
-
       </div>
-
     </div>
   )
 }
-
 // ======================================================
 // SECTION
 // ======================================================
-
 function Section({
   title,
   claims,
@@ -446,25 +360,18 @@ function Section({
   badgeTheme,
   onExpire
 }: any) {
-
   if (claims.length === 0)
     return null
-
   return (
-
     <div>
-
       {/* SECTION HEADER */}
-
       <div className="
         flex
         items-center
         gap-3
         mb-5
       ">
-
         {icon}
-
         <h2 className="
           text-2xl
           font-bold
@@ -472,11 +379,8 @@ function Section({
         ">
           {title}
         </h2>
-
       </div>
-
       {/* GRID */}
-
       <div className="
         grid
         grid-cols-1
@@ -484,20 +388,10 @@ function Section({
         xl:grid-cols-3
         gap-5
       ">
-
         {claims.map(
           (claim: any) => (
-
             <div
               key={claim.id}
-              initial={{
-                opacity: 0,
-                y: 20
-              }}
-              animate={{
-                opacity: 1,
-                y: 0
-              }}
               className="
                 bg-[#0B0E13]
                 border
@@ -510,13 +404,9 @@ function Section({
                 min-h-[320px]
               "
             >
-
               {/* TOP */}
-
               <div>
-
                 {/* TASK ID */}
-
                 <p className="
                   text-[11px]
                   tracking-[0.25em]
@@ -526,9 +416,7 @@ function Section({
                 ">
                   {claim.task_code}
                 </p>
-
                 {/* TITLE */}
-
                 <h3 className="
                   text-xl
                   font-bold
@@ -537,18 +425,13 @@ function Section({
                   mb-5
                   break-words
                 ">
-
                   {claim.title ||
                     "Untitled Task"}
-
                 </h3>
-
                 {/* DETAILS */}
-
                 <div className="
                   space-y-3
                 ">
-
                   <Detail
                     label="Subreddit"
                     value={
@@ -556,45 +439,35 @@ function Section({
                       "N/A"
                     }
                   />
-
                   <Detail
                     label="Reward"
                     value={`$${claim.reward || 0}`}
                   />
-
                   <Detail
                     label="Task Type"
                     value={
                       claim.task_type
                     }
                   />
-
                   <Detail
                     label="Status"
                     value={
                       claim.status
                     }
                   />
-
                 </div>
-
               </div>
-
               {/* BOTTOM */}
-
               <div className="
                 mt-6
                 flex
                 flex-col
                 gap-3
               ">
-
                 {/* TIMER */}
-
                 {claim.expires_at &&
                   claim.status ===
                     "claimed" && (
-
                   <CountdownTimer
                     expiresAt={
                       claim.expires_at
@@ -604,12 +477,9 @@ function Section({
                     }
                   />
                 )}
-
                 {/* SUBMIT BUTTON */}
-
                 {claim.status ===
                   "claimed" && (
-
                   <button
                     onClick={() =>
                       submitTask(
@@ -630,18 +500,12 @@ function Section({
                       gap-2
                     "
                   >
-
                     <Send size={18} />
-
                     Submit Task
-
                   </button>
                 )}
-
                 {/* REDDIT LINK */}
-
                 {claim.post_link && (
-
                   <a
                     href={
                       claim.post_link
@@ -664,39 +528,28 @@ function Section({
                       text-sm
                     "
                   >
-
                     <ExternalLink
                       size={16}
                     />
-
                     Open Reddit Post
-
                   </a>
                 )}
-
               </div>
-
             </div>
           )
         )}
-
       </div>
-
     </div>
   )
 }
-
 // ======================================================
 // DETAIL
 // ======================================================
-
 function Detail({
   label,
   value
 }: any) {
-
   return (
-
     <div className="
       flex
       flex-col
@@ -708,7 +561,6 @@ function Detail({
       border-white/5
       pb-3
     ">
-
       <span className="
         text-zinc-500
         text-sm
@@ -716,7 +568,6 @@ function Detail({
       ">
         {label}
       </span>
-
       <span className="
         text-white
         font-medium
@@ -729,7 +580,6 @@ function Detail({
       ">
         {value}
       </span>
-
     </div>
   )
 }
