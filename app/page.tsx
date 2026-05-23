@@ -165,7 +165,21 @@ import { ArrowRight, CheckCircle, Zap, Users, TrendingUp, Award, Shield, Clock }
         </div>
       </section>
 
-      {/* CTA Section */}
+     {/* For Clients Section */}
+           <section className="py-20 px-4 md:px-8 relative z-10 bg-gradient-to-b from-transparent to-red-500/5">
+                   <div className="max-w-4xl mx-auto text-center">
+                             <h2 className="text-4xl md:text-5xl font-bold mb-6">Are You a Brand or Business?</h2>h2>
+                             <p className="text-gray-400 text-lg mb-8">Looking to scale your Reddit presence? Reach out to our client services team for strategic campaign solutions.</p>p>
+                             <Link
+                                          href="/client"
+                                          className="inline-block px-8 py-4 bg-gradient-to-r from-cyan-600 to-cyan-500 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-cyan-500/50 transition-all duration-300"
+                                        >
+                                         Explore Client Services
+                             </Link>Link>
+                   </div>div>
+           </section>section>
+    
+    </section>{/* CTA Section */}
       <section className="py-20 px-4 md:px-8 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Start Earning?</h2>
@@ -193,6 +207,7 @@ import { ArrowRight, CheckCircle, Zap, Users, TrendingUp, Award, Shield, Clock }
                 <li><Link href="/signup" className="hover:text-white transition">Sign Up</Link></li>
                 <li><Link href="/login" className="hover:text-white transition">Login</Link></li>
                 <li><a href="#features" className="hover:text-white transition">Features</a></li>
+                               <li><Link href="/client" className="hover:text-white transition">For Clients</Link>Link></li>li></li>
               </ul>
             </div>
             <div>
