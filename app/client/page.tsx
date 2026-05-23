@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import {
   ArrowRight,
   Sparkles,
@@ -38,12 +37,7 @@ export default function ClientPage() {
 
       <section className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-6 py-20">
         {/* Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="max-w-4xl text-center"
-        >
+        <div className="max-w-4xl text-center animate-in fade-in slide-in-from-bottom-4 duration-600">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur-xl">
             <Sparkles className="h-4 w-4 text-cyan-400" />
             <span className="text-sm text-gray-300">
@@ -69,15 +63,12 @@ export default function ClientPage() {
             Start a Campaign
             <ArrowRight className="h-5 w-5" />
           </Link>
-        </motion.div>
+        </div>
 
         {/* What We Offer */}
         <div className="mt-24 grid w-full gap-6 md:grid-cols-3">
           {/* Card 1 */}
-          <motion.div
-            whileHover={{ y: -5 }}
-            className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-2xl"
-          >
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-2xl transition-transform hover:-translate-y-1 duration-300">
             <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-black/40">
               <Rocket className="h-7 w-7 text-cyan-400" />
             </div>
@@ -90,13 +81,10 @@ export default function ClientPage() {
               We design and execute Reddit campaigns tailored to your niche,
               audience, and growth objectives across targeted communities.
             </p>
-          </motion.div>
+          </div>
 
           {/* Card 2 */}
-          <motion.div
-            whileHover={{ y: -5 }}
-            className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-2xl"
-          >
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-2xl transition-transform hover:-translate-y-1 duration-300">
             <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-black/40">
               <MessageSquareMore className="h-7 w-7 text-indigo-400" />
             </div>
@@ -109,13 +97,10 @@ export default function ClientPage() {
               From discussion threads to community interaction systems, we help
               campaigns feel natural, authentic, and scalable.
             </p>
-          </motion.div>
+          </div>
 
           {/* Card 3 */}
-          <motion.div
-            whileHover={{ y: -5 }}
-            className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-2xl"
-          >
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-2xl transition-transform hover:-translate-y-1 duration-300">
             <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-black/40">
               <ShieldCheck className="h-7 w-7 text-green-400" />
             </div>
@@ -128,16 +113,11 @@ export default function ClientPage() {
               Campaigns are continuously monitored and optimized for reach,
               engagement quality, audience response, and long-term performance.
             </p>
-          </motion.div>
+          </div>
         </div>
 
         {/* Process Section */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="mt-24 w-full rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur-2xl"
-        >
+        <div className="mt-24 w-full rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur-2xl animate-in fade-in duration-600" style={{ animationDelay: '0.4s' }}>
           <h2 className="text-center text-4xl font-bold">
             How We <span className="text-cyan-400">Work</span>
           </h2>
@@ -182,7 +162,7 @@ export default function ClientPage() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Online Status */}
         <div className="mt-16 rounded-2xl border border-green-500/20 bg-green-500/10 px-6 py-4 backdrop-blur-xl">

@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabaseClient"
 import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
 
 export default function Auth() {
   const [dark, setDark] = useState(true)
@@ -421,19 +420,8 @@ export default function Auth() {
       `} />
 
       {/* CARD */}
-      <motion.div
-
-        initial={{
-          opacity: 0,
-          y: 20,
-        }}
-
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-
-        className={`
+      <div className={`
+        animate-in fade-in slide-in-from-bottom-4 duration-500
           relative
           z-10
           w-full
@@ -652,7 +640,7 @@ export default function Auth() {
 
         </p>
 
-      </motion.div>
+      </div>
 
     </div>
   )
