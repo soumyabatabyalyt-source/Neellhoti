@@ -1191,4 +1191,85 @@ function DetailField({
   label,
   value,
   isEditing,
-  on
+  onChange,
+}: any) {
+
+  if (isEditing) {
+
+    return (
+
+      <div>
+
+        <label className="
+          block
+          text-xs
+          uppercase
+          text-slate-500
+          mb-2
+        ">
+
+          {label}
+
+        </label>
+
+        <input
+          type="text"
+          value={value || ""}
+          onChange={(e) =>
+            onChange(
+              e.target.value
+            )
+          }
+          className="
+            w-full
+            px-3
+            py-2
+            rounded-lg
+            bg-white/[0.03]
+            border-2
+            border-white/15
+            text-white
+            text-sm
+            focus:bg-white/[0.05]
+            focus:border-blue-500/50
+            transition-all
+          "
+        />
+
+      </div>
+    )
+  }
+
+  return (
+
+    <div className="
+      flex
+      justify-between
+      items-center
+      pb-3
+      border-b
+      border-white/5
+    ">
+
+      <span className="
+        text-slate-500
+        text-sm
+      ">
+
+        {label}
+
+      </span>
+
+      <span className="
+        text-white
+        font-medium
+        text-sm
+      ">
+
+        {value}
+
+      </span>
+
+    </div>
+  )
+}

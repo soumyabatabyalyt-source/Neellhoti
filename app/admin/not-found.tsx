@@ -28,3 +28,7 @@ export default function AdminNotFound() {
           <ArrowLeft size={18} />
           Back to Admin
         </Link>
+      </div>
+    </div>
+  )
+}

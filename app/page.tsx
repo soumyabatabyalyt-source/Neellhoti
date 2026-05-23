@@ -209,3 +209,11 @@ export default function LandingPage() {
               </ul>
             </div>
           </div>
+          <div className="border-t border-red-500/20 pt-8 text-center text-gray-400">
+            <p>© 2026 Neellohit. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </main>
+  )
+}
