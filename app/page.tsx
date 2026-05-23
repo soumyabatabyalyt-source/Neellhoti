@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { ArrowRight, CheckCircle, Zap, Users, TrendingUp, Award, Shield, Clock } from "lucide-react"
 
-V3 Live  const router = useRouter()
+ const router = useRouter()
 
   return (
     <main className="relative min-h-screen bg-[#0a0a14] text-white overflow-hidden">
