@@ -15,11 +15,12 @@ export default function ClientPage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-black text-white">
-      {/* HOME BUTTON */}
+      {/* HOME BUTTON WITH LOGO */}
       <button
         onClick={() => router.push("/")}
-        className="fixed top-6 left-6 z-50 px-4 py-2 rounded-full bg-red-600 text-white font-semibold text-sm transition-all hover:scale-105 hover:bg-red-700 shadow-lg shadow-red-600/50"
+        className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-red-600 text-white font-semibold text-sm transition-all hover:scale-105 hover:bg-red-700 shadow-lg shadow-red-600/50"
       >
+        <img src="/logo-icon.png" alt="Neellohit" className="w-6 h-6" />
         Home
       </button>
 

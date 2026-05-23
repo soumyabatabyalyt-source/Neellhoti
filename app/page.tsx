@@ -4,10 +4,29 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { ArrowRight, CheckCircle, Zap, Users, TrendingUp, Award, Shield, Clock } from "lucide-react"
 
- const router = useRouter()
+export default function LandingPage() {
+  const router = useRouter()
 
   return (
     <main className="relative min-h-screen bg-[#0a0a14] text-white overflow-hidden">
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 px-4 md:px-8 py-4 border-b border-red-500/20">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <img src="/logo-icon.png" alt="Neellohit" className="w-10 h-10 hover:scale-110 transition-transform" />
+            <span className="text-xl font-bold tracking-wide hidden sm:inline">NEELLOHIT</span>
+          </div>
+          <div className="hidden md:flex items-center gap-8">
+            <a href="#features" className="text-gray-300 hover:text-white transition">Features</a>
+            <a href="#how-it-works" className="text-gray-300 hover:text-white transition">How It Works</a>
+            <Link href="/client" className="text-gray-300 hover:text-white transition">For Clients</Link>
+          </div>
+          <div className="flex items-center gap-4">
+            <Link href="/auth" className="px-4 py-2 text-white rounded-lg hover:bg-red-500/20 transition">Sign In</Link>
+          </div>
+        </div>
+      </nav>
+
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center px-4 md:px-8">
         {/* Background Elements */}
@@ -165,21 +184,21 @@ import { ArrowRight, CheckCircle, Zap, Users, TrendingUp, Award, Shield, Clock }
         </div>
       </section>
 
-     {/* For Clients Section */}
-           <section className="py-20 px-4 md:px-8 relative z-10 bg-gradient-to-b from-transparent to-red-500/5">
-                   <div className="max-w-4xl mx-auto text-center">
-                             <h2 className="text-4xl md:text-5xl font-bold mb-6">Are You a Brand or Business?</h2>h2>
-                             <p className="text-gray-400 text-lg mb-8">Looking to scale your Reddit presence? Reach out to our client services team for strategic campaign solutions.</p>p>
-                             <Link
-                                          href="/client"
-                                          className="inline-block px-8 py-4 bg-gradient-to-r from-cyan-600 to-cyan-500 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-cyan-500/50 transition-all duration-300"
-                                        >
-                                         Explore Client Services
-                             </Link>Link>
-                   </div>div>
-           </section>section>
-    
-    </section>{/* CTA Section */}
+      {/* For Clients Section */}
+      <section className="py-20 px-4 md:px-8 relative z-10 bg-gradient-to-b from-transparent to-red-500/5">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">Are You a Brand or Business?</h2>
+          <p className="text-gray-400 text-lg mb-8">Looking to scale your Reddit presence? Reach out to our client services team for strategic campaign solutions.</p>
+          <Link
+            href="/client"
+            className="inline-block px-8 py-4 bg-gradient-to-r from-cyan-600 to-cyan-500 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-cyan-500/50 transition-all duration-300"
+          >
+            Start a Campaign
+          </Link>
+        </div>
+      </section>
+
+      {/* CTA Section */}
       <section className="py-20 px-4 md:px-8 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Start Earning?</h2>
@@ -205,9 +224,9 @@ import { ArrowRight, CheckCircle, Zap, Users, TrendingUp, Award, Shield, Clock }
               <h4 className="font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-gray-400">
                 <li><Link href="/signup" className="hover:text-white transition">Sign Up</Link></li>
-                <li><Link href="/login" className="hover:text-white transition">Login</Link></li>
+                <li><Link href="/auth" className="hover:text-white transition">Login</Link></li>
                 <li><a href="#features" className="hover:text-white transition">Features</a></li>
-                               <li><Link href="/client" className="hover:text-white transition">For Clients</Link>Link></li>li></li>
+                <li><Link href="/client" className="hover:text-white transition">For Clients</Link></li>
               </ul>
             </div>
             <div>

@@ -120,6 +120,33 @@ export default function Login() {
       dark ? "bg-[#0f0814]" : "bg-[#fafaf8]"
     }`}>
 
+      {/* HOME BUTTON WITH LOGO */}
+      <button
+        onClick={() => router.push("/")}
+        className={`
+          fixed
+          top-6
+          left-6
+          z-50
+          flex
+          items-center
+          gap-2
+          px-4
+          py-2
+          rounded-full
+          font-semibold
+          text-sm
+          transition-all
+          hover:scale-105
+          ${dark
+            ? "bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-600/50"
+            : "bg-red-600 text-white hover:bg-red-700"}
+        `}
+      >
+        <img src="/logo-icon.png" alt="Neellohit" className="w-6 h-6" />
+        Home
+      </button>
+
       <div className={`absolute w-[400px] h-[400px] rounded-full blur-[120px] top-[-100px] left-[-100px] ${
         dark ? "bg-red-500/20" : "bg-red-500/10"
       }`} />
@@ -133,10 +160,8 @@ export default function Login() {
           : "bg-[#7f1d1d] border-black shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
       }`}>
 
-        <div className={`w-16 h-16 rounded-[18px] mx-auto mb-6 flex items-center justify-center text-2xl font-bold text-white ${
-          dark ? "bg-gradient-to-br from-red-500 to-red-600" : "bg-gradient-to-br from-red-500 to-red-600"
-        }`}>
-          N
+        <div className="w-20 h-20 rounded-[18px] mx-auto mb-6 flex items-center justify-center">
+          <img src="/logo-md.png" alt="Neellohit" className="w-20 h-20 object-contain" />
         </div>
 
         <h1 className="text-white text-center text-4xl font-bold mb-2.5">

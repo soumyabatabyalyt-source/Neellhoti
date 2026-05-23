@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Send,
   MessageCircle,
@@ -7,12 +8,21 @@ import {
   ArrowRight,
 } from "lucide-react";
 export default function StartCampaignPage() {
+  const router = useRouter();
   const copyDiscord = async () => {
     await navigator.clipboard.writeText("storm_sb");
     alert("Discord username copied!");
   };
   return (
     <main className="relative min-h-screen overflow-hidden bg-black text-white">
+      {/* HOME BUTTON WITH LOGO */}
+      <button
+        onClick={() => router.push("/")}
+        className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-red-600 text-white font-semibold text-sm transition-all hover:scale-105 hover:bg-red-700 shadow-lg shadow-red-600/50"
+      >
+        <img src="/logo-icon.png" alt="Neellohit" className="w-6 h-6" />
+        Home
+      </button>
       {/* Background */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#0f172a_0%,#020617_45%,#000000_100%)]" />
       {/* Stars */}

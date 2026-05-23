@@ -59,6 +59,37 @@ export default function Signup() {
         ? "bg-[#0f0814] text-slate-200 selection:bg-orange-500/30"
         : "bg-[#fafaf8] text-slate-800 selection:bg-red-500/20"
     }`}>
+
+      {/* HOME BUTTON WITH LOGO */}
+      <button
+        onClick={() => {
+          if (typeof window !== 'undefined') {
+            window.location.href = '/'
+          }
+        }}
+        className={`
+          fixed
+          top-6
+          left-6
+          z-50
+          flex
+          items-center
+          gap-2
+          px-4
+          py-2
+          rounded-full
+          font-semibold
+          text-sm
+          transition-all
+          hover:scale-105
+          ${dark
+            ? "bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-600/50"
+            : "bg-red-600 text-white hover:bg-red-700"}
+        `}
+      >
+        <img src="/logo-icon.png" alt="Neellohit" className="w-6 h-6" />
+        Home
+      </button>
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none mix-blend-screen bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
       <div
         className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-gradient-to-br from-orange-600/30 to-rose-600/10 rounded-full blur-[120px] pointer-events-none animate-pulse"
@@ -75,8 +106,8 @@ export default function Signup() {
         }`}
       >
         <div className="text-center mb-10">
-          <div className="mx-auto w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center shadow-[0_0_15px_rgba(249,115,22,0.4)] mb-6">
-            <Sparkles size={20} className="text-white" />
+          <div className="mx-auto w-16 h-16 mb-6 flex items-center justify-center">
+            <img src="/logo-md.png" alt="Neellohit" className="w-16 h-16 object-contain" />
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-white mb-2">Join the Elite</h1>
           <p className="text-slate-400 text-sm font-light">Create your account to start earning.</p>

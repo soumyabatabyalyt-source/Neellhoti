@@ -384,7 +384,7 @@ export default function Auth() {
       ${dark ? "bg-[#0f0814]" : "bg-[#fafaf8]"}
     `}>
 
-      {/* HOME BUTTON */}
+      {/* HOME BUTTON WITH LOGO */}
       <button
         onClick={() => router.push("/")}
         className={`
@@ -392,6 +392,9 @@ export default function Auth() {
           top-6
           left-6
           z-50
+          flex
+          items-center
+          gap-2
           px-4
           py-2
           rounded-full
@@ -404,6 +407,7 @@ export default function Auth() {
             : "bg-red-600 text-white hover:bg-red-700"}
         `}
       >
+        <img src="/logo-icon.png" alt="Neellohit" className="w-6 h-6" />
         Home
       </button>
 
