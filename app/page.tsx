@@ -18,9 +18,6 @@ import { ArrowRight, CheckCircle, Zap, Users, TrendingUp, Award, Shield, Clock }
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl text-center mx-auto">
-          <div className="inline-block mb-6 px-4 py-2 bg-red-500/10 border border-red-500/30 rounded-full">
-          </div>
-
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
             Turn Tasks Into{" "}
             <span className="bg-gradient-to-r from-red-500 to-white bg-clip-text text-transparent">
