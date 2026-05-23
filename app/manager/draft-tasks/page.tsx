@@ -500,7 +500,7 @@ export default function
           tasks from imports
         </p>
 
-      </motion.div>
+      </div>
 
       {/* INFO */}
 
