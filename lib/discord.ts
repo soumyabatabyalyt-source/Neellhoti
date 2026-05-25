@@ -86,6 +86,10 @@ export async function sendTaskAvailableNotification(task: Task): Promise<void> {
   }
 }
 
+export async function sendTasksSummaryNotification(summary: TaskSummary): Promise<void> {
+  return sendSummaryNotification(summary)
+}
+
 export async function sendSummaryNotification(summary: TaskSummary): Promise<void> {
   if (!DISCORD_WEBHOOK_URL) {
     console.warn("[Discord] DISCORD_WEBHOOK_URL not set — skipping summary notification")
