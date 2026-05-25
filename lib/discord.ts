@@ -81,4 +81,53 @@ export async function sendTaskAvailableNotification(task: Task): Promise<void> {
       console.log("[Discord] ✅ Notification sent successfully!")
     }
   } catch (err) {
-    // Never 
+    // Never throw from notification helpers — log and move on
+    console.error("[Discord] Error sending notification:", err)
+  }
+}
+
+export async function sendSummaryNotification(summary: TaskSummary): Promise<void> {
+  if (!DISCORD_WEBHOOK_URL) {
+    console.warn("[Discord] DISCORD_WEBHOOK_URL not set — skipping summary notification")
+    return
+  }
+
+  const taskList = summary.tasks
+    .map((t) => {
+      const id = t.task_code || t.id
+      const reward = t.reward_credits != null ? `${t.reward_credits} credits` : "N/A"
+      return `• \`${id}\` — ${reward}`
+    })
+    .join("\n") || "No tasks available."
+
+  const embed = {
+    title: "📋 Task Summary",
+    description: taskList,
+    color: 0x5865f2,
+    footer: {
+      text: "✨ Neellohit • Earn Credits Today",
+    },
+  }
+
+  try {
+    const response = await fetch(DISCORD_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content: "📢 Here are the currently available tasks:",
+        username: "Neellohit Bot",
+        avatar_url: "https://www.redditstatic.com/desktop2x/img/favicon/android-icon-192x192.png",
+        embeds: [embed],
+      }),
+    })
+
+    if (!response.ok) {
+      const text = await response.text()
+      console.error(`[Discord] Summary webhook failed (${response.status}):`, text)
+    } else {
+      console.log("[Discord] ✅ Summary notification sent successfully!")
+    }
+  } catch (err) {
+    console.error("[Discord] Error sending summary notification:", err)
+  }
+}
