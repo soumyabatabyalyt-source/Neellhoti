@@ -475,3 +475,27 @@ export async function POST(
 
     // =====================================
     // SUCCESS
+    // =====================================
+
+    return NextResponse.json({
+      success: true,
+    })
+
+  } catch (err) {
+
+    console.error(
+      "SERVER ERROR:",
+      err
+    )
+
+    return NextResponse.json(
+      {
+        error:
+          "Server failed",
+      },
+      {
+        status: 500,
+      }
+    )
+  }
+}
