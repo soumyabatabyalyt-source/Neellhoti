@@ -121,9 +121,6 @@ export async function POST(req: Request) {
         // Execute each statement
         const { error } = await supabase.rpc("exec", {
           command: statement,
-        }).catch(() => {
-          // exec might not exist, so we'll try raw query approach
-          return { error: null }
         })
 
         if (error) {
