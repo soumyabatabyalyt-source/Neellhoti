@@ -2,89 +2,121 @@
 
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
-import { Check, X, User, Mail, ExternalLink, ShieldQuestion } from "lucide-react"
+import {
+  Check,
+  X,
+  User,
+  Mail,
+  ExternalLink,
+  ShieldQuestion,
+  MessageSquare,
+  Calendar,
+} from "lucide-react"
+
+// =========================================
+// REDDIT URL HELPERS
+// =========================================
+
+function redditUsername(raw: string): string {
+  try {
+    // Parse as URL to strip query params and trailing slashes
+    const url = new URL(raw.startsWith("http") ? raw : `https://${raw}`)
+    // pathname looks like /user/Rex_orci-1/ or /u/Rex_orci-1/
+    const parts = url.pathname.replace(/\/$/, "").split("/").filter(Boolean)
+    // parts = ["user", "Rex_orci-1"] or ["u", "Rex_orci-1"]
+    const idx = parts.findIndex((p) => p === "user" || p === "u")
+    if (idx !== -1 && parts[idx + 1]) return parts[idx + 1]
+    // Fallback: last segment
+    return parts[parts.length - 1] || raw
+  } catch {
+    // Not a valid URL — treat as plain username or u/handle
+    return raw.replace(/^\/?u\//, "")
+  }
+}
+
+function redditProfileUrl(raw: string): string {
+  const username = redditUsername(raw)
+  return `https://www.reddit.com/user/${username}`
+}
+
+// =========================================
+// COMPONENT
+// =========================================
 
 export default function Accounts() {
   const [users, setUsers] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     load()
   }, [])
 
   const load = async () => {
+    setLoading(true)
     const { data, error } = await supabase
       .from("profiles")
-      .select("*")
-      .eq("approved", false)
+      .select("id, username, email, reddit, discord, created_at, approval_status, approved")
+      .or("approved.eq.false,approval_status.eq.pending")
+      .order("created_at", { ascending: true })
 
     if (error) {
       console.error(error)
-      return
     }
-
     setUsers(data || [])
+    setLoading(false)
   }
 
-  // ✅ APPROVE USER
+  // =========================================
+  // APPROVE
+  // =========================================
+
   const approveUser = async (id: string) => {
     try {
       const res = await fetch("/api/manager/accounts/action", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: id,
-          action: "approve",
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: id, action: "approve" }),
       })
-
       const data = await res.json()
-
       if (!res.ok) {
-        console.error(data.error)
         alert("Approval failed: " + (data.error || "Unknown error"))
         return
       }
-
-      alert("User approved ✅ (Wallet created)")
       load()
-    } catch (err) {
-      console.error(err)
+    } catch {
       alert("Approval failed")
     }
   }
 
-  // ✅ REJECT USER
+  // =========================================
+  // REJECT
+  // =========================================
+
   const rejectUser = async (id: string) => {
-    const confirmed = confirm("Reject this account?")
+    const confirmed = confirm("Reject and delete this account?")
     if (!confirmed) return
 
-    const { error } = await supabase
-      .from("profiles")
-      .delete()
-      .eq("id", id)
+    const { error } = await supabase.from("profiles").delete().eq("id", id)
 
     if (error) {
-      console.error(error)
       alert("Rejection failed")
       return
     }
-
-    alert("User rejected ❌")
     load()
   }
 
+  // =========================================
+  // RENDER
+  // =========================================
+
   return (
     <div className="p-6 md:p-10 max-w-5xl mx-auto w-full font-sans">
-      
+
       {/* HEADER */}
-      <div
-        className="mb-8 animate-in fade-in slide-in-from-top-4 duration-300"
-      >
+      <div className="mb-8 animate-in fade-in slide-in-from-top-4 duration-300">
         <h2 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
           Pending Accounts
-          {users.length > 0 && (
+          {!loading && users.length > 0 && (
             <span className="bg-amber-500/20 text-amber-400 text-sm py-1 px-3 rounded-full font-medium border border-amber-500/20">
               {users.length} Awaiting
             </span>
@@ -95,11 +127,14 @@ export default function Accounts() {
         </p>
       </div>
 
-      {/* USER LIST */}
-      {users.length === 0 ? (
-        <div
-          className="py-16 px-6 border-2 border-dashed border-white/5 rounded-3xl flex flex-col items-center justify-center text-center bg-white/[0.01] animate-in fade-in duration-300"
-        >
+      {/* LOADING */}
+      {loading ? (
+        <div className="py-16 flex items-center justify-center text-slate-500 animate-pulse">
+          Loading...
+        </div>
+      ) : users.length === 0 ? (
+        /* EMPTY */
+        <div className="py-16 px-6 border-2 border-dashed border-white/5 rounded-3xl flex flex-col items-center justify-center text-center bg-white/[0.01] animate-in fade-in duration-300">
           <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 border border-white/10 shadow-inner">
             <ShieldQuestion className="text-slate-500" size={32} />
           </div>
@@ -109,69 +144,84 @@ export default function Accounts() {
           </p>
         </div>
       ) : (
-        <div className="grid gap-4">
-            {users.map((u) => (
-              <div
-                key={u.id}
-                className="
-                  group relative
-                  p-5 sm:p-6
-                  rounded-2xl
-                  border-2
-                  border-white/15
-                  bg-white/[0.03]
-                  backdrop-blur-sm
-                  overflow-hidden
-                  flex flex-col md:flex-row md:items-center justify-between gap-6
-                  transition-all duration-300
-                  hover:bg-white/[0.05]
-                  hover:border-white/25
-                  shadow-lg
-                  animate-in fade-in zoom-in-95 duration-200
-                "
-              >
-                
-                {/* INFO SECTION */}
-                <div className="flex-1 space-y-4">
-                  
-                  {/* Top Row: Username & ID */}
+        /* USER LIST */
+        <div className="grid gap-5">
+          {users.map((u) => (
+            <div
+              key={u.id}
+              className="
+                rounded-2xl border-2 border-white/15 bg-white/[0.03]
+                backdrop-blur-sm shadow-lg
+                hover:bg-white/[0.05] hover:border-white/25
+                transition-all duration-300
+                animate-in fade-in zoom-in-95 duration-200
+                overflow-hidden
+              "
+            >
+              {/* CARD BODY */}
+              <div className="p-5 sm:p-6 flex flex-col gap-5">
+
+                {/* TOP: Username + Joined date */}
+                <div className="flex items-start justify-between gap-4 flex-wrap">
                   <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-xl font-semibold text-white tracking-tight flex items-center gap-2">
-                        <User size={18} className="text-slate-400" />
-                        {u.username || "Unknown User"}
-                      </h3>
-                    </div>
-                    <p className="text-[10px] text-slate-500 font-mono tracking-wider break-all bg-black/40 inline-block px-2 py-0.5 rounded border border-white/5">
+                    <h3 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+                      <User size={18} className="text-slate-400 shrink-0" />
+                      {u.username || "Unknown User"}
+                    </h3>
+                    <p className="text-[10px] text-slate-500 font-mono mt-1 tracking-wider bg-black/40 inline-block px-2 py-0.5 rounded border border-white/5">
                       ID: {u.id}
                     </p>
                   </div>
-
-                  {/* Bottom Row: Meta Info */}
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
-                    {/* Email */}
-                    <div className="flex items-center gap-2 text-sm text-slate-300">
-                      <Mail size={16} className="text-slate-500" />
-                      {u.email}
+                  {u.created_at && (
+                    <div className="flex items-center gap-1.5 text-xs text-slate-500 shrink-0">
+                      <Calendar size={13} />
+                      Registered {new Date(u.created_at).toLocaleDateString("en-GB", {
+                        day: "numeric", month: "short", year: "numeric"
+                      })}
                     </div>
+                  )}
+                </div>
 
-                    {/* Reddit Link */}
-                    <div className="flex items-center gap-2 text-sm">
-                      <div className="w-4 h-4 rounded-full bg-[#FF4500]/20 flex items-center justify-center">
-                        <span className="text-[10px] text-[#FF4500] font-bold">R</span>
-                      </div>
+                {/* INFO GRID */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+                  {/* Email */}
+                  <div className="flex items-center gap-3 bg-black/20 rounded-xl px-4 py-3 border border-white/8 min-w-0">
+                    <Mail size={16} className="text-slate-500 shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold mb-0.5">Email</p>
+                      <p className="text-sm text-slate-200 truncate">{u.email || "—"}</p>
+                    </div>
+                  </div>
+
+                  {/* Discord */}
+                  <div className="flex items-center gap-3 bg-black/20 rounded-xl px-4 py-3 border border-white/8 min-w-0">
+                    <MessageSquare size={16} className="text-indigo-400 shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold mb-0.5">Discord</p>
+                      <p className="text-sm text-slate-200 truncate">{u.discord || "—"}</p>
+                    </div>
+                  </div>
+
+                  {/* Reddit */}
+                  <div className="flex items-center gap-3 bg-black/20 rounded-xl px-4 py-3 border border-white/8 min-w-0 sm:col-span-2">
+                    <div className="w-4 h-4 rounded-full bg-[#FF4500]/20 flex items-center justify-center shrink-0">
+                      <span className="text-[10px] text-[#FF4500] font-bold">R</span>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold mb-0.5">Reddit</p>
                       {u.reddit ? (
                         <a
-                          href={u.reddit}
+                          href={redditProfileUrl(u.reddit)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1 font-medium bg-blue-500/10 px-2.5 py-0.5 rounded-md border border-blue-500/20"
+                          className="text-sm text-orange-400 hover:text-orange-300 transition-colors flex items-center gap-1.5 font-medium w-fit max-w-full"
                         >
-                          {u.reddit.replace(/^https?:\/\/(www\.)?reddit\.com\/user\//, "")}
-                          <ExternalLink size={12} />
+                          <span className="truncate">u/{redditUsername(u.reddit)}</span>
+                          <ExternalLink size={12} className="shrink-0 opacity-60" />
                         </a>
                       ) : (
-                        <span className="text-slate-500 italic">Not provided</span>
+                        <span className="text-sm text-slate-500 italic">Not provided</span>
                       )}
                     </div>
                   </div>
@@ -179,26 +229,26 @@ export default function Accounts() {
                 </div>
 
                 {/* ACTION BUTTONS */}
-                <div className="shrink-0 flex items-center gap-3 pt-4 border-t border-white/10 md:pt-0 md:border-t-0 md:pl-6 md:border-l">
+                <div className="flex items-center gap-3 pt-4 border-t border-white/10">
                   <button
                     onClick={() => approveUser(u.id)}
-                    className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transform hover:-translate-y-0.5"
+                    className="flex-1 flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40"
                   >
-                    <Check size={18} />
+                    <Check size={17} />
                     Approve
                   </button>
-
                   <button
                     onClick={() => rejectUser(u.id)}
-                    className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white border border-rose-500/20 hover:border-rose-500 px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 transform hover:-translate-y-0.5"
+                    className="flex-1 flex items-center justify-center gap-2 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 hover:border-rose-500 px-5 py-2.5 rounded-xl font-semibold transition-all duration-200"
                   >
-                    <X size={18} />
+                    <X size={17} />
                     Reject
                   </button>
                 </div>
 
               </div>
-            ))}
+            </div>
+          ))}
         </div>
       )}
     </div>
