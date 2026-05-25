@@ -21,6 +21,8 @@ export async function POST(
       username,
       reddit,
       discord,
+      reddit_karma,
+      reddit_account_age_days,
     } = body
 
     // =========================================
@@ -156,6 +158,10 @@ export async function POST(
         approved: false,
 
         suspended: false,
+
+        reddit_karma: Number(reddit_karma) || 0,
+
+        reddit_account_age_days: Number(reddit_account_age_days) || 0,
       })
 
     // =========================================

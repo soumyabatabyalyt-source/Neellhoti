@@ -31,6 +31,12 @@ export default function Auth() {
   const [discord, setDiscord] =
     useState("")
 
+  const [redditKarma, setRedditKarma] =
+    useState("")
+
+  const [redditAgeDays, setRedditAgeDays] =
+    useState("")
+
   const [loading, setLoading] =
     useState(false)
 
@@ -154,6 +160,8 @@ export default function Auth() {
               username,
               reddit,
               discord,
+              reddit_karma: Number(redditKarma) || 0,
+              reddit_account_age_days: Number(redditAgeDays) || 0,
             }),
           })
 
@@ -519,6 +527,30 @@ export default function Auth() {
                 e.target.value
               )
             }
+            className={getInputClass(dark)}
+          />
+        )}
+
+        {/* REDDIT KARMA */}
+        {isSignup && (
+          <input
+            type="number"
+            min={0}
+            placeholder="Reddit Karma (e.g. 5000)"
+            value={redditKarma}
+            onChange={(e) => setRedditKarma(e.target.value)}
+            className={getInputClass(dark)}
+          />
+        )}
+
+        {/* REDDIT ACCOUNT AGE */}
+        {isSignup && (
+          <input
+            type="number"
+            min={0}
+            placeholder="Reddit Account Age (days)"
+            value={redditAgeDays}
+            onChange={(e) => setRedditAgeDays(e.target.value)}
             className={getInputClass(dark)}
           />
         )}
