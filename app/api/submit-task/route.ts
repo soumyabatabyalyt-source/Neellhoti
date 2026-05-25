@@ -447,15 +447,24 @@ export async function POST(
     // =====================================
     // TRIGGER COOLDOWN
     // =====================================
-    
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("cooldown_minutes")
-      .eq("id", user.id)
-      .single()
-      
-    const cooldownMins = profile?.cooldown_minutes || 0
-    
+
+    const [{ data: profile }, { data: platformSettings }] = await Promise.all([
+      supabase
+        .from("profiles")
+        .select("cooldown_minutes")
+        .eq("id", user.id)
+        .single(),
+      supabase
+        .from("platform_settings")
+        .select("submission_cooldown_minutes")
+        .eq("id", 1)
+        .single(),
+    ])
+
+    const perUserMins = Number(profile?.cooldown_minutes || 0)
+    const globalMins = Number(platformSettings?.submission_cooldown_minutes || 0)
+    const cooldownMins = Math.max(perUserMins, globalMins)
+
     if (cooldownMins > 0) {
       const cooldownUntil = new Date(Date.now() + cooldownMins * 60 * 1000).toISOString()
       await supabase
@@ -466,27 +475,3 @@ export async function POST(
 
     // =====================================
     // SUCCESS
-    // =====================================
-
-    return NextResponse.json({
-      success: true,
-    })
-
-  } catch (err) {
-
-    console.error(
-      "SERVER ERROR:",
-      err
-    )
-
-    return NextResponse.json(
-      {
-        error:
-          "Server failed",
-      },
-      {
-        status: 500,
-      }
-    )
-  }
-}
