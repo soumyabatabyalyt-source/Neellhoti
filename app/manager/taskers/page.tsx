@@ -188,7 +188,7 @@ function TaskerCard({
         p-5 sm:p-6
         shadow-lg
         backdrop-blur-sm
-        flex flex-col lg:flex-row gap-6 justify-between
+        flex flex-col xl:flex-row gap-6
       "
 
     >
@@ -247,13 +247,13 @@ function TaskerCard({
       </div>
 
       {/* COOLDOWN CONTROLS */}
-      <div className="shrink-0 bg-white/[0.02] rounded-xl p-4 border-2 border-white/15 flex flex-col justify-center min-w-[280px]">
+      <div className="w-full xl:w-72 xl:shrink-0 bg-white/[0.02] rounded-xl p-4 border-2 border-white/15 flex flex-col justify-center">
         <div className="flex items-center gap-2 mb-3 text-sm font-medium text-slate-400">
           <Timer size={16} /> Set Cooldown Time
         </div>
-        
-        <div className="flex items-end gap-3 flex-wrap sm:flex-nowrap">
-          <label className="flex-1 space-y-1">
+
+        <div className="flex items-end gap-3">
+          <label className="flex-1 space-y-1 min-w-0">
             <span className="text-xs text-slate-500 pl-1 uppercase tracking-wider font-semibold">Hours</span>
             <input
               type="number"
@@ -264,7 +264,7 @@ function TaskerCard({
             />
           </label>
 
-          <label className="flex-1 space-y-1">
+          <label className="flex-1 space-y-1 min-w-0">
             <span className="text-xs text-slate-500 pl-1 uppercase tracking-wider font-semibold">Minutes</span>
             <input
               type="number"
@@ -279,14 +279,13 @@ function TaskerCard({
           <button
             onClick={() => saveCooldown(user.id, hours, minutes)}
             disabled={saving}
-            className="h-[42px] px-4 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-medium transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2"
+            className="shrink-0 h-[42px] w-[42px] rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-medium transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center"
           >
             {saving ? (
               <Loader2 size={16} className="animate-spin" />
             ) : (
               <Save size={16} />
             )}
-            <span className="hidden sm:inline">{saving ? "..." : "Save"}</span>
           </button>
         </div>
       </div>
