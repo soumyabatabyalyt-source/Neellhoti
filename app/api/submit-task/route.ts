@@ -461,6 +461,31 @@ export async function POST(
     }
 
     // =====================================
+    // SYNC POST/COMMENT LINK TO SHEET
+    // =====================================
+    // After saving the link to DB, update the Google Sheet
+    // This ensures the sheet reflects the submitted post/comment URL
+    try {
+      const linkField = isCommentTask ? "comment_link" : "post_link"
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+
+      await fetch(`${baseUrl}/api/update-sheet-field`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          task_code: taskRow?.task_code,
+          field: linkField,
+          value: normalizedSubmission,
+        }),
+      })
+      // Note: We don't await or check the response - sheet updates are best-effort
+      // The task has already been saved to DB successfully
+    } catch (sheetError) {
+      // Log but don't fail - task submission is already complete
+      console.warn("Sheet sync failed (non-critical):", sheetError)
+    }
+
+    // =====================================
     // TRIGGER COOLDOWN
     // =====================================
 
