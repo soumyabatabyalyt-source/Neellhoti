@@ -381,7 +381,7 @@ export default function ActiveTasksPage() {
         (t) =>
           t.claim
             .status ===
-            "expired"
+            "rejected"
       )
 
     }, [tasks])
