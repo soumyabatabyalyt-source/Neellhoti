@@ -118,14 +118,14 @@ export default function WalletPage() {
       .eq("user_id", user.id)
       .eq("status", "approved")
 
-    // CALCULATE
+    // CALCULATE (rewards are stored in cents, convert to dollars)
     const approved =
       (approvedClaims || []).reduce(
         (sum: number, item: any) =>
           sum +
-          Number(
+          (Number(
             item.tasks?.reward || 0
-          ),
+          ) / 100),
         0
       )
 
@@ -133,9 +133,9 @@ export default function WalletPage() {
       (pendingClaims || []).reduce(
         (sum: number, item: any) =>
           sum +
-          Number(
+          (Number(
             item.tasks?.reward || 0
-          ),
+          ) / 100),
         0
       )
 
@@ -143,7 +143,7 @@ export default function WalletPage() {
       (withdrawals || []).reduce(
         (sum: number, item: any) =>
           sum +
-          Number(item.amount || 0),
+          (Number(item.amount || 0) / 100),
         0
       )
 
