@@ -369,7 +369,7 @@ export default function ActiveTasksPage() {
         (t) =>
           t.claim
             .status ===
-            "completed"
+            "approved"
       )
 
     }, [tasks])
