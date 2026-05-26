@@ -180,6 +180,25 @@ export async function PUT(req: Request) {
     // =====================================
 
     if (action === "publish") {
+      // First, fetch the task to get its details
+      const { data: task, error: fetchError } = await supabase
+        .from("tasks")
+        .select("id, title, task_type, reward_credits, task_code")
+        .eq("id", taskId)
+        .maybeSingle()
+
+      if (fetchError) {
+        throw fetchError
+      }
+
+      if (!task) {
+        return NextResponse.json(
+          { error: "Task not found" },
+          { status: 404 }
+        )
+      }
+
+      // Update the task to published
       const { error } = await supabase
         .from("tasks")
         .update({
@@ -191,6 +210,25 @@ export async function PUT(req: Request) {
 
       if (error) {
         throw error
+      }
+
+      // Send Discord notification (async, non-blocking)
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+        await fetch(`${baseUrl}/api/send-notification`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: task.id,
+            title: task.title,
+            task_type: task.task_type,
+            reward_credits: task.reward_credits,
+            task_code: task.task_code,
+          }),
+        })
+      } catch (notificationError) {
+        // Log but don't fail the publish operation
+        console.warn("[DRAFT-TASKS] Discord notification failed (non-critical):", notificationError)
       }
 
       return NextResponse.json({
