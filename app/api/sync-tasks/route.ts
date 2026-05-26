@@ -80,7 +80,8 @@ export async function GET() {
           sheet_row_link: task.sheet_row_link || null,  // Link to original sheet row if provided
         }
       })
-      .filter((task: any): task is Exclude<any, null> => task !== null)  // Remove invalid tasks with proper type guard
+      .filter((task: any) => task !== null)  // Remove invalid tasks
+      .filter((task: any): task is NonNullable<typeof task> => task !== null)  // Remove invalid tasks with proper type guard
 
     // 🔥 STEP 3: insert only new ones
     if (newTasks.length > 0) {
@@ -101,4 +102,6 @@ export async function GET() {
       message: `Imported ${newTasks.length} new task(s)`,
     })
   } catch (err: any) {
-    retur
+    return NextResponse.json({ error: err.message })
+  }
+}
