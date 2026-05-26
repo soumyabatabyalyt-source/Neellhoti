@@ -57,6 +57,15 @@ export default function CreateTaskPage() {
   const [commentType, setCommentType] =
     useState("comment")
 
+  const [postLink, setPostLink] =
+    useState("")
+
+  const [minKarma, setMinKarma] =
+    useState("")
+
+  const [minAccountAgeDays, setMinAccountAgeDays] =
+    useState("")
+
   // =========================================
   // FETCH DRAFTS
   // =========================================
@@ -147,15 +156,16 @@ export default function CreateTaskPage() {
         return
       }
 
-      if (!title.trim()) {
-        alert("Please enter a title")
+      // Title is required for post tasks, but not for comment tasks
+      if (taskType === "post" && !title.trim()) {
+        alert("Please enter a title for post tasks")
         setLoading(false)
         return
       }
 
       const payload = {
 
-        title,
+        title: taskType === "post" ? title : null,
 
         description:
           body,
@@ -177,7 +187,9 @@ export default function CreateTaskPage() {
         task_type:
           taskType,
 
-        subreddit,
+        subreddit: taskType === "post" ? subreddit : null,
+
+        post_link: taskType === "comment" ? postLink : null,
 
         body,
 
@@ -188,19 +200,44 @@ export default function CreateTaskPage() {
           Number(timeLimit),
 
         task_code:
-          taskCode
+          taskCode,
+
+        min_karma: minKarma ? Number(minKarma) : null,
+
+        min_account_age_days: minAccountAgeDays ? Number(minAccountAgeDays) : null
       }
 
-      const { error } =
+      const { error, data } =
         await supabase
           .from("tasks")
           .insert([payload])
+          .select()
 
       if (error) {
 
         alert(error.message)
 
         return
+      }
+
+      // Send notification for new task
+      if (data && data.length > 0) {
+        const createdTask = data[0]
+        try {
+          await fetch("/api/send-notification", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              id: createdTask.id,
+              title: createdTask.title,
+              task_type: createdTask.task_type,
+              reward_credits: createdTask.reward,
+              task_code: createdTask.task_code,
+            }),
+          })
+        } catch (err) {
+          console.error("Failed to send notification:", err)
+        }
       }
 
       alert(
@@ -211,8 +248,11 @@ export default function CreateTaskPage() {
       setTitle("")
       setBody("")
       setSubreddit("")
+      setPostLink("")
       setReward("")
       setTimeLimit("30")
+      setMinKarma("")
+      setMinAccountAgeDays("")
 
       fetchDrafts()
 
@@ -266,6 +306,24 @@ export default function CreateTaskPage() {
           "Publish failed: Task not found"
         )
         return
+      }
+
+      // Send notification for published task
+      const publishedTask = data[0]
+      try {
+        await fetch("/api/send-notification", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: publishedTask.id,
+            title: publishedTask.title,
+            task_type: publishedTask.task_type,
+            reward_credits: publishedTask.reward,
+            task_code: publishedTask.task_code,
+          }),
+        })
+      } catch (err) {
+        console.error("Failed to send notification:", err)
       }
 
       // Wait briefly for DB to sync
@@ -351,7 +409,7 @@ export default function CreateTaskPage() {
 
       setPublishingAll(true)
 
-      await supabase
+      const { data, error } = await supabase
         .from("tasks")
         .update({
           draft: false,
@@ -360,6 +418,33 @@ export default function CreateTaskPage() {
           published_at: new Date().toISOString()
         })
         .eq("draft", true)
+        .select()
+
+      if (error) {
+        alert(`Error: ${error.message}`)
+        return
+      }
+
+      // Send notifications for all published tasks
+      if (data && data.length > 0) {
+        for (const task of data) {
+          try {
+            await fetch("/api/send-notification", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                id: task.id,
+                title: task.title,
+                task_type: task.task_type,
+                reward_credits: task.reward,
+                task_code: task.task_code,
+              }),
+            })
+          } catch (err) {
+            console.error("Failed to send notification for task:", task.id, err)
+          }
+        }
+      }
 
       fetchDrafts()
 
@@ -492,11 +577,12 @@ export default function CreateTaskPage() {
               mb-6
             ">
               <button
-                onClick={() =>
+                onClick={() => {
                   setManualSection(
                     "posts"
                   )
-                }
+                  setTaskType("post")
+                }}
                 className={`
                   px-6
                   py-3
@@ -516,11 +602,12 @@ export default function CreateTaskPage() {
                 Create Post
               </button>
               <button
-                onClick={() =>
+                onClick={() => {
                   setManualSection(
                     "comments"
                   )
-                }
+                  setTaskType("comment")
+                }}
                 className={`
                   px-6
                   py-3
@@ -605,6 +692,27 @@ export default function CreateTaskPage() {
                   />
                 </div>
 
+                <div className="
+                  grid
+                  md:grid-cols-2
+                  gap-5
+                ">
+                  <Input
+                    label="Minimum Karma (Optional)"
+                    value={minKarma}
+                    setValue={setMinKarma}
+                    placeholder="e.g., 1000"
+                    type="number"
+                  />
+                  <Input
+                    label="Minimum Account Age (days, Optional)"
+                    value={minAccountAgeDays}
+                    setValue={setMinAccountAgeDays}
+                    placeholder="e.g., 30"
+                    type="number"
+                  />
+                </div>
+
                 <button
                   onClick={
                     handleCreateTask
@@ -656,13 +764,6 @@ export default function CreateTaskPage() {
                   placeholder="e.g., B-2-1002"
                 />
 
-                <Input
-                  label="Subreddit"
-                  value={subreddit}
-                  setValue={setSubreddit}
-                  placeholder="r/AskReddit"
-                />
-
                 <div className="
                   grid
                   md:grid-cols-2
@@ -708,8 +809,8 @@ export default function CreateTaskPage() {
                   </div>
                   <Input
                     label="Post Link"
-                    value={subreddit}
-                    setValue={setSubreddit}
+                    value={postLink}
+                    setValue={setPostLink}
                     placeholder="https://reddit.com/r/..."
                   />
                 </div>
@@ -738,6 +839,27 @@ export default function CreateTaskPage() {
                     value={timeLimit}
                     setValue={setTimeLimit}
                     placeholder="30"
+                    type="number"
+                  />
+                </div>
+
+                <div className="
+                  grid
+                  md:grid-cols-2
+                  gap-5
+                ">
+                  <Input
+                    label="Minimum Karma (Optional)"
+                    value={minKarma}
+                    setValue={setMinKarma}
+                    placeholder="e.g., 1000"
+                    type="number"
+                  />
+                  <Input
+                    label="Minimum Account Age (days, Optional)"
+                    value={minAccountAgeDays}
+                    setValue={setMinAccountAgeDays}
+                    placeholder="e.g., 30"
                     type="number"
                   />
                 </div>
@@ -1105,235 +1227,4 @@ export default function CreateTaskPage() {
                         ${
                           publishingId ===
                           task.id
-                            ? "bg-red-500/5 border-red-500/15 text-red-300/50 cursor-not-allowed"
-                            : "bg-red-500/10 border-red-500/30 text-red-300 hover:bg-red-500/20 hover:border-red-500/50"
-                        }
-                      `}
-                    >
-                      {publishingId ===
-                      task.id
-                        ? "Deleting..."
-                        : "Delete"}
-                    </button>
-
-                  </div>
-
-                </div>
-              ))}
-
-            </div>
-
-          </div>
-        )}
-
-      </div>
-
-    </div>
-  )
-}
-
-function Detail({
-  label,
-  value
-}: any) {
-
-  return (
-
-    <div className="
-      flex
-      flex-col
-      sm:flex-row
-      sm:items-start
-      justify-between
-      gap-2
-      border-b
-      border-white/10
-      pb-3
-    ">
-
-      <span className="
-        text-slate-400
-        text-sm
-        shrink-0
-        font-medium
-      ">
-        {label}
-      </span>
-
-      <span className="
-        text-white
-        font-medium
-        text-sm
-        text-left
-        sm:text-right
-        break-all
-        max-w-full
-        sm:max-w-[65%]
-      ">
-        {value}
-      </span>
-
-    </div>
-  )
-}
-
-function TabButton({
-  children,
-  active,
-  onClick
-}: any) {
-
-  return (
-
-    <button
-      onClick={onClick}
-      className={`
-        px-6
-        py-3
-        rounded-2xl
-        font-semibold
-        whitespace-nowrap
-        transition-all
-        backdrop-blur-xl
-        border-2
-        ${
-          active
-            ? "bg-blue-500/30 border-blue-400/50 text-blue-200 shadow-lg shadow-blue-500/20"
-            : "bg-white/5 border-white/15 text-slate-300 hover:bg-white/10 hover:border-white/20"
-        }
-      `}
-    >
-      {children}
-    </button>
-  )
-}
-
-function Badge({
-  children
-}: any) {
-
-  return (
-
-    <div className="
-      bg-white/[0.03]
-      backdrop-blur-sm
-      border-2
-      border-white/15
-      px-3
-      py-1
-      rounded-full
-      text-xs
-      capitalize
-      text-slate-300
-      font-medium
-    ">
-      {children}
-    </div>
-  )
-}
-
-function Input({
-  label,
-  value,
-  setValue,
-  placeholder,
-  type = "text",
-}: any) {
-
-  return (
-
-    <div>
-
-      <label className="
-        block
-        mb-2
-        text-sm
-        text-slate-400
-        font-medium
-      ">
-        {label}
-      </label>
-
-      <input
-        type={type}
-        value={value}
-        onChange={(e) =>
-          setValue(
-            e.target.value
-          )
-        }
-        placeholder={placeholder}
-        className="
-          w-full
-          bg-white/[0.03]
-          backdrop-blur-sm
-          border-2
-          border-white/15
-          hover:border-white/20
-          focus:border-blue-500/50
-          focus:bg-white/[0.05]
-          rounded-2xl
-          p-4
-          text-white
-          placeholder:text-slate-500
-          outline-none
-          transition-all
-        "
-      />
-
-    </div>
-  )
-}
-
-function Textarea({
-  label,
-  value,
-  setValue,
-  placeholder,
-}: any) {
-
-  return (
-
-    <div>
-
-      <label className="
-        block
-        mb-2
-        text-sm
-        text-slate-400
-        font-medium
-      ">
-        {label}
-      </label>
-
-      <textarea
-        value={value}
-        onChange={(e) =>
-          setValue(
-            e.target.value
-          )
-        }
-        placeholder={placeholder}
-        rows={6}
-        className="
-          w-full
-          bg-white/[0.03]
-          backdrop-blur-sm
-          border-2
-          border-white/15
-          hover:border-white/20
-          focus:border-blue-500/50
-          focus:bg-white/[0.05]
-          rounded-2xl
-          p-4
-          text-white
-          placeholder:text-slate-500
-          outline-none
-          resize-none
-          transition-all
-        "
-      />
-
-    </div>
-  )
-}
+                            ? "bg-red-500/5 borde
