@@ -411,10 +411,10 @@ export async function POST(
     // UPDATE TASK STATUS + SUBMISSION LINK
     // =====================================
 
-    // Fetch task_type so we know which link field to populate
+    // Fetch task_type and task_code so we know which link field to populate and can sync to sheet
     const { data: taskRow } = await supabase
       .from("tasks")
-      .select("task_type")
+      .select("task_type, task_code")
       .eq("id", claim.task_id)
       .single()
 
