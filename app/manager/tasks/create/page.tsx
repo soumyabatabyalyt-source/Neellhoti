@@ -1066,6 +1066,13 @@ export default function CreateTaskPage() {
                         value={task.task_type}
                       />
 
+                      {task.body && (
+                        <Detail
+                          label="Body"
+                          value={task.body}
+                        />
+                      )}
+
                     </div>
 
                   </div>
