@@ -234,14 +234,14 @@ export async function POST(
     }
 
     // =========================================
-    // CHECK TASK EXISTS
+    // CHECK TASK EXISTS & GET REQUIREMENTS
     // =========================================
 
     const {
       data: task,
     } = await supabase
       .from("tasks")
-      .select("*")
+      .select("*, min_karma, min_account_age_days")
       .eq("id", task_id)
       .single()
 
@@ -256,6 +256,36 @@ export async function POST(
           status: 404,
         }
       )
+    }
+
+    // =========================================
+    // CHECK KARMA & ACCOUNT AGE REQUIREMENTS
+    // =========================================
+
+    if (task.min_karma !== null || task.min_account_age_days !== null) {
+      const { data: userProfile } = await supabase
+        .from("profiles")
+        .select("reddit_karma, reddit_account_age_days")
+        .eq("id", user.id)
+        .single()
+
+      if (task.min_karma !== null && (!userProfile?.reddit_karma || userProfile.reddit_karma < task.min_karma)) {
+        return NextResponse.json(
+          {
+            error: `Minimum karma requirement: ${task.min_karma}. You have: ${userProfile?.reddit_karma || 0}`,
+          },
+          { status: 403 }
+        )
+      }
+
+      if (task.min_account_age_days !== null && (!userProfile?.reddit_account_age_days || userProfile.reddit_account_age_days < task.min_account_age_days)) {
+        return NextResponse.json(
+          {
+            error: `Minimum account age requirement: ${task.min_account_age_days} days. You have: ${userProfile?.reddit_account_age_days || 0} days`,
+          },
+          { status: 403 }
+        )
+      }
     }
 
     // =========================================
@@ -321,74 +351,4 @@ export async function POST(
             1000
       ).toISOString()
 
-    // =========================================
-    // CREATE CLAIM
-    // =========================================
-
-    const {
-      error: insertError,
-    } = await supabase
-      .from("task_claims")
-      .insert({
-
-        task_id,
-
-        user_id: user.id,
-
-        status: "active",
-
-        expires_at:
-          expiresAt,
-      })
-
-    if (insertError) {
-
-      console.error(
-        insertError
-      )
-
-      return NextResponse.json(
-        {
-          error:
-            "Claim failed",
-        },
-        {
-          status: 500,
-        }
-      )
-    }
-
-    // =========================================
-    // UPDATE TASK STATUS
-    // =========================================
-
-    await supabase
-      .from("tasks")
-      .update({
-        status: "claimed",
-      })
-      .eq("id", task_id)
-
-    // =========================================
-    // SUCCESS
-    // =========================================
-
-    return NextResponse.json({
-      success: true,
-    })
-
-  } catch (err) {
-
-    console.error(err)
-
-    return NextResponse.json(
-      {
-        error:
-          "Server error",
-      },
-      {
-        status: 500,
-      }
-    )
-  }
-}
+    // ========

@@ -52,6 +52,9 @@ export default function TasksPage() {
   const [cooldownMsg, setCooldownMsg] =
     useState("")
 
+  const [cooldownUntil, setCooldownUntil] =
+    useState<string | null>(null)
+
   // =========================================
   // FETCH TASKS
   // =========================================
@@ -156,28 +159,14 @@ export default function TasksPage() {
         ) > new Date()
       ) {
 
-        const remainingMs =
-          new Date(
-            profile.cooldown_until
-          ).getTime() -
-          Date.now()
-
-        const totalMinutes =
-          Math.ceil(
-            remainingMs / 60000
-          )
-
-        const hours =
-          Math.floor(
-            totalMinutes / 60
-          )
-
-        const minutes =
-          totalMinutes % 60
-
-        setCooldownMsg(
-          `Cooldown active: ${hours}h ${minutes}m remaining`
+        setCooldownUntil(
+          profile.cooldown_until
         )
+
+      } else {
+
+        setCooldownUntil(null)
+        setCooldownMsg("")
       }
 
       // FETCH TASKS
@@ -223,6 +212,44 @@ export default function TasksPage() {
     void fetchTasks()
 
   }, [fetchTasks])
+
+  // =========================================
+  // COOLDOWN TIMER
+  // =========================================
+
+  useEffect(() => {
+
+    if (!cooldownUntil) return
+
+    const updateTimer = () => {
+
+      const now = new Date()
+      const end = new Date(cooldownUntil)
+      const remainingMs = end.getTime() - now.getTime()
+
+      if (remainingMs <= 0) {
+
+        setCooldownMsg("")
+        setCooldownUntil(null)
+        return
+      }
+
+      const totalSeconds = Math.ceil(remainingMs / 1000)
+      const hours = Math.floor(totalSeconds / 3600)
+      const minutes = Math.floor((totalSeconds % 3600) / 60)
+      const seconds = totalSeconds % 60
+
+      setCooldownMsg(
+        `Cooldown active: ${hours}h ${minutes}m ${seconds}s remaining`
+      )
+    }
+
+    updateTimer()
+    const interval = setInterval(updateTimer, 1000)
+
+    return () => clearInterval(interval)
+
+  }, [cooldownUntil])
 
   // =========================================
   // CLAIM TASK
@@ -736,49 +763,3 @@ export default function TasksPage() {
 }
 
 // =========================================
-// DETAIL
-// =========================================
-
-function Detail({
-  label,
-  value
-}: any) {
-
-  return (
-
-    <div className="
-      flex
-      flex-col
-      sm:flex-row
-      sm:items-start
-      justify-between
-      gap-2
-      border-b
-      border-white/5
-      pb-3
-    ">
-
-      <span className="
-        text-zinc-500
-        text-sm
-        shrink-0
-      ">
-        {label}
-      </span>
-
-      <span className="
-        text-white
-        font-medium
-        text-sm
-        text-left
-        sm:text-right
-        break-all
-        max-w-full
-        sm:max-w-[65%]
-      ">
-        {value}
-      </span>
-
-    </div>
-  )
-}
