@@ -35,6 +35,26 @@ type TaskRow = {
   status?: string | null
 }
 
+// Helper function to get task display title
+function getTaskTitle(task: TaskRow): string {
+  if (task.title) return task.title
+
+  // For comment tasks without title, generate from comment_type
+  if (task.task_type === "comment" && task.comment_type) {
+    switch (task.comment_type.toLowerCase()) {
+      case "reply":
+        return "Reply"
+      case "hyperlink":
+        return "Hyperlink Comment"
+      case "comment":
+      default:
+        return "Comment"
+    }
+  }
+
+  return "Untitled Task"
+}
+
 export default function TasksPage() {
 
   const [tasks, setTasks] =
@@ -612,8 +632,7 @@ export default function TasksPage() {
                     break-words
                   ">
 
-                    {task.title ||
-                      "Untitled Task"}
+                    {getTaskTitle(task)}
 
                   </h2>
 

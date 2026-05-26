@@ -20,6 +20,28 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 // ======================================================
+// HELPER: GET TASK TITLE
+// ======================================================
+function getTaskTitle(claim: any): string {
+  if (claim.title) return claim.title
+
+  // For comment tasks without title, generate from comment_type
+  if (claim.task_type === "comment" && claim.comment_type) {
+    switch (claim.comment_type.toLowerCase()) {
+      case "reply":
+        return "Reply"
+      case "hyperlink":
+        return "Hyperlink Comment"
+      case "comment":
+      default:
+        return "Comment"
+    }
+  }
+
+  return "Untitled Task"
+}
+
+// ======================================================
 // COUNTDOWN TIMER
 // ======================================================
 function CountdownTimer({
@@ -425,8 +447,7 @@ function Section({
                   mb-5
                   break-words
                 ">
-                  {claim.title ||
-                    "Untitled Task"}
+                  {getTaskTitle(claim)}
                 </h3>
                 {/* DETAILS */}
                 <div className="

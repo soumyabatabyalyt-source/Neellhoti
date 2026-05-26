@@ -3,6 +3,28 @@
 import { useEffect, useMemo, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
 
+// =========================================
+// HELPER: GET TASK TITLE
+// =========================================
+function getTaskTitle(task: any): string {
+  if (task.title) return task.title
+
+  // For comment tasks without title, generate from comment_type
+  if (task.task_type === "comment" && task.comment_type) {
+    switch (task.comment_type.toLowerCase()) {
+      case "reply":
+        return "Reply"
+      case "hyperlink":
+        return "Hyperlink Comment"
+      case "comment":
+      default:
+        return "Comment"
+    }
+  }
+
+  return "Untitled Task"
+}
+
 export default function CreateTaskPage() {
 
   const [activeTab, setActiveTab] =
@@ -988,8 +1010,7 @@ export default function CreateTaskPage() {
                           break-words
                         ">
 
-                          {task.title ||
-                            "Untitled Task"}
+                          {getTaskTitle(task)}
 
                         </h3>
 

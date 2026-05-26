@@ -183,10 +183,31 @@ export async function GET() {
       //          post_link = null (tasker submits their post URL as proof)
       // COMMENT: task_code, comment_type, body
       //          comment_link = null (tasker submits their comment URL as proof)
+
+      // Generate title from comment_type for comment tasks
+      let taskTitle: string | null = null
+      if (isComment && resolvedCommentType) {
+        // Generate descriptive title from comment_type
+        switch (resolvedCommentType.toLowerCase()) {
+          case "reply":
+            taskTitle = "Reply"
+            break
+          case "hyperlink":
+            taskTitle = "Hyperlink Comment"
+            break
+          case "comment":
+          default:
+            taskTitle = "Comment"
+            break
+        }
+      } else if (!isComment) {
+        taskTitle = String(row.title).trim()
+      }
+
       newTasks.push({
         task_code:            codeForDB,
         task_type:            taskType,
-        title:                isComment ? null : String(row.title).trim(),
+        title:                taskTitle,
         description:          resolvedDesc,
         body:                 resolvedBody,
         subreddit:            row.subreddit ? String(row.subreddit).trim() : null,
