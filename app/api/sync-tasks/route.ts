@@ -109,6 +109,13 @@ export async function GET() {
         continue
       }
 
+      // Skip example tasks (marked with EXAMPLE in task_code)
+      if (codeForDB.toUpperCase().includes("EXAMPLE")) {
+        console.log(`Row ${codeForDB}: marked as example task — skipping`)
+        skipped.push(codeForDB)
+        continue
+      }
+
       // Skip if already imported (check both task_code and task_id)
       if (
         existingCodes.has(codeForDB) ||
