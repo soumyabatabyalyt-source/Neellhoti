@@ -704,6 +704,9 @@ export default function CreateTaskPage() {
                       <option value="reply">
                         Reply
                       </option>
+                      <option value="hyperlink">
+                        Hyperlink
+                      </option>
                     </select>
                   </div>
                   <Input

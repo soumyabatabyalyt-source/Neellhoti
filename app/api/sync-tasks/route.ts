@@ -142,14 +142,11 @@ export async function GET() {
       const resolvedBody = bodyVal || descVal || null
       const resolvedDesc = descVal || bodyVal || null
 
-      // ── validate required fields ───────────────────────
+      // ── validate required fields by task type ──────────
+      // POST tasks require:    task_code, title, body, reward (karma/age optional)
+      // COMMENT tasks require: task_code, comment_type, body
       if (!isComment && !row.title?.trim()) {
         console.warn(`Row ${codeForDB}: post task missing title — skipping`)
-        invalid.push(codeForDB)
-        continue
-      }
-      if (isComment && !row.post_link?.trim()) {
-        console.warn(`Row ${codeForDB}: comment task missing post_link — skipping`)
         invalid.push(codeForDB)
         continue
       }
@@ -159,22 +156,33 @@ export async function GET() {
         continue
       }
 
-      // ── clean post_link (strip UTM params) ─────────────
-      const rawPostLink = row.post_link ? String(row.post_link).trim() : null
-      const cleanedPostLink = rawPostLink ? cleanUrl(rawPostLink) : null
+      // ── comment_type (comment tasks only) ──────────────
+      const validCommentTypes = ["comment", "reply", "hyperlink"]
+      const rawCommentType = row.comment_type
+        ? String(row.comment_type).toLowerCase().trim()
+        : null
+      const resolvedCommentType = isComment
+        ? (validCommentTypes.includes(rawCommentType ?? "") ? rawCommentType : "comment")
+        : null
 
       // ── numeric fields ─────────────────────────────────
       const reward    = row.reward     ? parseInt(String(row.reward), 10)     : 0
       const timeLimit = row.time_limit ? parseInt(String(row.time_limit), 10) : 30
 
-      const minKarma = row.min_karma
+      // POST tasks: karma/age eligibility gates apply
+      // COMMENT tasks: no eligibility filters from sheet
+      const minKarma = !isComment && row.min_karma
         ? parseInt(String(row.min_karma), 10)
         : null
-      const minAccountAge = row.min_account_age_days
+      const minAccountAge = !isComment && row.min_account_age_days
         ? parseInt(String(row.min_account_age_days), 10)
         : null
 
       // ── build DB row ────────────────────────────────────
+      // POST:    task_code, title, body, reward, min_karma, min_account_age_days
+      //          post_link = null (tasker submits their post URL as proof)
+      // COMMENT: task_code, comment_type, body
+      //          comment_link = null (tasker submits their comment URL as proof)
       newTasks.push({
         task_code:            codeForDB,
         task_type:            taskType,
@@ -184,12 +192,11 @@ export async function GET() {
         subreddit:            row.subreddit ? String(row.subreddit).trim() : null,
         reward:               isNaN(reward) ? 0 : reward,
         time_limit:           isNaN(timeLimit) ? 30 : timeLimit,
-        post_link:            isComment ? cleanedPostLink : null,
-        comment_type:         row.comment_type
-                                ? String(row.comment_type).trim()
-                                : isComment ? "comment" : null,
-        min_karma:            minKarma !== null && !isNaN(minKarma) ? minKarma : null,
-        min_account_age_days: minAccountAge !== null && !isNaN(minAccountAge)
+        post_link:            null,  // filled by tasker on submission
+        comment_link:         null,  // filled by tasker on submission (comment tasks)
+        comment_type:         resolvedCommentType,
+        min_karma:            minKarma !== null && !isNaN(minKarma as number) ? minKarma : null,
+        min_account_age_days: minAccountAge !== null && !isNaN(minAccountAge as number)
                                 ? minAccountAge : null,
         sheet_row_link:       row.sheet_row_link ?? null,
         platform:             "reddit",

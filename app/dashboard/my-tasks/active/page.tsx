@@ -62,6 +62,8 @@ type TaskRow = {
 
   post_link?: string
 
+  comment_link?: string
+
   comment_type?: string
 
   reward?: number | string
@@ -1172,6 +1174,32 @@ export default function ActiveTasksPage() {
                     </SectionCard>
                   )}
 
+                  {/* COMMENT TYPE */}
+                  {isComment && task.comment_type && (
+
+                    <SectionCard
+                      title="Comment Type"
+                    >
+
+                      <span className="
+                        inline-block
+                        px-3
+                        py-1
+                        rounded-full
+                        text-sm
+                        font-semibold
+                        capitalize
+                        bg-blue-500/15
+                        border
+                        border-blue-500/30
+                        text-blue-300
+                      ">
+                        {task.comment_type}
+                      </span>
+
+                    </SectionCard>
+                  )}
+
                   {/* POST LINK */}
                   {task.post_link && (
 
@@ -1414,8 +1442,18 @@ export default function ActiveTasksPage() {
                   ">
 
                     <SectionCard
-                      title="Submission Box"
+                      title={
+                        isComment
+                          ? "Submit Comment Link"
+                          : "Submit Post Link"
+                      }
                     >
+
+                      <p className="text-xs text-slate-500 mb-3">
+                        {isComment
+                          ? "Paste the link to your comment or reply after posting it on Reddit."
+                          : "Paste the link to your Reddit post after submitting it."}
+                      </p>
 
                       <input
                         className="
@@ -1430,7 +1468,11 @@ export default function ActiveTasksPage() {
                           placeholder:text-slate-600
                           outline-none
                         "
-                        placeholder="https://reddit.com/..."
+                        placeholder={
+                          isComment
+                            ? "https://reddit.com/r/.../comment/..."
+                            : "https://reddit.com/r/.../post/..."
+                        }
                         value={
                           submissionMap[
                             item.claim.id

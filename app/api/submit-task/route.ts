@@ -408,17 +408,33 @@ export async function POST(
     }
 
     // =====================================
-    // UPDATE TASK STATUS
+    // UPDATE TASK STATUS + SUBMISSION LINK
     // =====================================
+
+    // Fetch task_type so we know which link field to populate
+    const { data: taskRow } = await supabase
+      .from("tasks")
+      .select("task_type")
+      .eq("id", claim.task_id)
+      .single()
+
+    const isCommentTask = taskRow?.task_type === "comment"
+
+    const taskUpdatePayload: Record<string, any> = {
+      status: "pending_review",
+    }
+
+    if (isCommentTask) {
+      taskUpdatePayload.comment_link = normalizedSubmission
+    } else {
+      taskUpdatePayload.post_link = normalizedSubmission
+    }
 
     const {
       error: taskUpdateError,
     } = await supabase
       .from("tasks")
-      .update({
-        status:
-          "pending_review",
-      })
+      .update(taskUpdatePayload)
       .eq(
         "id",
         claim.task_id
