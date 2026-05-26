@@ -46,6 +46,7 @@ export default function Account() {
 
   const [profile, setProfile] = useState<any>(null)
   const [copied, setCopied] = useState(false)
+  const [cooldownMsg, setCooldownMsg] = useState("")
 
   // Delete account state
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -67,11 +68,53 @@ export default function Account() {
         .single()
 
       setProfile(data)
+
+      // Check cooldown on load
+      if (data?.cooldown_until && new Date(data.cooldown_until) > new Date()) {
+        updateCooldownTimer(data.cooldown_until)
+      }
     }
 
     load()
 
   }, [])
+
+  // =========================================
+  // COOLDOWN TIMER
+  // =========================================
+
+  const updateCooldownTimer = (cooldownUntil: string) => {
+
+    const now = new Date()
+    const end = new Date(cooldownUntil)
+    const remainingMs = end.getTime() - now.getTime()
+
+    if (remainingMs <= 0) {
+
+      setCooldownMsg("")
+      return
+    }
+
+    const totalSeconds = Math.ceil(remainingMs / 1000)
+    const hours = Math.floor(totalSeconds / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+    const seconds = totalSeconds % 60
+
+    setCooldownMsg(
+      `Cooldown active: ${hours}h ${minutes}m ${seconds}s remaining`
+    )
+  }
+
+  useEffect(() => {
+
+    if (!profile?.cooldown_until) return
+
+    updateCooldownTimer(profile.cooldown_until)
+    const interval = setInterval(() => updateCooldownTimer(profile.cooldown_until), 1000)
+
+    return () => clearInterval(interval)
+
+  }, [profile?.cooldown_until])
 
   // =========================================
   // COPY EMAIL
@@ -152,6 +195,13 @@ export default function Account() {
           Manage your profile details, linked accounts, and session access.
         </p>
       </div>
+
+      {/* COOLDOWN ALERT */}
+      {cooldownMsg && (
+        <div className="mb-6 animate-in fade-in slide-in-from-top-4 duration-300 overflow-hidden rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4 text-amber-300">
+          {cooldownMsg}
+        </div>
+      )}
 
       {/* PROFILE CARD */}
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-600 relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.02] backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.35)]">

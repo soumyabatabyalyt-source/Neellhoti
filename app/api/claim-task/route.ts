@@ -351,4 +351,74 @@ export async function POST(
             1000
       ).toISOString()
 
-    // ========
+    // =========================================
+    // CREATE CLAIM
+    // =========================================
+
+    const {
+      error: insertError,
+    } = await supabase
+      .from("task_claims")
+      .insert({
+
+        task_id,
+
+        user_id: user.id,
+
+        status: "active",
+
+        expires_at:
+          expiresAt,
+      })
+
+    if (insertError) {
+
+      console.error(
+        insertError
+      )
+
+      return NextResponse.json(
+        {
+          error:
+            "Claim failed",
+        },
+        {
+          status: 500,
+        }
+      )
+    }
+
+    // =========================================
+    // UPDATE TASK STATUS
+    // =========================================
+
+    await supabase
+      .from("tasks")
+      .update({
+        status: "claimed",
+      })
+      .eq("id", task_id)
+
+    // =========================================
+    // SUCCESS
+    // =========================================
+
+    return NextResponse.json({
+      success: true,
+    })
+
+  } catch (err) {
+
+    console.error(err)
+
+    return NextResponse.json(
+      {
+        error:
+          "Server error",
+      },
+      {
+        status: 500,
+      }
+    )
+  }
+}

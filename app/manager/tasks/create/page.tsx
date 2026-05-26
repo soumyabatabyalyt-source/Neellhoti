@@ -1227,4 +1227,235 @@ export default function CreateTaskPage() {
                         ${
                           publishingId ===
                           task.id
-                            ? "bg-red-500/5 borde
+                            ? "bg-red-500/5 border-red-500/15 text-red-300/50 cursor-not-allowed"
+                            : "bg-red-500/10 border-red-500/30 text-red-300 hover:bg-red-500/20 hover:border-red-500/50"
+                        }
+                      `}
+                    >
+                      {publishingId ===
+                      task.id
+                        ? "Deleting..."
+                        : "Delete"}
+                    </button>
+
+                  </div>
+
+                </div>
+              ))}
+
+            </div>
+
+          </div>
+        )}
+
+      </div>
+
+    </div>
+  )
+}
+
+function Detail({
+  label,
+  value
+}: any) {
+
+  return (
+
+    <div className="
+      flex
+      flex-col
+      sm:flex-row
+      sm:items-start
+      justify-between
+      gap-2
+      border-b
+      border-white/10
+      pb-3
+    ">
+
+      <span className="
+        text-slate-400
+        text-sm
+        shrink-0
+        font-medium
+      ">
+        {label}
+      </span>
+
+      <span className="
+        text-white
+        font-medium
+        text-sm
+        text-left
+        sm:text-right
+        break-all
+        max-w-full
+        sm:max-w-[65%]
+      ">
+        {value}
+      </span>
+
+    </div>
+  )
+}
+
+function TabButton({
+  children,
+  active,
+  onClick
+}: any) {
+
+  return (
+
+    <button
+      onClick={onClick}
+      className={`
+        px-6
+        py-3
+        rounded-2xl
+        font-semibold
+        whitespace-nowrap
+        transition-all
+        backdrop-blur-xl
+        border-2
+        ${
+          active
+            ? "bg-blue-500/30 border-blue-400/50 text-blue-200 shadow-lg shadow-blue-500/20"
+            : "bg-white/5 border-white/15 text-slate-300 hover:bg-white/10 hover:border-white/20"
+        }
+      `}
+    >
+      {children}
+    </button>
+  )
+}
+
+function Badge({
+  children
+}: any) {
+
+  return (
+
+    <div className="
+      bg-white/[0.03]
+      backdrop-blur-sm
+      border-2
+      border-white/15
+      px-3
+      py-1
+      rounded-full
+      text-xs
+      capitalize
+      text-slate-300
+      font-medium
+    ">
+      {children}
+    </div>
+  )
+}
+
+function Input({
+  label,
+  value,
+  setValue,
+  placeholder,
+  type = "text",
+}: any) {
+
+  return (
+
+    <div>
+
+      <label className="
+        block
+        mb-2
+        text-sm
+        text-slate-400
+        font-medium
+      ">
+        {label}
+      </label>
+
+      <input
+        type={type}
+        value={value}
+        onChange={(e) =>
+          setValue(
+            e.target.value
+          )
+        }
+        placeholder={placeholder}
+        className="
+          w-full
+          bg-white/[0.03]
+          backdrop-blur-sm
+          border-2
+          border-white/15
+          hover:border-white/20
+          focus:border-blue-500/50
+          focus:bg-white/[0.05]
+          rounded-2xl
+          p-4
+          text-white
+          placeholder:text-slate-500
+          outline-none
+          transition-all
+        "
+      />
+
+    </div>
+  )
+}
+
+function Textarea({
+  label,
+  value,
+  setValue,
+  placeholder,
+}: any) {
+
+  return (
+
+    <div>
+
+      <label className="
+        block
+        mb-2
+        text-sm
+        text-slate-400
+        font-medium
+      ">
+        {label}
+      </label>
+
+      <textarea
+        value={value}
+        onChange={(e) =>
+          setValue(
+            e.target.value
+          )
+        }
+        placeholder={placeholder}
+        rows={6}
+        className="
+          w-full
+          bg-white/[0.03]
+          backdrop-blur-sm
+          border-2
+          border-white/15
+          hover:border-white/20
+          focus:border-blue-500/50
+          focus:bg-white/[0.05]
+          rounded-2xl
+          p-4
+          text-white
+          placeholder:text-slate-500
+          outline-none
+          resize-none
+          transition-all
+        "
+      />
+
+    </div>
+  )
+}

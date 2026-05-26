@@ -32,8 +32,7 @@ type ClaimStatus =
   | "active"
   | "submitted"
   | "pending_review"
-  | "approved"
-  | "rejected"
+  | "completed"
   | "expired"
 
 type ActiveClaim = {
@@ -170,8 +169,8 @@ export default function ActiveTasksPage() {
             "active",
             "submitted",
             "pending_review",
-            "approved",
-            "rejected",
+            "completed",
+            "expired",
           ])
           .order(
             "created_at",
@@ -215,6 +214,18 @@ export default function ActiveTasksPage() {
                 return null
               }
 
+              // Map database statuses to display statuses
+              let displayStatus = item.status
+
+              // When approved: task_claims status is "completed"
+              if (item.status === "completed") {
+                displayStatus = "approved"
+              }
+              // When rejected: task_claims status is "expired"
+              else if (item.status === "expired") {
+                displayStatus = "rejected"
+              }
+
               return {
 
                 claim: {
@@ -226,7 +237,7 @@ export default function ActiveTasksPage() {
                   created_at:
                     item.created_at,
                   status:
-                    item.status,
+                    displayStatus,
                 },
 
                 task:
