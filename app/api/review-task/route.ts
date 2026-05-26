@@ -99,49 +99,22 @@ export async function POST(req: Request) {
       )
     }
 
-    // Update task_claims status — "completed" for approved, keep enum-valid value for rejected
-    const claimFinalStatus = reviewedStatus === "approved" ? "completed" : "expired"
+    // Update task_claims status — "approved" for approved, "rejected" for rejected
+    // The task_claims status reflects the user's claim state
+    const claimFinalStatus = reviewedStatus === "approved" ? "approved" : "rejected"
     await supabase
       .from("task_claims")
       .update({ status: claimFinalStatus })
       .eq("id", claim_id)
 
-    if (reviewedStatus === "approved" && rewardCredits > 0) {
-      try {
-        const { data: wallet, error: walletError } = await supabase
-          .from("wallets")
-          .select("id, balance_credits")
-          .eq("user_id", taskClaim.user_id)
-          .maybeSingle()
-
-        if (walletError) throw walletError
-
-        if (!wallet) {
-          const { error } = await supabase.from("wallets").insert({
-            user_id: taskClaim.user_id,
-            balance_credits: rewardCredits,
-          })
-          if (error) throw error
-        } else {
-          const { error } = await supabase
-            .from("wallets")
-            .update({ balance_credits: Number(wallet.balance_credits || 0) + rewardCredits })
-            .eq("user_id", taskClaim.user_id)
-
-          if (error) throw error
-        }
-      } catch (creditError) {
-        await supabase
-          .from("task_submissions")
-          .update({ status: "pending" })
-          .eq("id", submission.id)
-        throw creditError
-      }
-    }
+    // NOTE: Wallet credit is now handled by database trigger on tasks.status = 'approved'
+    // The trigger fn_credit_reward_on_approval() automatically updates wallets when task is approved
+    // No need for manual wallet update here - the trigger will handle it
 
     if (task) {
-      // tasks.status enum: draft/open/available/claimed/pending_review/completed/expired/rejected
-      const taskFinalStatus = reviewedStatus === "approved" ? "completed" : "rejected"
+      // tasks.status enum: draft/open/available/claimed/pending_review/approved/rejected/expired
+      // Setting status to "approved" triggers the database trigger to credit the wallet
+      const taskFinalStatus = reviewedStatus === "approved" ? "approved" : "rejected"
       const taskUpdate: any = {
         status: taskFinalStatus,
         approval_status: reviewedStatus,

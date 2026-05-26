@@ -32,8 +32,8 @@ type ClaimStatus =
   | "active"
   | "submitted"
   | "pending_review"
-  | "completed"
-  | "expired"
+  | "approved"
+  | "rejected"
 
 type ActiveClaim = {
   id: string
@@ -216,17 +216,9 @@ export default function ActiveTasksPage() {
                 return null
               }
 
-              // Map database statuses to display statuses
+              // Status values are now stored directly as "approved" or "rejected"
+              // No conversion needed
               let displayStatus = item.status
-
-              // When approved: task_claims status is "completed"
-              if (item.status === "completed") {
-                displayStatus = "approved"
-              }
-              // When rejected: task_claims status is "expired"
-              else if (item.status === "expired") {
-                displayStatus = "rejected"
-              }
 
               return {
 
