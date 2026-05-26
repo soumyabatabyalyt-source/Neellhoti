@@ -218,4 +218,9 @@ export default function AdminLayout({
         </div>
       ) : null}
 
-      <main className="flex-
+      <main className="flex-1 overflow-auto md:ml-0 mt-16 md:mt-0">
+        {children}
+      </main>
+    </div>
+  )
+}

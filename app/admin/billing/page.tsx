@@ -645,4 +645,27 @@ export default function BillingPage() {
                       <tbody>
                         {[
                           cryptoBinanceId   && ["Binance Pay ID",  cryptoBinanceId,   false],
-                          cryptoBinanceUser && ["Binance Use
+                          cryptoBinanceUser && ["Binance User",     cryptoBinanceUser, false],
+                          cryptoWallet      && ["Wallet Address",   cryptoWallet,      true],
+                          cryptoNetwork     && ["Network",          cryptoNetwork,     false],
+                          cryptoCoins       && ["Accepted Coins",   cryptoCoins,       false],
+                        ].filter(Boolean).map(([k, v, mono]) => (
+                          <tr key={k as string}>
+                            <td style={{ padding: "5px 8px 5px 0", fontSize: 10.5, fontWeight: 700, color: "#a07820", textTransform: "uppercase", letterSpacing: 0.8, width: 120, verticalAlign: "top" }}>{k as string}</td>
+                            <td style={{ padding: "5px 0", fontSize: mono ? 11 : 12.5, fontWeight: 600, color: "#333", fontFamily: mono ? "'Courier New', monospace" : "inherit", wordBreak: "break-all" }}>{v as string}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div style={inv.thankyou}>Thank you for your business.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
