@@ -37,6 +37,4 @@ export async function POST(req: NextRequest) {
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Delete failed"
     console.error("DELETE ACCOUNT ERROR:", err)
-    return NextResponse.json({ error: message }, { status: 500 })
-  }
-}
+    return NextResponse.json({ er

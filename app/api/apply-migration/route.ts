@@ -164,14 +164,4 @@ export async function POST(req: Request) {
     )
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Migration failed"
-    console.error("[MIGRATION] Fatal error:", message, error)
-
-    return NextResponse.json(
-      {
-        error: message,
-        success: false,
-      },
-      { status: 500 }
-    )
-  }
-}
+    console.error("[MIGRAT

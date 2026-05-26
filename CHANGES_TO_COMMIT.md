@@ -115,4 +115,4 @@ feat: add min_karma and min_account_age_days fields to manual task creation form
 ```
 
 ---
-**Note:** If you continue to have git lock issues, please delete the lock files manually from Windows File Explorer or use `git clean -fd` to reset the repository state.
+**Note:** If you continue to have git lock issues, pl

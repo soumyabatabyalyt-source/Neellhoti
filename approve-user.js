@@ -92,11 +92,4 @@ async function approveUser() {
     console.log(`User: ${user.username} (${user.email})`);
     console.log(`Status: ✅ APPROVED`);
     console.log(`\nThey can now login at:`);
-    console.log(`http://localhost:3000/login\n`);
-
-  } catch (err) {
-    console.error('❌ Error:', err.message);
-  }
-}
-
-approveUser();
+    console.log(`http://localhost:3000/logi

@@ -129,9 +129,4 @@ export async function sendSummaryNotification(summary: TaskSummary): Promise<voi
       const text = await response.text()
       console.error(`[Discord] Summary webhook failed (${response.status}):`, text)
     } else {
-      console.log("[Discord] ✅ Summary notification sent successfully!")
-    }
-  } catch (err) {
-    console.error("[Discord] Error sending summary notification:", err)
-  }
-}
+      console.log("[Discord] ✅ Summary notif

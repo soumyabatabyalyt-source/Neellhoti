@@ -30,4 +30,4 @@ CREATE TRIGGER sync_task_submission_status_trigger
 AFTER UPDATE ON public.task_submissions
 FOR EACH ROW
 WHEN (OLD.status IS DISTINCT FROM NEW.status)
-EXECUTE FUNCTION public.sync_task_submission_status();
+EXECUTE FUNCTION public

@@ -269,13 +269,4 @@ It will tell you exactly what's working and what needs fixing!
 If you need to set everything up from scratch:
 
 1. **Create profiles table** (if not exists)
-2. **Add approval columns:**
-   ```sql
-   ALTER TABLE profiles ADD COLUMN approved BOOLEAN DEFAULT FALSE;
-   ALTER TABLE profiles ADD COLUMN suspended BOOLEAN DEFAULT FALSE;
-   ```
-3. **Deploy the code** (all files already updated)
-4. **Run verification script**
-5. **Test the flow**
-
-Done! ✨
+2. **Add approval column

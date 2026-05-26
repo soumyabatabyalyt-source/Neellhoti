@@ -14,4 +14,4 @@ ON UPDATE CASCADE;
 -- If the above fails because the constraint already exists,
 -- you can check existing constraints with:
 -- SELECT constraint_name FROM information_schema.table_constraints
--- WHERE table_name = 'task_claims';
+-- WHERE table_name =

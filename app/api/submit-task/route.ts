@@ -480,32 +480,4 @@ export async function POST(
     // =====================================
 
     const response: any = {
-      success: true,
-      task_code: taskData?.[0]?.task_code,
-    }
-
-    // Include sheet link if task was imported from Google Sheets
-    if (taskData?.[0]?.sheet_row_link) {
-      response.sheet_row_link = taskData[0].sheet_row_link
-    }
-
-    return NextResponse.json(response)
-
-  } catch (err) {
-
-    console.error(
-      "SERVER ERROR:",
-      err
-    )
-
-    return NextResponse.json(
-      {
-        error:
-          "Server failed",
-      },
-      {
-        status: 500,
-      }
-    )
-  }
-}
+      success: tru

@@ -548,38 +548,3 @@ function Section({
 function Detail({
   label,
   value
-}: any) {
-  return (
-    <div className="
-      flex
-      flex-col
-      sm:flex-row
-      sm:items-start
-      justify-between
-      gap-2
-      border-b
-      border-white/5
-      pb-3
-    ">
-      <span className="
-        text-zinc-500
-        text-sm
-        shrink-0
-      ">
-        {label}
-      </span>
-      <span className="
-        text-white
-        font-medium
-        text-sm
-        text-left
-        sm:text-right
-        break-all
-        max-w-full
-        sm:max-w-[65%]
-      ">
-        {value}
-      </span>
-    </div>
-  )
-}

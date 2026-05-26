@@ -364,14 +364,4 @@ function TaskerCard({
 
           <div className="flex gap-2 flex-wrap pt-2">
             <span className="text-[11px] bg-blue-500/10 border border-blue-500/20 text-blue-400 px-3 py-1.5 rounded-md font-medium flex items-center gap-1">
-              <TrendingUp size={12} /> {karma.toLocaleString()} karma
-            </span>
-            <span className="text-[11px] bg-purple-500/10 border border-purple-500/20 text-purple-400 px-3 py-1.5 rounded-md font-medium flex items-center gap-1">
-              <CalendarDays size={12} /> {formatAge(ageDays)}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+              <TrendingUp size=

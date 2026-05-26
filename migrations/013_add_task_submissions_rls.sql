@@ -22,4 +22,4 @@ CREATE POLICY users_read_own_submissions
 ON public.task_submissions
 FOR SELECT
 TO authenticated
-USING (user_id = auth.uid());
+USING 

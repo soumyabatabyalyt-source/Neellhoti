@@ -81,11 +81,4 @@ async function checkSchema() {
       console.log(`✅ Good: Single suspended column: ${suspendedCols[0]}`);
     }
 
-    console.log();
-
-  } catch (err) {
-    console.error('Error:', err.message);
-  }
-}
-
-checkSchema();
+    console.log();

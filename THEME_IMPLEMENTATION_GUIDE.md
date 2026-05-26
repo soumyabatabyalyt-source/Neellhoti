@@ -239,13 +239,4 @@ For each updated page, verify:
 ████░░░░░░░░░░░░░░░░░░░░░░░░  25% Complete
 
 ✅ Core infrastructure (hooks, utilities)
-✅ Layout files (dashboard, manager, admin)
-✅ Auth pages (auth, signup)
-🔄 Login & other auth pages
-⏳ Remaining standalone pages (mostly inherit from layouts)
-```
-
----
-
-**Last Updated:** 2026-05-22
-**Next Steps:** Update login page, then verify all pages inherit theme correctly
+✅ Layout files (dashboard, manager, admin)

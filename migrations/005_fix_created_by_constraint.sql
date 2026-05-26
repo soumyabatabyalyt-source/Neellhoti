@@ -10,4 +10,4 @@ ALTER COLUMN created_by SET DEFAULT auth.uid();
 -- Update any existing NULL values
 UPDATE public.tasks
 SET created_by = auth.uid()
-WHERE created_by IS NULL;
+WHERE created_

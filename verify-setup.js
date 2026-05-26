@@ -195,12 +195,4 @@ async function verifySetup() {
 
     console.log('═══════════════════════════════════════');
     console.log('✅ ALL CHECKS PASSED!');
-    console.log('═══════════════════════════════════════');
-    console.log('\nYour approval system is ready to use!');
-
-  } catch (err) {
-    console.error('❌ Unexpected error:', err);
-  }
-}
-
-verifySetup();
+    console.log('════════════════════════�

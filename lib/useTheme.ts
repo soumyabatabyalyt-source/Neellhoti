@@ -34,7 +34,4 @@ export const themeColors = {
     card: '#7f1d1d',
     border: '#000000',
     text: '#1f2937',
-    textSecondary: '#6b7280',
-    accent: '#ef4444',
-  },
-}
+    textSecondary: '#6b7

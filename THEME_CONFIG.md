@@ -228,11 +228,4 @@ To further customize the theme:
 
 - The creamy white background (#fafaf8) is easier on eyes in light mode than pure white
 - Red cards maintain brand identity in both modes
-- Black borders provide strong contrast and visual definition
-- Purple tint in dark mode (#0f0814) is subtle (5% more than pure black)
-- All transitions are smooth and user-friendly
-- Theme persists across sessions via localStorage
-
----
-
-**Status**: ✅ Complete and Ready for Production
+- Black borders provide strong contrast and visual definit

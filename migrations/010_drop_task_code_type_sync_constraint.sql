@@ -4,4 +4,4 @@
 
 -- Drop the constraint that's blocking task creation
 ALTER TABLE public.tasks
-DROP CONSTRAINT IF EXISTS chk_task_code_type_sync;
+DROP CONSTRAINT IF EXISTS chk_task_code_type_

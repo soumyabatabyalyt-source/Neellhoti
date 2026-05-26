@@ -247,10 +247,4 @@ console.log('✨ CODE VERIFICATION COMPLETE!\n');
 console.log('Next steps:');
 console.log('1. Start the app: npm run dev');
 console.log('2. Sign up at http://localhost:3000/signup');
-console.log('3. Check Supabase for the new user');
-console.log('4. Approve the user (set approved: true)');
-console.log('5. Try to login');
-console.log();
-console.log('For complete system test, run:');
-console.log('   python3 verify-approval-system.py');
-console.log();
+console.log('3. Check

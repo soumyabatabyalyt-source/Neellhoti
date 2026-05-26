@@ -322,20 +322,4 @@ Your Supabase MCP is now configured and ready to use.
 - I can test and troubleshoot faster
 - Everything will be more efficient
 
-**Keep using me as normal!** The MCP just makes me better at helping you. 💪
-
----
-
-## Reference
-
-**File Modified:**
-- `.mcp.json` - MCP configuration
-
-**Project ID:**
-- `jbymiopbxtxkfvublfeh`
-
-**Features Available:**
-- development, debugging, account, docs, database, functions, branching
-
-**Status:**
-- ✅ Active and connected
+**Keep 

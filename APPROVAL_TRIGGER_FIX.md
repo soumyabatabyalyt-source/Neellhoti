@@ -167,9 +167,4 @@ If you still see errors after applying the migration:
 
 ## Next Steps
 
-1. ✅ Run migration 012 in Supabase
-2. ✅ Test approval workflow
-3. ✅ Verify wallet credits appear
-4. ✅ Monitor for any errors in logs
-
-**After this fix, the approval trigger will work correctly!**
+1. ✅ Run migration 012 in Supabas

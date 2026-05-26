@@ -183,18 +183,4 @@ Check session in Supabase
 3. Dashboard layout checks auth
 4. No session in browser storage
 5. Queries Supabase for session
-6. Supabase returns no session
-7. **Redirects to `/login`** ✅
-
----
-
-## 📝 DOCUMENTATION UPDATED
-
-Created: `FIXES_APPLIED_SESSION2.md` (this file)
-
----
-
-## 🎯 ALL ISSUES RESOLVED
-
-**Ready to test!** 🚀
-
+6. Supabase returns no se

@@ -9,4 +9,4 @@ CREATE INDEX IF NOT EXISTS idx_tasks_reward
 ON public.tasks(reward);
 
 COMMENT ON COLUMN public.tasks.reward
-IS 'Reward amount in USD for completing the task';
+IS 'Reward amount in USD for completing 

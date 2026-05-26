@@ -26,7 +26,4 @@ export default function DashboardNotFound() {
           <ArrowLeft size={18} />
           Back to Dashboard
         </Link>
-      </div>
-    </div>
-  )
-}
+  

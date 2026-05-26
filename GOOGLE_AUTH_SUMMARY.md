@@ -259,17 +259,4 @@ Google OAuth credentials are managed in Supabase dashboard, not in env vars.
 
 ## Future Enhancements
 
-Easy to add:
-- GitHub login
-- Apple login
-- LinkedIn login
-- Email magic links (no password)
-- Social account linking (connect Google + email)
-
----
-
-## Questions?
-
-Check the detailed setup guide: [`GOOGLE_AUTH_SETUP.md`](./GOOGLE_AUTH_SETUP.md)
-
-Good luck! 🚀
+E

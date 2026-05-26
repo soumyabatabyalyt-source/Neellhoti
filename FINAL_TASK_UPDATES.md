@@ -233,12 +233,4 @@ app/manager/tasks/page.tsx
 
 ## Notes
 
-- Draft tasks are never shown in Task Pool
-- Task ID format is user's choice (no restrictions)
-- All published tasks remain active in Task Pool
-- Drafts are accessible only from Create Task page
-- Import still works independently
-
----
-
-Last Updated: 2026-05-20
+- Draft tasks are never sh

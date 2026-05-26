@@ -191,10 +191,4 @@ type ClaimStatus =
 - Filter logic is broken
 
 **Solution**:
-1. Insert test data in database
-2. Check browser console for JavaScript errors
-3. Check network tab for API errors
-
----
-
-**Note**: After making database changes, refresh the page (F5) to see updates.
+1. Inse

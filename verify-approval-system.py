@@ -154,8 +154,4 @@ try:
     print("3. Approve users from the manager dashboard")
     print("4. Users can then login\n")
 
-except Exception as e:
-    print(f"\n❌ Error: {str(e)}")
-    print(f"\nMake sure you have installed: pip install supabase")
-    import traceback
-    traceback.print_exc()
+except Exception 

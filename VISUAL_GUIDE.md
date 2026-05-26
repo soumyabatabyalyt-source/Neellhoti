@@ -409,19 +409,4 @@ Role: "admin"
 | User signs up | `/signup` | `/api/signup` | Creates profile (approved=false) |
 | User tries login | `/login` | Checks approval | Reads profile |
 | User unapproved | Redirect to `/pending-approval` | - | - |
-| Manager approves | Manager dashboard | `/api/...` | Updates approved=true |
-| User logs in again | `/login` | Checks approval ✅ | Reads profile |
-| User sees dashboard | `/dashboard` | Fetch tasks | Reads tasks |
-
----
-
-## 🎉 You Now Understand!
-
-You can visualize:
-- ✅ Where files are located
-- ✅ What the user sees
-- ✅ What the database looks like
-- ✅ How approval system works
-- ✅ Who sees what
-
-**Next:** Read BEGINNERS_GUIDE.md for detailed explanations!
+| Manager approves | Manager dashboard | `/api/...` | Updates ap

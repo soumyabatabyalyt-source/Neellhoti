@@ -259,14 +259,4 @@ If you see errors after applying the migration:
 
 **"Constraint already exists"** → Safe, continue  
 **"Function already exists"** → Safe, it's updating  
-**"Trigger already exists"** → Safe, it's replacing  
-**"Column already exists"** → Safe, if exists statement  
-
-All are idempotent operations.
-
----
-
-**Report Generated**: 2026-05-24  
-**Status**: READY FOR FIX  
-**Estimated Fix Time**: 2 minutes  
-**Estimated Test Time**: 1 minute
+**"Trigger already exists"

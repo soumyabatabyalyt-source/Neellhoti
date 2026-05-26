@@ -278,14 +278,4 @@ export default function ThemeDemo() {
                 <p className="text-sm text-gray-400">#000000</p>
               </div>
               <div>
-                <div className="w-full h-24 rounded-lg mb-3 border-2 border-red-500/50" style={{ backgroundColor: "#ffffff" }} />
-                <p className="font-semibold">Pure White Text</p>
-                <p className="text-sm text-gray-400">#ffffff</p>
-              </div>
-            </div>
-          </section>
-        </div>
-      </div>
-    </main>
-  )
-}
+                <div className="w-full h-24 rounded-lg mb-3 border-2 border-red-500/50"

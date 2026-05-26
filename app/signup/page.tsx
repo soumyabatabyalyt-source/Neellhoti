@@ -196,12 +196,4 @@ export default function Signup() {
           className={`w-full px-8 py-4 rounded-xl text-white font-semibold transition-all duration-300 transform hover:-translate-y-0.5 border disabled:opacity-60 disabled:cursor-not-allowed ${
             dark
               ? "bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-400 hover:to-red-500 shadow-[0_0_20px_rgba(249,115,22,0.2)] hover:shadow-[0_0_40px_rgba(249,115,22,0.4)] border-white/10"
-              : "bg-red-500 hover:bg-red-600 shadow-[0_0_20px_rgba(239,68,68,0.2)] hover:shadow-[0_0_40px_rgba(239,68,68,0.3)] border-black"
-          }`}
-        >
-          {loading ? "Creating account..." : "Sign Up"}
-        </button>
-      </div>
-    </div>
-  )
-}
+              : "bg-red-500 hover:bg-red-600 shadow-[0_0_20px_rgba(239,

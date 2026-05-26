@@ -158,7 +158,4 @@ If the user_id being sent is malformed, the API returns 400 (Bad Request):
 
 ## Next Steps if Issues Occur
 
-1. Share the console error message from step 5 above
-2. Include the user ID being updated
-3. Check if you're logged in as a manager/admin user
-4. Verify RLS policies in Supabase dashboard
+1. Share the console error m

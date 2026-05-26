@@ -134,9 +134,4 @@ return NextResponse.json({ success: true, updated: data[0] })
 When ready:
 ```bash
 git add .
-git commit -m "Fix: karma/age save, comment titles, database verification"
-git push
-# Vercel auto-deploys
-```
-
-No additional configuration needed - all fixes are backward compatible.
+git commit -m "Fix: karma/age save, comment tit

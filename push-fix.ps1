@@ -22,4 +22,4 @@ git push origin main --force
 
 Write-Host ""
 Write-Host "Done! Vercel will now auto-deploy the fix." -ForegroundColor Green
-Write-Host "Check deployment at: https://vercel.com/soumyabatabyal2-9505s-projects/neellhoti" -ForegroundColor Green
+Write-Host "Check deployment at: https://vercel.com/soumyabatabyal2-9505s-projects/neellhoti"

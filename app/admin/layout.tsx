@@ -206,15 +206,4 @@ export default function AdminLayout({
               >
                 <LogOut className="w-4 h-4" />
                 Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      <main className="flex-1 overflow-auto md:ml-0 mt-16 md:mt-0">
-        {children}
-      </main>
-    </div>
-  )
-}
+  

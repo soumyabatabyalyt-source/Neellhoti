@@ -30,5 +30,4 @@ fetch(DISCORD_WEBHOOK_URL, {
     }
   })
   .catch(err => {
-    console.error("❌ Network error:", err)
-  })
+    console.error(

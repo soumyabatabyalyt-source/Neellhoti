@@ -102,6 +102,4 @@
 Please confirm:
 1. Should the draft column be removed entirely or is it needed?
 2. Should we use `approved` or `approval_status` for the approval field?
-3. Should wallet be created at signup or on first approval?
-4. What is the complete current database schema?
-
+3. Sho

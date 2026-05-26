@@ -240,14 +240,4 @@ If you want to automate this:
 
 ```javascript
 // Approve user by email
-const { error } = await supabase
-  .from('profiles')
-  .update({ approved: true })
-  .eq('email', 'soumyabatabyal3@gmail.com');
-
-if (!error) console.log('✅ User approved!');
-```
-
----
-
-**Need help?** Check the BEGINNERS_GUIDE.md or ask for guidance!
+const { e

@@ -389,4 +389,4 @@ refactor: <code reorganization>
 
 ## Summary
 
-The **Neellohit production layout** follows a **three-tier user hierarchy** (Tasker → Manager → Admin) with dedicated sections for each role. The design emphasizes **dark-mode aesthetics** with **glassmorphic UI**, **smooth animations**, and **responsive design**. The application is built for **Vercel deployment** with **Supabase backend** and maintains **strict TypeScript types** throughout. All pages are **properly wrapped** with authentication checks and role-based access controls to ensure security in production.
+The **Neellohit production layout** follows a **three-tier user hierarchy** (Tasker → Manager → Admin) with dedicated sections for e

@@ -616,18 +616,4 @@ At 200+ daily users (WITHOUT optimization):
 Before you start, answer these to guide optimization:
 
 1. **Which pages get the most traffic?** (dashboard, task pool, etc)
-2. **How often do users refresh/navigate?** (affects caching strategy)
-3. **Any real-time features?** (tasks updating live, notifications, etc)
-4. **Do you upload images/files?** (affects bandwidth costs)
-5. **Peak user overlap?** (affects concurrent DB connections)
-
----
-
-## Final Notes
-
-Your codebase is **well-architected** and built with the right stack (Next.js + Supabase + Vercel). The optimizations here are standard best practices, not hacky workarounds.
-
-**The goal**: Stay on free tier until you hit product-market fit, then scale confidently.
-
-You've already solved the hard part (building a solid product). Now just optimize the plumbing. 🎯
-
+2. **How often do users refresh/navigate

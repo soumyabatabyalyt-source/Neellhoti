@@ -160,8 +160,4 @@ You now have a working approval system for your Reddit tasking app!
 
 Next steps:
 1. Explore the app more
-2. Read BEGINNERS_GUIDE.md for details
-3. Make small changes to learn
-4. Test different scenarios
-
-**Questions? Check BEGINNERS_GUIDE.md - it has all the answers!**
+2. 

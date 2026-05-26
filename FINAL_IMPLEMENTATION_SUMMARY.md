@@ -305,17 +305,4 @@ Code:
 - [ ] Account approval fixed
 - [ ] Rejection reasons implemented
 - [ ] Draft management UI complete
-- [ ] Manager sidebar updated
-
-Functionality:
-- [ ] Dashboard/tasks loads
-- [ ] Dashboard/my-tasks loads
-- [ ] Draft tasks page accessible
-- [ ] Approval/rejection works
-- [ ] Rejection reasons display
-- [ ] Wallet creates on approval
-
----
-
-**You are all set! 🚀 The system is complete and ready for users.**
-
+- [ ]

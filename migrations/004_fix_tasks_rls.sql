@@ -36,4 +36,4 @@ WITH CHECK (true);
 CREATE POLICY "tasks_delete_policy"
 ON public.tasks
 FOR DELETE
-USING (auth.role() = 'authenticated');
+U

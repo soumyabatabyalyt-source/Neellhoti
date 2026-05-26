@@ -170,9 +170,4 @@ Users should be able to:
 4. ✅ See task pool (no errors)
 5. ✅ Claim tasks
 6. ✅ View claimed tasks in MyTasks
-7. ✅ Submit tasks
-8. ✅ Get approved and receive rewards in wallet
-9. ✅ Request withdrawals
-10. ✅ Have manager approve withdrawals
-11. ✅ Receive balance deduction and tracking
-
+7. ✅ Submit 

@@ -14,4 +14,4 @@ ALTER COLUMN task_code SET DEFAULT ('TASK-' || to_char(now(), 'YYMMDDHHmmss'));
 -- Add a new, more lenient constraint if needed
 ALTER TABLE public.tasks
 ADD CONSTRAINT chk_task_code_not_empty
-CHECK (task_code IS NULL OR task_code != '');
+CHECK (task_code IS NULL OR ta

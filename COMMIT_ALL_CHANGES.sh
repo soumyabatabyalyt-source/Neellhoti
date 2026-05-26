@@ -65,7 +65,4 @@ if [ $? -eq 0 ]; then
     echo ""
     echo "Ready to push to origin with: git push"
 else
-    echo ""
-    echo "❌ Commit failed. Check the error above."
-    exit 1
-fi
+    echo ""

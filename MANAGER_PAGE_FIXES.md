@@ -139,7 +139,3 @@ All fixes use existing API endpoints and don't require new database columns or m
 
 - Manager layout includes live stats that update every 5 seconds
 - Auth listener prevents cache bypass (checks Supabase on mount)
-- All actions require manager role verification
-- Rejection reasons tracked for audit trail
-- Wallet auto-creation prevents approval errors
-

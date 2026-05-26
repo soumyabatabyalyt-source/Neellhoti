@@ -8,4 +8,4 @@ ADD COLUMN IF NOT EXISTS published_at timestamp with time zone;
 -- Update existing published tasks
 UPDATE public.tasks
 SET published_at = created_at
-WHERE draft = false AND published_at IS NULL;
+WHERE draft = false AND published_at

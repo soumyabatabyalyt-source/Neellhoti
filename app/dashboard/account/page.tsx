@@ -378,18 +378,4 @@ export default function Account() {
                   {deleting ? "Deleting..." : "Confirm Delete"}
                 </button>
                 <button
-                  onClick={() => { setShowDeleteConfirm(false); setDeleteInput("") }}
-                  className="px-6 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-400 font-medium transition-all"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
-
-        </div>
-      </div>
-
-    </div>
-  )
-}
+                  onCl

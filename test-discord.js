@@ -74,8 +74,4 @@ fetch(DISCORD_WEBHOOK_URL, {
       console.log("Response JSON:", JSON.parse(text))
     } else {
       console.log("✅ SUCCESS - No response body (normal for Discord webhooks)")
-    }
-  })
-  .catch(err => {
-    console.error("❌ ERROR:", err.message)
-  })
+   

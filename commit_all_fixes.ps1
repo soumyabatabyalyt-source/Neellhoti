@@ -66,6 +66,4 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "`nRecent commits:" -ForegroundColor Cyan
     git log --oneline -3
     Write-Host "`nReady to push with: git push" -ForegroundColor Green
-} else {
-    Write-Host "`n✗ Commit failed" -ForegroundColor Red
 }

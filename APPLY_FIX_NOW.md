@@ -179,17 +179,4 @@ Wallet credit trigger fires ✅
     ↓
 Wallet balance += reward_credits ✅
     ↓
-User sees credits in wallet ✅
-```
-
----
-
-## 🎉 Ready?
-
-1. Copy the SQL above
-2. Go to Supabase SQL Editor
-3. Paste & Run
-4. Test the approve button
-5. ✅ DONE!
-
-**The approval trigger will be LIVE!**
+User sees credits in wa

@@ -455,17 +455,4 @@ Before pushing to production:
 - [ ] No console errors
 - [ ] No layout shifts
 - [ ] No accessibility violations
-- [ ] Performance acceptable
-- [ ] Security verified (auth checks, CORS, etc.)
-
----
-
-## Notes
-
-- Last Updated: 2026-05-20
-- All styling uses Tailwind CSS utilities
-- Dark mode default with light mode toggle
-- Manager layout provides consistent navbar and spacing
-- All cards use consistent border, background, and shadow styling
-- All input fields use consistent styling with proper focus states
-- All pages support responsive design (mobile, tablet, desktop)
+- [

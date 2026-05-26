@@ -551,46 +551,4 @@ export async function getUsableActiveClaims(
     // SAME TASK DUPLICATE
     if (
       duplicate.task_id ===
-      keeper.task_id
-    ) {
-
-      const {
-        error:
-          duplicateError,
-      } = await supabase
-
-        .from("task_claims")
-
-        .update({
-          status:
-            "expired",
-        })
-
-        .eq(
-          "id",
-          duplicate.id
-        )
-
-        .eq(
-          "status",
-          "active"
-        )
-
-      if (
-        duplicateError
-      ) {
-        throw duplicateError
-      }
-
-    } else {
-
-      // DIFFERENT TASK
-      await expireClaim(
-        supabase,
-        duplicate
-      )
-    }
-  }
-
-  return [keeper]
-}
+    

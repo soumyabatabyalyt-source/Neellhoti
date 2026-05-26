@@ -119,6 +119,3 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "`nPlease check the error above and try again." -ForegroundColor Red
     exit 1
 }
-
-Write-Host "`nPress any key to exit..." -ForegroundColor Gray
-$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")

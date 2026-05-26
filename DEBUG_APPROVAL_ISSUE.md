@@ -180,12 +180,4 @@ Send me:
 
 **#3 (15% chance)**: RLS policy blocks update
 - Check: Is user a manager?
-- Fix: Check manager role in profiles
-
-**#4 (5% chance)**: Trigger function has syntax error
-- Check: Can you view the function in Supabase?
-- Fix: Delete and recreate
-
----
-
-**Copy the error message and send it to me!**
+- Fix: Check manager role in profiles

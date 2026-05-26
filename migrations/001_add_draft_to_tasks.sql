@@ -31,4 +31,4 @@ COMMENT ON COLUMN public.tasks.approval_status
 IS 'Status of task approval: pending, approved, rejected, filtered, mod_removed, etc. Tracked separately from claim status.';
 
 COMMENT ON COLUMN public.tasks.rejection_reason
-IS 'Reason why task was rejected/filtered (e.g., "Filtered", "Mod Removed", "Rule Violation", etc.)';
+IS 'Reason why task was rejected/filtered (e.g., "Filtered", "Mod Rem

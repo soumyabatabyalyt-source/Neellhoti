@@ -283,17 +283,4 @@ Follow the same pattern for any of these.
 
 ✅ `/app/auth/page.tsx` - Added Google login button and handler
 ✅ `/app/login/page.tsx` - Added Google login button and handler
-✅ `/app/auth/callback/page.tsx` - Updated to handle Google OAuth and auto-create profiles
-
----
-
-## Support
-
-If you get stuck:
-1. Check Supabase logs: Authentication → Logs
-2. Check browser console: F12 → Console tab
-3. Look at network requests: F12 → Network tab
-4. Verify all URLs are correct (common mistake!)
-
-Good luck! 🚀
-
+✅ `/app/auth/callback/page.tsx` - Updated to handle

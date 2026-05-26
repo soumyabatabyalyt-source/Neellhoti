@@ -70,7 +70,4 @@ ON UPDATE CASCADE;
 
 ---
 
-## ✨ Result
-
-MyTasks page should now load correctly with no relationship errors!
-
+## ✨ Resul

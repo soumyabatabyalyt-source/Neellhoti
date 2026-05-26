@@ -125,5 +125,4 @@ To verify the fix works:
 
 **Note:** This fix also ensures consistency with the task lifecycle:
 - Task submitted → claim status: "submitted"
-- Manager approves → claim status: "completed", submission status: "approved", wallet credited
-- Manager rejects → claim status: "expired", submission status: "rejected"
+- Manager approves → claim status: "completed

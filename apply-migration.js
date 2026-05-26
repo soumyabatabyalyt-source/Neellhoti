@@ -56,8 +56,4 @@ async function runMigration() {
     req.end();
 
   } catch (err) {
-    console.error('Error:', err.message);
-  }
-}
-
-runMigration();
+    con

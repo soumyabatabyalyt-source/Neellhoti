@@ -307,17 +307,4 @@ BEGINNERS_GUIDE.md        ← Learn the concepts
 ```
 Terminal              ← Run npm run dev
 Browser              ← Visit http://localhost:3000
-Supabase Console     ← https://app.supabase.com
-```
-
----
-
-## ✨ You've Got This!
-
-Choose a guide and start reading. Don't overwhelm yourself. Take it slow. Ask yourself questions. Enjoy the learning process.
-
-**Welcome to web development!** 🎓🚀
-
----
-
-**Next Step:** Pick a guide above and start reading!
+Sup

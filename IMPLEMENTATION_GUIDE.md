@@ -262,7 +262,4 @@ After applying all changes:
 
 ## ❓ NEXT QUESTIONS
 
-1. **For Draft Task UI:** Do you want me to build the draft task management UI for the manager/admin panel?
-2. **For Rejection Reasons:** Should I update the review-task API to accept and save rejection reasons?
-3. **For Task_claims query:** Can you confirm if the foreign key column is named `task_id`?
-
+1. **For Draft Task UI:** Do you want me 

@@ -180,11 +180,4 @@ from (
   from public.tasks
   where tasks.claimed_by is not null
   and tasks.status in ('claimed', 'active')
-) stuck_tasks
-where stuck_tasks.claim_rank = 1
-and not exists (
-  select 1
-  from public.task_claims
-  where task_claims.task_id = stuck_tasks.id
-  and task_claims.status = 'active'
-);
+) s

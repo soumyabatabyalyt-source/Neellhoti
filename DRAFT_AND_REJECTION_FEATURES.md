@@ -404,22 +404,4 @@ All new endpoints require:
 3. `/app/dashboard/my-tasks/page.tsx` - Display rejection reasons
 4. `/app/manager/layout.tsx` - Added Draft Tasks navigation
 
-**Database Changes:**
-1. Migration created: `/migrations/001_add_draft_to_tasks.sql`
-
----
-
-## ✨ FEATURES COMPLETE
-
-✅ Draft tasks management UI  
-✅ Publish/Reject functionality  
-✅ Rejection reason tracking  
-✅ Custom rejection reasons  
-✅ Display reasons to users  
-✅ Updated submission review  
-✅ Manager navigation  
-✅ API endpoints with auth  
-✅ Real-time updates  
-
-**Ready for production! 🚀**
-
+**Database Chang

@@ -92,6 +92,4 @@ SET reward_credits = FLOOR(CAST(reward AS numeric) * 100)
 WHERE reward > 0 AND reward_credits = 0;
 
 -- Create index on reward_credits for performance
-CREATE INDEX IF NOT EXISTS idx_tasks_reward_credits
-ON public.tasks(reward_credits)
-WHERE reward_credits > 0;
+CREATE INDEX IF 

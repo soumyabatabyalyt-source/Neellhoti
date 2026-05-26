@@ -93,12 +93,4 @@ if %errorlevel% equ 0 (
     echo Recent commits:
     git log --oneline -5
     echo.
-    echo Ready to push with: git push
-) else (
-    echo.
-    echo [ERROR] Commit failed
-    pause
-    exit /b 1
-)
-
-pause
+    echo Ready to push wit

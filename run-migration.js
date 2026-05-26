@@ -21,7 +21,3 @@ async function runMigration() {
     }
   } catch (err) {
     console.error('Error:', err.message);
-  }
-}
-
-runMigration();

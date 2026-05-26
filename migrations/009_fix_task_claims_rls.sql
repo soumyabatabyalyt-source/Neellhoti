@@ -25,4 +25,4 @@ CREATE POLICY "task_claims_update_own"
 ON public.task_claims
 FOR UPDATE
 USING (auth.uid() = user_id OR auth.role() = 'service_role')
-WITH CHECK (auth.uid() = user_id OR auth.role() = 'service_role');
+WITH CHECK (auth.uid() = user_id OR auth

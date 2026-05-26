@@ -51,6 +51,4 @@ export async function POST(req: Request) {
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Cooldown update failed"
     console.error("Cooldown update error:", error)
-    return NextResponse.json({ error: message }, { status: 500 })
-  }
-}
+    return NextResp
