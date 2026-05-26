@@ -12,18 +12,17 @@ const supabase = createClient(
 //  task_id              – API reference, used for deduplication     [col A]
 //  task_code            – Human reference shown in admin/manager UI  [col B]
 //  task_type            – "post" | "comment"                         [col C]
-//  title                – Post title (required for post tasks)        [col D]
-//  description          – Task description / comment text             [col E]
-//  body                 – Post body (posts) or comment text (comments)[col F]
+//  subreddit            – Subreddit name (e.g., r/AskReddit)          [col D]
+//  title                – Post title (required for post tasks)        [col E]
+//  body                 – Post body or comment text (required)        [col F]
 //  reward               – Dollar amount integer                       [col G]
-//  post_link            – Reddit URL (required for comment tasks)     [col H]
-//  comment_type         – "comment" | "reply"                        [col I]
-//  min_karma            – Integer or blank                            [col J]
-//  min_account_age_days – Integer or blank                            [col K]
+//  time_limit           – Minutes to complete (default 30)            [col H]
+//  post_link            – Reddit URL (required for comment tasks)     [col I]
+//  comment_type         – "comment" | "reply" | "hyperlink"          [col J]
+//  min_karma            – Integer or blank                            [col K]
+//  min_account_age_days – Integer or blank                            [col L]
 //
-// NOTE: body and description are interchangeable — whichever is
-// filled in will be used. For comment tasks the text is often
-// only in description; for post tasks it may be only in body.
+// NOTE: The description column has been removed. Use body field only.
 // ─────────────────────────────────────────────────────────────
 
 /** Strip query strings and fragments from a URL, normalize domain. */
@@ -134,13 +133,9 @@ export async function GET() {
       const isComment = taskType === "comment"
 
       // ── resolve body text ──────────────────────────────
-      // Comments often have their text only in "description".
-      // Posts often have their text only in "body".
-      // Accept whichever is filled in — prefer body, fall back to description.
-      const bodyVal = row.body        ? String(row.body).trim()        : null
-      const descVal = row.description ? String(row.description).trim() : null
-      const resolvedBody = bodyVal || descVal || null
-      const resolvedDesc = descVal || bodyVal || null
+      // Body field is required for all tasks (posts and comments)
+      const bodyVal = row.body ? String(row.body).trim() : null
+      const resolvedBody = bodyVal || null
 
       // ── validate required fields by task type ──────────
       // POST tasks require:    task_code, title, body, reward (karma/age optional)
@@ -151,7 +146,7 @@ export async function GET() {
         continue
       }
       if (!resolvedBody) {
-        console.warn(`Row ${codeForDB}: no body or description text — skipping`)
+        console.warn(`Row ${codeForDB}: missing body text — skipping`)
         invalid.push(codeForDB)
         continue
       }
@@ -208,7 +203,6 @@ export async function GET() {
         task_code:            codeForDB,
         task_type:            taskType,
         title:                taskTitle,
-        description:          resolvedDesc,
         body:                 resolvedBody,
         subreddit:            row.subreddit ? String(row.subreddit).trim() : null,
         reward:               isNaN(reward) ? 0 : reward,
