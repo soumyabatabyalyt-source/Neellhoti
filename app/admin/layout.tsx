@@ -15,6 +15,7 @@ import {
   Shield,
   Menu,
   X,
+  FileText,
 } from "lucide-react"
 
 import { supabase } from "@/lib/supabaseClient"
@@ -39,6 +40,11 @@ const navItems = [
     name: "Withdrawals",
     href: "/admin/withdrawals",
     icon: Wallet,
+  },
+  {
+    name: "Billing",
+    href: "/admin/billing",
+    icon: FileText,
   },
   {
     name: "Settings",
@@ -212,9 +218,4 @@ export default function AdminLayout({
         </div>
       ) : null}
 
-      <main className="flex-1 overflow-auto md:ml-0 mt-16 md:mt-0">
-        {children}
-      </main>
-    </div>
-  )
-}
+      <main className="flex-
