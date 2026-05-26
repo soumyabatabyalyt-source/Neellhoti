@@ -43,3 +43,8 @@ export default function DashboardError({
               Error ID: {error.digest}
             </p>
           )}
+        </div>
+      </div>
+    </div>
+  )
+}

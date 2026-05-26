@@ -260,4 +260,15 @@ export default function Login() {
             onClick={() =>
               router.push("/auth")
             }
-            className={`
+            className={`ml-2 cursor-pointer font-semibold transition-colors ${
+              dark ? "text-red-400 hover:text-red-300" : "text-red-500 hover:text-red-600"
+            }`}
+          >
+            Create account
+          </span>
+        </p>
+
+      </div>
+    </div>
+  )
+}

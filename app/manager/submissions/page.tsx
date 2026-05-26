@@ -1145,4 +1145,86 @@ function TabCard({
           text-sm
           font-medium
           mb-1
-          text-slat
+          text-slate-400
+        ">
+          {title}
+        </p>
+
+        <p className="
+          text-3xl
+          font-bold
+          text-white
+        ">
+          {count}
+        </p>
+
+      </div>
+
+      <div className="
+        w-12
+        h-12
+        rounded-full
+        flex
+        items-center
+        justify-center
+        bg-white/5
+        text-slate-400
+      ">
+
+        {icon}
+
+      </div>
+
+    </button>
+  )
+}
+
+// =========================================
+// TIME FORMAT
+// =========================================
+
+function formatAge(
+  value: string | null
+) {
+
+  if (!value)
+    return "Unknown"
+
+  const seconds =
+    Math.max(
+      0,
+      Math.floor(
+        (
+          Date.now() -
+          new Date(
+            value
+          ).getTime()
+        ) / 1000
+      )
+    )
+
+  const days =
+    Math.floor(
+      seconds / 86400
+    )
+
+  const hours =
+    Math.floor(
+      (seconds % 86400) /
+        3600
+    )
+
+  const minutes =
+    Math.floor(
+      (seconds % 3600) /
+        60
+    )
+
+  if (days > 0)
+    return `${days}d ${hours}h ago`
+
+  if (hours > 0)
+    return `${hours}h ${minutes}m ago`
+
+  return `${minutes}m ago`
+}

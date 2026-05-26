@@ -121,4 +121,12 @@ export default function StartCampaignPage() {
         @keyframes moveStars {
           from {
             transform: translateY(0);
-      
+          }
+          to {
+            transform: translateY(-2000px);
+          }
+        }
+      `}</style>
+    </main>
+  );
+}

@@ -188,11 +188,7 @@ export default function CreateTaskPage() {
           Number(timeLimit),
 
         task_code:
-          taskCode,
-
-        min_karma: minKarma ? Number(minKarma) : null,
-
-        min_account_age_days: minAccountAgeDays ? Number(minAccountAgeDays) : null
+          taskCode
       }
 
       const { error } =
@@ -217,8 +213,6 @@ export default function CreateTaskPage() {
       setSubreddit("")
       setReward("")
       setTimeLimit("30")
-      setMinKarma("")
-      setMinAccountAgeDays("")
 
       fetchDrafts()
 
@@ -272,24 +266,6 @@ export default function CreateTaskPage() {
           "Publish failed: Task not found"
         )
         return
-      }
-
-      // Send notification for published task
-      const publishedTask = data[0]
-      try {
-        await fetch("/api/send-notification", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id: publishedTask.id,
-            title: publishedTask.title,
-            task_type: publishedTask.task_type,
-            reward_credits: publishedTask.reward,
-            task_code: publishedTask.task_code,
-          }),
-        })
-      } catch (err) {
-        console.error("Failed to send notification:", err)
       }
 
       // Wait briefly for DB to sync
@@ -400,55 +376,6 @@ export default function CreateTaskPage() {
       setPublishingAll(false)
     }
   }
-
-  // =========================================
-  // DELETE ALL DRAFTS
-  // =========================================
-
-  async function handleDeleteAllDrafts() {
-
-    const confirmed = confirm(
-      "Delete all drafts? This action cannot be undone."
-    )
-
-    if (!confirmed) return
-
-    try {
-
-      setPublishingAll(true)
-
-      const { error } = await supabase
-        .from("tasks")
-        .delete()
-        .eq("draft", true)
-
-      if (error) {
-        alert(`Error: ${error.message}`)
-        return
-      }
-
-      await new Promise(
-        resolve =>
-          setTimeout(resolve, 500)
-      )
-
-      await fetchDrafts()
-
-      alert("All drafts deleted")
-
-    } catch (err) {
-
-      console.error(err)
-      alert(
-        `Error: ${err instanceof Error ? err.message : "Unknown error"}`
-      )
-
-    } finally {
-
-      setPublishingAll(false)
-    }
-  }
-
 
   return (
 
@@ -964,63 +891,234 @@ export default function CreateTaskPage() {
 
               </div>
 
-              <div className="flex gap-4 flex-wrap items-center">
-                <button
-                  onClick={
-                    handlePublishAll
-                  }
-                  disabled={publishingAll}
-                  className="
-                    bg-gradient-to-r
-                    from-emerald-500
-                    to-emerald-600
-                    hover:from-emerald-600
-                    hover:to-emerald-700
-                    transition-all
-                    px-8
-                    py-4
-                    rounded-2xl
-                    font-semibold
-                    text-white
-                    shadow-lg
-                    shadow-emerald-500/20
-                    disabled:opacity-50
-                  "
-                >
-                  {publishingAll
-                    ? "Publishing..."
-                    : "Publish All"}
-                </button>
+              <button
+                onClick={
+                  handlePublishAll
+                }
+                disabled={publishingAll}
+                className="
+                  bg-gradient-to-r
+                  from-emerald-500
+                  to-emerald-600
+                  hover:from-emerald-600
+                  hover:to-emerald-700
+                  transition-all
+                  px-8
+                  py-4
+                  rounded-2xl
+                  font-semibold
+                  text-white
+                  shadow-lg
+                  shadow-emerald-500/20
+                  disabled:opacity-50
+                "
+              >
 
-                <button
-                  onClick={
-                    handleDeleteAllDrafts
-                  }
-                  disabled={publishingAll || drafts.length === 0}
+                {publishingAll
+                  ? "Publishing..."
+                  : "Publish All"}
+
+              </button>
+
+            </div>
+
+            {/* DRAFT GRID */}
+
+            <div className="
+              grid
+              grid-cols-1
+              md:grid-cols-2
+              xl:grid-cols-3
+              gap-6
+            ">
+
+              {drafts.map((task) => (
+
+                <div
+                  key={task.id}
                   className="
-                    bg-gradient-to-r
-                    from-red-500/40
-                    to-red-600/40
-                    hover:from-red-500/60
-                    hover:to-red-600/60
-                    transition-all
-                    px-8
-                    py-4
-                    rounded-2xl
-                    font-semibold
-                    text-white
-                    shadow-lg
-                    shadow-red-500/10
-                    disabled:opacity-30
+                    bg-white/[0.03]
+                    backdrop-blur-xl
                     border-2
-                    border-red-500/20
-                    hover:border-red-500/40
+                    border-white/15
+                    hover:border-white/25
+                    hover:bg-white/[0.05]
+                    rounded-3xl
+                    p-6
+                    flex
+                    flex-col
+                    justify-between
+                    min-h-[340px]
+                    transition-all
+                    duration-300
+                    shadow-lg
                   "
                 >
-                  Delete All
-                </button>
-              </div>
-            </div>
+
+                  <div>
+
+                    <div className="
+                      flex
+                      items-start
+                      justify-between
+                      gap-4
+                      mb-5
+                    ">
+
+                      <div className="min-w-0">
+
+                        <p className="
+                          text-[11px]
+                          tracking-[0.25em]
+                          uppercase
+                          text-zinc-500
+                          mb-2
+                        ">
+                          {task.task_code}
+                        </p>
+
+                        <h3 className="
+                          text-xl
+                          font-bold
+                          leading-tight
+                          line-clamp-2
+                          break-words
+                        ">
+
+                          {task.title ||
+                            "Untitled Task"}
+
+                        </h3>
+
+                      </div>
+
+                      <div className="
+                        flex
+                        flex-col
+                        gap-2
+                        items-end
+                        shrink-0
+                      ">
+
+                        <Badge>
+                          {task.source}
+                        </Badge>
+
+                        <Badge>
+                          Draft
+                        </Badge>
+
+                      </div>
+
+                    </div>
+
+                    {/* DETAILS */}
+
+                    <div className="
+                      space-y-3
+                      text-sm
+                    ">
+
+                      <Detail
+                        label="Subreddit"
+                        value={
+                          task.subreddit ||
+                          "N/A"
+                        }
+                      />
+
+                      <Detail
+                        label="Reward"
+                        value={`$${task.reward || 0}`}
+                      />
+
+                      <Detail
+                        label="Time"
+                        value={`${task.time_limit || 30} mins`}
+                      />
+
+                      <Detail
+                        label="Type"
+                        value={task.task_type}
+                      />
+
+                    </div>
+
+                  </div>
+
+                  {/* BUTTONS */}
+
+                  <div className="
+                    flex
+                    gap-3
+                    mt-6
+                  ">
+
+                    <button
+                      onClick={() =>
+                        handlePublishDraft(
+                          task.id
+                        )
+                      }
+                      disabled={
+                        publishingId === task.id
+                      }
+                      className={`
+                        flex-1
+                        py-3
+                        rounded-2xl
+                        font-semibold
+                        text-sm
+                        transition-all
+                        shadow-lg
+                        ${
+                          publishingId ===
+                          task.id
+                            ? "bg-emerald-500/50 text-white/70 cursor-not-allowed shadow-emerald-500/10"
+                            : "bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-emerald-500/20"
+                        }
+                      `}
+                    >
+                      {publishingId ===
+                      task.id
+                        ? "Publishing..."
+                        : "Publish"}
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        handleDeleteDraft(
+                          task.id
+                        )
+                      }
+                      disabled={
+                        publishingId === task.id
+                      }
+                      className={`
+                        px-4
+                        rounded-2xl
+                        text-sm
+                        font-semibold
+                        transition-all
+                        backdrop-blur-sm
+                        border-2
+                        ${
+                          publishingId ===
+                          task.id
+                            ? "bg-red-500/5 border-red-500/15 text-red-300/50 cursor-not-allowed"
+                            : "bg-red-500/10 border-red-500/30 text-red-300 hover:bg-red-500/20 hover:border-red-500/50"
+                        }
+                      `}
+                    >
+                      {publishingId ===
+                      task.id
+                        ? "Deleting..."
+                        : "Delete"}
+                    </button>
+
+                  </div>
+
+                </div>
               ))}
 
             </div>
@@ -1038,55 +1136,6 @@ function Detail({
   label,
   value
 }: any) {
-
-  // =========================================
-  // DELETE ALL DRAFTS
-  // =========================================
-
-  async function handleDeleteAllDrafts() {
-
-    const confirmed = confirm(
-      "Delete all drafts? This action cannot be undone."
-    )
-
-    if (!confirmed) return
-
-    try {
-
-      setPublishingAll(true)
-
-      const { error } = await supabase
-        .from("tasks")
-        .delete()
-        .eq("draft", true)
-
-      if (error) {
-        alert(`Error: ${error.message}`)
-        return
-      }
-
-      await new Promise(
-        resolve =>
-          setTimeout(resolve, 500)
-      )
-
-      await fetchDrafts()
-
-      alert("All drafts deleted")
-
-    } catch (err) {
-
-      console.error(err)
-      alert(
-        `Error: ${err instanceof Error ? err.message : "Unknown error"}`
-      )
-
-    } finally {
-
-      setPublishingAll(false)
-    }
-  }
-
 
   return (
 
@@ -1134,55 +1183,6 @@ function TabButton({
   onClick
 }: any) {
 
-  // =========================================
-  // DELETE ALL DRAFTS
-  // =========================================
-
-  async function handleDeleteAllDrafts() {
-
-    const confirmed = confirm(
-      "Delete all drafts? This action cannot be undone."
-    )
-
-    if (!confirmed) return
-
-    try {
-
-      setPublishingAll(true)
-
-      const { error } = await supabase
-        .from("tasks")
-        .delete()
-        .eq("draft", true)
-
-      if (error) {
-        alert(`Error: ${error.message}`)
-        return
-      }
-
-      await new Promise(
-        resolve =>
-          setTimeout(resolve, 500)
-      )
-
-      await fetchDrafts()
-
-      alert("All drafts deleted")
-
-    } catch (err) {
-
-      console.error(err)
-      alert(
-        `Error: ${err instanceof Error ? err.message : "Unknown error"}`
-      )
-
-    } finally {
-
-      setPublishingAll(false)
-    }
-  }
-
-
   return (
 
     <button
@@ -1212,55 +1212,6 @@ function Badge({
   children
 }: any) {
 
-  // =========================================
-  // DELETE ALL DRAFTS
-  // =========================================
-
-  async function handleDeleteAllDrafts() {
-
-    const confirmed = confirm(
-      "Delete all drafts? This action cannot be undone."
-    )
-
-    if (!confirmed) return
-
-    try {
-
-      setPublishingAll(true)
-
-      const { error } = await supabase
-        .from("tasks")
-        .delete()
-        .eq("draft", true)
-
-      if (error) {
-        alert(`Error: ${error.message}`)
-        return
-      }
-
-      await new Promise(
-        resolve =>
-          setTimeout(resolve, 500)
-      )
-
-      await fetchDrafts()
-
-      alert("All drafts deleted")
-
-    } catch (err) {
-
-      console.error(err)
-      alert(
-        `Error: ${err instanceof Error ? err.message : "Unknown error"}`
-      )
-
-    } finally {
-
-      setPublishingAll(false)
-    }
-  }
-
-
   return (
 
     <div className="
@@ -1288,55 +1239,6 @@ function Input({
   placeholder,
   type = "text",
 }: any) {
-
-  // =========================================
-  // DELETE ALL DRAFTS
-  // =========================================
-
-  async function handleDeleteAllDrafts() {
-
-    const confirmed = confirm(
-      "Delete all drafts? This action cannot be undone."
-    )
-
-    if (!confirmed) return
-
-    try {
-
-      setPublishingAll(true)
-
-      const { error } = await supabase
-        .from("tasks")
-        .delete()
-        .eq("draft", true)
-
-      if (error) {
-        alert(`Error: ${error.message}`)
-        return
-      }
-
-      await new Promise(
-        resolve =>
-          setTimeout(resolve, 500)
-      )
-
-      await fetchDrafts()
-
-      alert("All drafts deleted")
-
-    } catch (err) {
-
-      console.error(err)
-      alert(
-        `Error: ${err instanceof Error ? err.message : "Unknown error"}`
-      )
-
-    } finally {
-
-      setPublishingAll(false)
-    }
-  }
-
 
   return (
 
@@ -1389,55 +1291,6 @@ function Textarea({
   setValue,
   placeholder,
 }: any) {
-
-  // =========================================
-  // DELETE ALL DRAFTS
-  // =========================================
-
-  async function handleDeleteAllDrafts() {
-
-    const confirmed = confirm(
-      "Delete all drafts? This action cannot be undone."
-    )
-
-    if (!confirmed) return
-
-    try {
-
-      setPublishingAll(true)
-
-      const { error } = await supabase
-        .from("tasks")
-        .delete()
-        .eq("draft", true)
-
-      if (error) {
-        alert(`Error: ${error.message}`)
-        return
-      }
-
-      await new Promise(
-        resolve =>
-          setTimeout(resolve, 500)
-      )
-
-      await fetchDrafts()
-
-      alert("All drafts deleted")
-
-    } catch (err) {
-
-      console.error(err)
-      alert(
-        `Error: ${err instanceof Error ? err.message : "Unknown error"}`
-      )
-
-    } finally {
-
-      setPublishingAll(false)
-    }
-  }
-
 
   return (
 

@@ -161,4 +161,11 @@ function PendingApprovalContent() {
 export default function PendingApproval() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex item
+      <div className="min-h-screen flex items-center justify-center bg-[#0f0814]">
+        <p className="text-white">Loading...</p>
+      </div>
+    }>
+      <PendingApprovalContent />
+    </Suspense>
+  )
+}

@@ -239,4 +239,18 @@ export default function Accounts() {
                   </button>
                   <button
                     onClick={() => rejectUser(u.id)}
-                    className="flex-1 flex items-center justify-center gap-2 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 hover:border-rose-500 px-5 py-2.5 rounded-xl font-semibold transition-all dur
+                    className="flex-1 flex items-center justify-center gap-2 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 hover:border-rose-500 px-5 py-2.5 rounded-xl font-semibold transition-all duration-200"
+                  >
+                    <X size={17} />
+                    Reject
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}

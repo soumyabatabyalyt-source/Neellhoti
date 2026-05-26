@@ -46,4 +46,7 @@ export default function History() {
 }
 
 const card = {
-  padding: "10px
+  padding: "10px",
+  marginBottom: "5px",
+  background: "#eee"
+}

@@ -68,4 +68,13 @@ export default function RootLayout({
         flex
         flex-col
         bg-[#0f0814]
-        text-[#
+        text-[#ffffff]
+      ">
+
+        {children}
+
+      </body>
+
+    </html>
+  )
+}

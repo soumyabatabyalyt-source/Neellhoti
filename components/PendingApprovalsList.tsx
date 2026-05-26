@@ -303,4 +303,20 @@ const rejectBtn: React.CSSProperties = {
   alignItems: "center",
   justifyContent: "center",
   gap: "8px",
-  transition: "all 0.3s
+  transition: "all 0.3s ease",
+}
+
+const emptyState: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: "60px 20px",
+  textAlign: "center",
+}
+
+const emptyText: React.CSSProperties = {
+  color: "#9ca3af",
+  fontSize: "16px",
+  marginTop: "16px",
+}

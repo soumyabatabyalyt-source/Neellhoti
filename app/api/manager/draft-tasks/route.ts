@@ -259,4 +259,19 @@ export async function PUT(req: Request) {
       { status: 400 }
     )
   } catch (error: unknown) {
-    const
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Failed to update task"
+
+    console.error(
+      "Draft task update error:",
+      error
+    )
+
+    return NextResponse.json(
+      { error: message },
+      { status: 500 }
+    )
+  }
+}

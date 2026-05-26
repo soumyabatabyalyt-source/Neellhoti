@@ -49,4 +49,8 @@ export async function POST(req: NextRequest) {
     )
 
     return NextResponse.json(
-      { e
+      { error: message },
+      { status: 500 }
+    )
+  }
+}

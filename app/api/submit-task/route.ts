@@ -408,11 +408,10 @@ export async function POST(
     }
 
     // =====================================
-    // UPDATE TASK STATUS & GET SHEET LINK
+    // UPDATE TASK STATUS
     // =====================================
 
     const {
-      data: taskData,
       error: taskUpdateError,
     } = await supabase
       .from("tasks")
@@ -424,7 +423,6 @@ export async function POST(
         "id",
         claim.task_id
       )
-      .select("sheet_row_link, task_code")
 
     if (
       taskUpdateError
@@ -479,5 +477,25 @@ export async function POST(
     // SUCCESS
     // =====================================
 
-    const response: any = {
-      success: tru
+    return NextResponse.json({
+      success: true,
+    })
+
+  } catch (err) {
+
+    console.error(
+      "SERVER ERROR:",
+      err
+    )
+
+    return NextResponse.json(
+      {
+        error:
+          "Server failed",
+      },
+      {
+        status: 500,
+      }
+    )
+  }
+}

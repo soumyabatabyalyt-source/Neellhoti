@@ -164,4 +164,14 @@ export default function ReviewActions({
                   setCustomReason("")
                 }}
                 disabled={reviewing !== null}
-                className="flex-1 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white font-medium text-sm transition
+                className="flex-1 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white font-medium text-sm transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}

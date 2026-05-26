@@ -26,4 +26,7 @@ export default function ManagerNotFound() {
           <ArrowLeft size={18} />
           Back to Manager
         </Link>
-  
+      </div>
+    </div>
+  )
+}

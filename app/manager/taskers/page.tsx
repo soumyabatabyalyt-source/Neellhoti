@@ -3,10 +3,14 @@
 import { useCallback, useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
 import {
-  Search, User, Mail, Timer, Loader2, Save,
+  Search, User, Mail, Clock, Timer, Loader2, Save,
   ExternalLink, TrendingUp, CalendarDays, ArrowUpDown,
-  MessageSquare,
+  MessageSquare, ShieldCheck,
 } from "lucide-react"
+
+// =========================================
+// TYPES
+// =========================================
 
 type Tasker = {
   id: string
@@ -23,6 +27,10 @@ type Tasker = {
 }
 
 type SortKey = "username" | "karma" | "age" | "cooldown"
+
+// =========================================
+// REDDIT HELPERS
+// =========================================
 
 function redditUsername(raw: string): string {
   try {
@@ -59,6 +67,10 @@ function formatAge(days?: number | null): string {
   return mo > 0 ? `${y}y ${mo}mo` : `${y}y`
 }
 
+// =========================================
+// MAIN COMPONENT
+// =========================================
+
 export default function Taskers() {
   const [users, setUsers] = useState<Tasker[]>([])
   const [saving, setSaving] = useState<string | null>(null)
@@ -77,6 +89,10 @@ export default function Taskers() {
   }, [])
 
   useEffect(() => { void load() }, [load])
+
+  // =========================================
+  // SAVE STATS
+  // =========================================
 
   async function saveStats(
     userId: string,
@@ -110,6 +126,10 @@ export default function Taskers() {
     await load()
   }
 
+  // =========================================
+  // SORT & FILTER
+  // =========================================
+
   const sorted = [...users]
     .filter((u) => (u.username || "").toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
@@ -130,8 +150,14 @@ export default function Taskers() {
     else { setSortKey(key); setSortAsc(key === "username") }
   }
 
+  // =========================================
+  // RENDER
+  // =========================================
+
   return (
     <div className="p-6 md:p-10 max-w-5xl mx-auto w-full font-sans text-white">
+
+      {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 animate-in fade-in slide-in-from-top-4 duration-300">
         <div>
           <h2 className="text-3xl font-bold tracking-tight flex items-center gap-3">
@@ -145,6 +171,7 @@ export default function Taskers() {
           </p>
         </div>
 
+        {/* SEARCH */}
         <div className="relative w-full md:max-w-xs group">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within:text-red-400 transition-colors">
             <Search size={18} />
@@ -159,6 +186,7 @@ export default function Taskers() {
         </div>
       </div>
 
+      {/* SORT CONTROLS */}
       <div className="flex items-center gap-2 mb-5 flex-wrap">
         <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold mr-1 flex items-center gap-1">
           <ArrowUpDown size={13} /> Sort:
@@ -185,6 +213,7 @@ export default function Taskers() {
         ))}
       </div>
 
+      {/* LIST */}
       {sorted.length === 0 ? (
         <div className="py-16 border-2 border-dashed border-white/5 rounded-3xl flex flex-col items-center justify-center text-slate-500 bg-white/[0.01]">
           <User className="mb-3 text-slate-600" size={36} />
@@ -207,6 +236,10 @@ export default function Taskers() {
   )
 }
 
+// =========================================
+// TASKER CARD
+// =========================================
+
 function TaskerCard({
   user,
   saving,
@@ -216,27 +249,19 @@ function TaskerCard({
   saving: boolean
   onSave: (userId: string, karma: number, ageDays: number, cooldownHours: number, cooldownMinutes: number) => void
 }) {
+  const currentMins = Number(user.cooldown_minutes || 0)
   const [karma, setKarma] = useState(Number(user.reddit_karma || 0))
   const [ageDays, setAgeDays] = useState(Number(user.reddit_account_age_days || 0))
-  const [hasChanges, setHasChanges] = useState(false)
+  const [hours, setHours] = useState(Math.floor(currentMins / 60))
+  const [minutes, setMinutes] = useState(currentMins % 60)
 
-  const handleKarmaChange = (value: number) => {
-    setKarma(value)
-    setHasChanges(true)
-  }
-
-  const handleAgeChange = (value: number) => {
-    setAgeDays(value)
-    setHasChanges(true)
-  }
-
-  const handleSave = () => {
-    onSave(user.id, karma, ageDays, 0, 0)
-    setHasChanges(false)
-  }
+  const cooldownStatus = formatCooldownUntil(user.cooldown_until)
+  const isCooldownActive = cooldownStatus !== "None"
 
   return (
     <div className="rounded-2xl border-2 border-white/15 bg-white/[0.03] backdrop-blur-sm shadow-lg hover:bg-white/[0.05] hover:border-white/25 transition-all duration-300 overflow-hidden animate-in fade-in zoom-in-98 duration-200">
+
+      {/* ── SECTION 1: IDENTITY ── */}
       <div className="px-5 py-4 border-b border-white/10 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
@@ -260,7 +285,10 @@ function TaskerCard({
         </div>
       </div>
 
+      {/* ── SECTION 2: CONTACT + REDDIT ── */}
       <div className="px-5 py-4 border-b border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-3">
+
+        {/* Email */}
         <div className="flex items-center gap-3 bg-black/20 rounded-xl px-3 py-2.5 border border-white/8 min-w-0">
           <Mail size={15} className="text-slate-500 shrink-0" />
           <div className="min-w-0">
@@ -269,6 +297,7 @@ function TaskerCard({
           </div>
         </div>
 
+        {/* Discord */}
         <div className="flex items-center gap-3 bg-black/20 rounded-xl px-3 py-2.5 border border-white/8 min-w-0">
           <MessageSquare size={15} className="text-indigo-400 shrink-0" />
           <div className="min-w-0">
@@ -277,6 +306,7 @@ function TaskerCard({
           </div>
         </div>
 
+        {/* Reddit */}
         <div className="flex items-center gap-3 bg-black/20 rounded-xl px-3 py-2.5 border border-white/8 min-w-0">
           <div className="w-4 h-4 rounded-full bg-[#FF4500]/20 flex items-center justify-center shrink-0">
             <span className="text-[10px] text-[#FF4500] font-bold">R</span>
@@ -298,70 +328,105 @@ function TaskerCard({
             )}
           </div>
         </div>
+
       </div>
 
-      <div className="px-5 py-6">
-        <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold flex items-center gap-1.5 mb-4">
-          <TrendingUp size={12} /> Update Reddit Stats
-        </p>
+      {/* ── SECTION 3: REDDIT STATS + COOLDOWN CONTROLS ── */}
+      <div className="px-5 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-        <div className="space-y-4">
-          <div>
-            <label className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold block mb-2">
-              Karma
-            </label>
-            <div className="flex items-center gap-3">
+        {/* LEFT: Reddit Stats */}
+        <div className="space-y-3">
+          <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold flex items-center gap-1.5">
+            <TrendingUp size={12} /> Reddit Stats
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {/* Karma */}
+            <div>
+              <label className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold block mb-1.5">
+                Karma
+              </label>
               <input
                 type="number"
                 min={0}
                 value={karma}
-                onChange={(e) => handleKarmaChange(Number(e.target.value))}
-                placeholder="Enter karma amount"
-                className="flex-1 bg-black/30 border border-white/15 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-blue-500/50 focus:bg-black/40 transition-all font-mono"
+                onChange={(e) => setKarma(Number(e.target.value))}
+                className="w-full bg-black/30 border border-white/15 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-blue-500/40 transition-all font-mono"
               />
-              <span className="text-xs text-slate-400 min-w-fit">{karma.toLocaleString()}</span>
             </div>
-          </div>
-
-          <div>
-            <label className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold block mb-2">
-              Account Age (days)
-            </label>
-            <div className="flex items-center gap-3">
+            {/* Account Age */}
+            <div>
+              <label className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold block mb-1.5">
+                Acct Age (days)
+              </label>
               <input
                 type="number"
                 min={0}
                 value={ageDays}
-                onChange={(e) => handleAgeChange(Number(e.target.value))}
-                placeholder="Enter account age in days"
-                className="flex-1 bg-black/30 border border-white/15 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-purple-500/50 focus:bg-black/40 transition-all font-mono"
+                onChange={(e) => setAgeDays(Number(e.target.value))}
+                className="w-full bg-black/30 border border-white/15 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-blue-500/40 transition-all font-mono"
               />
-              <span className="text-xs text-slate-400 min-w-fit">{formatAge(ageDays)}</span>
             </div>
           </div>
+          {/* Summary chips */}
+          <div className="flex gap-2 flex-wrap">
+            <span className="text-[11px] bg-blue-500/10 border border-blue-500/20 text-blue-400 px-2 py-0.5 rounded-md font-medium flex items-center gap-1">
+              <TrendingUp size={10} /> {karma.toLocaleString()} karma
+            </span>
+            <span className="text-[11px] bg-purple-500/10 border border-purple-500/20 text-purple-400 px-2 py-0.5 rounded-md font-medium flex items-center gap-1">
+              <CalendarDays size={10} /> {formatAge(ageDays)}
+            </span>
+          </div>
+        </div>
 
-          <button
-            onClick={handleSave}
-            disabled={saving || !hasChanges}
-            className={`w-full py-3 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
-              hasChanges
-                ? "bg-blue-500 hover:bg-blue-600 text-white shadow-lg shadow-blue-500/20"
-                : "bg-white/5 text-slate-400 cursor-not-allowed"
-            } disabled:opacity-50 disabled:pointer-events-none`}
-          >
-            {saving ? (
-              <>
-                <Loader2 size={16} className="animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save size={16} />
-                Save Changes
-              </>
-            )}
-          </button>
+        {/* RIGHT: Cooldown Controls */}
+        <div className="space-y-3">
+          <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold flex items-center gap-1.5">
+            <Timer size={12} /> Cooldown
+          </p>
+          {/* Cooldown status */}
+          <div className="flex items-center gap-2">
+            <Clock size={14} className={isCooldownActive ? "text-amber-400" : "text-slate-600"} />
+            <span className={`text-xs font-medium ${isCooldownActive ? "text-amber-400" : "text-emerald-400"}`}>
+              {cooldownStatus === "None" ? "No active cooldown" : cooldownStatus}
+            </span>
+          </div>
+          {/* Inputs */}
+          <div className="flex items-end gap-2">
+            <div className="flex-1">
+              <label className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold block mb-1.5">Hours</label>
+              <input
+                type="number"
+                min={0}
+                value={hours}
+                onChange={(e) => setHours(Number(e.target.value))}
+                className="w-full bg-black/30 border border-white/15 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-red-500/40 transition-all font-mono"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold block mb-1.5">Mins</label>
+              <input
+                type="number"
+                min={0}
+                max={59}
+                value={minutes}
+                onChange={(e) => setMinutes(Number(e.target.value))}
+                className="w-full bg-black/30 border border-white/15 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-red-500/40 transition-all font-mono"
+              />
+            </div>
+            <button
+              onClick={() => onSave(user.id, karma, ageDays, hours, minutes)}
+              disabled={saving}
+              title="Save all changes"
+              className="h-[38px] px-4 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-1.5 text-sm font-semibold shrink-0"
+            >
+              {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
+              Save
+            </button>
+          </div>
+        </div>
 
-          <div className="flex gap-2 flex-wrap pt-2">
-            <span className="text-[11px] bg-blue-500/10 border border-blue-500/20 text-blue-400 px-3 py-1.5 rounded-md font-medium flex items-center gap-1">
-              <TrendingUp size=
+      </div>
+
+    </div>
+  )
+}

@@ -36,4 +36,8 @@ export async function POST(req: NextRequest) {
     console.error("DELETE USER ERROR:", err)
 
     return NextResponse.json(
-      { error: "Internal server error"
+      { error: "Internal server error" },
+      { status: 500 }
+    )
+  }
+}
