@@ -27,7 +27,8 @@ export async function sendTaskAvailableNotification(task: Task): Promise<void> {
   }
 
   const taskType = task.task_type || "General"
-  const reward = task.reward_credits != null ? `${task.reward_credits} credits` : "N/A"
+  const rewardDollars = task.reward_credits != null ? (task.reward_credits / 100).toFixed(2) : null
+  const reward = rewardDollars != null ? `$${rewardDollars}` : "N/A"
   const taskId = task.task_code || task.id
 
   console.log("[Discord] Preparing notification with:", { taskId, taskType, reward })

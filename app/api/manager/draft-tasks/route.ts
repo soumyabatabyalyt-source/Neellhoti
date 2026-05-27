@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
+import { sendTaskAvailableNotification } from "@/lib/discord"
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -213,24 +214,16 @@ export async function PUT(req: Request) {
         throw error
       }
 
-      // Send Discord notification (async, non-blocking)
-      try {
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-        await fetch(`${baseUrl}/api/send-notification`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id: task.id,
-            title: task.title,
-            task_type: task.task_type,
-            reward_credits: task.reward,
-            task_code: task.task_code,
-          }),
-        })
-      } catch (notificationError) {
-        // Log but don't fail the publish operation
+      // Send Discord notification directly (non-blocking, never throws)
+      sendTaskAvailableNotification({
+        id: task.id,
+        title: task.title,
+        task_type: task.task_type,
+        reward_credits: task.reward != null ? Math.round(Number(task.reward) * 100) : null,
+        task_code: task.task_code,
+      }).catch((notificationError) => {
         console.warn("[DRAFT-TASKS] Discord notification failed (non-critical):", notificationError)
-      }
+      })
 
       return NextResponse.json({
         success: true,
