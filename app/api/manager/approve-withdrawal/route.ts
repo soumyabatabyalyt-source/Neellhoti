@@ -19,21 +19,22 @@ export async function POST(req: Request) {
       return Response.json({ error: "Already processed" }, { status: 400 })
     }
 
-    // 🔹 Deduct wallet
+    // 🔹 Deduct wallet (correct column: balance_credits)
     const { data: wallet } = await supabaseAdmin
       .from("wallets")
-      .select("balance")
+      .select("balance_credits")
       .eq("user_id", withdrawal.user_id)
       .single()
 
-    if (!wallet || wallet.balance < withdrawal.amount) {
+    if (!wallet || wallet.balance_credits < withdrawal.amount_credits) {
       return Response.json({ error: "Invalid balance" }, { status: 400 })
     }
 
     await supabaseAdmin
       .from("wallets")
       .update({
-        balance: wallet.balance - withdrawal.amount,
+        balance_credits: wallet.balance_credits - withdrawal.amount_credits,
+        updated_at: new Date().toISOString(),
       })
       .eq("user_id", withdrawal.user_id)
 

@@ -43,7 +43,12 @@ export default function WalletPage() {
   // WALLET STATS
   // =========================================
 
-  const [approvedBalance, setApprovedBalance] =
+  // availableBalance = balance_credits from wallets table (source of truth)
+  const [availableBalance, setAvailableBalance] =
+    useState(0)
+
+  // totalEarned = availableBalance + totalWithdrawn (derived)
+  const [totalEarned, setTotalEarned] =
     useState(0)
 
   const [pendingBalance, setPendingBalance] =
@@ -80,20 +85,18 @@ export default function WalletPage() {
       return
     }
 
-    // APPROVED
+    // SOURCE OF TRUTH: read directly from wallets table
+    // balance_credits  = spendable now (goes up on task approval, down on withdrawal approval)
+    // total_earned_credits = cumulative lifetime earnings (only ever goes up)
     const {
-      data: approvedClaims,
+      data: walletRow,
     } = await supabase
-      .from("task_claims")
-      .select(`
-        tasks!task_claims_task_fkey (
-          reward
-        )
-      `)
+      .from("wallets")
+      .select("balance_credits, total_earned_credits")
       .eq("user_id", user.id)
-      .eq("status", "approved")
+      .single()
 
-    // PENDING
+    // PENDING EARNINGS: tasks submitted but not yet reviewed
     const {
       data: pendingClaims,
     } = await supabase
@@ -109,67 +112,41 @@ export default function WalletPage() {
         "pending_review",
       ])
 
-    // WITHDRAWALS
+    // TOTAL WITHDRAWN: all approved withdrawal requests
     const {
       data: withdrawals,
     } = await supabase
       .from("withdrawals")
-      .select("*")
+      .select("amount_credits")
       .eq("user_id", user.id)
       .eq("status", "approved")
 
-    // CALCULATE (rewards are stored in cents, convert to dollars)
-    const approved =
-      (approvedClaims || []).reduce(
-        (sum: number, item: any) =>
-          sum +
-          (Number(
-            item.tasks?.reward || 0
-          ) / 100),
-        0
-      )
+    // 1 credit = $0.01 → divide by 100 for dollar display
+    const balanceCredits      = Number(walletRow?.balance_credits || 0)
+    const totalEarnedCredits  = Number(walletRow?.total_earned_credits || 0)
 
+    // tasks.reward is stored in dollars (e.g. 0.15), NOT credits — no division needed
     const pending =
       (pendingClaims || []).reduce(
         (sum: number, item: any) =>
-          sum +
-          (Number(
-            item.tasks?.reward || 0
-          ) / 100),
+          sum + Number(item.tasks?.reward || 0),
         0
       )
 
-    const withdrawn =
+    const withdrawnCredits =
       (withdrawals || []).reduce(
         (sum: number, item: any) =>
-          sum +
-          (Number(item.amount || 0) / 100),
+          sum + Number(item.amount_credits || 0),
         0
       )
 
-    setApprovedBalance(approved)
-
+    setAvailableBalance(balanceCredits / 100)
+    setTotalEarned(totalEarnedCredits / 100)
     setPendingBalance(pending)
-
-    setWithdrawnBalance(withdrawn)
+    setWithdrawnBalance(withdrawnCredits / 100)
 
     setStatsLoading(false)
   }
-
-  // =========================================
-  // AVAILABLE BALANCE
-  // =========================================
-
-  const rawAvailableBalance =
-    approvedBalance -
-    withdrawnBalance
-
-  // NEVER NEGATIVE
-  const availableBalance =
-    Math.max(
-      0,
-      rawAvailableBalance
-    )
 
   // =========================================
   // WITHDRAW
@@ -363,8 +340,8 @@ export default function WalletPage() {
 
         <Card
           icon={<CheckCircle2 size={22} />}
-          title="Approved Earnings"
-          value={`$${approvedBalance.toFixed(2)}`}
+          title="Total Earned"
+          value={`$${totalEarned.toFixed(2)}`}
           color="text-emerald-400"
           loading={statsLoading}
         />

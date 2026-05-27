@@ -6,10 +6,11 @@ import { Loader2, Banknote, DollarSign, User, Clock, AtSign, Check, X } from "lu
 type Withdrawal = {
   id: string
   user_id: string
-  amount: number
+  amount_credits: number
   status: string
   created_at: string
   upi_id?: string
+  note?: string
 }
 
 export default function WithdrawalsPage() {
@@ -163,7 +164,7 @@ export default function WithdrawalsPage() {
                       <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold mb-1">Amount</p>
                       <div className="flex items-center gap-1 text-2xl font-bold text-white tracking-tight">
                         <DollarSign size={20} className="text-emerald-400" />
-                        {w.amount}
+                        {(Number(w.amount_credits) / 100).toFixed(2)}
                       </div>
                     </div>
 

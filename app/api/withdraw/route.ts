@@ -12,7 +12,10 @@ export async function POST(req: Request) {
 
     const {
       user_id,
-      amount
+      amount,
+      method,
+      upi_id,
+      crypto_address,
     } = body
 
     // ✅ validate input
@@ -20,21 +23,6 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: "Missing fields" },
         { status: 400 }
-      )
-    }
-
-    // ✅ get wallet
-    const { data: wallet, error: walletError } =
-      await supabase
-        .from("wallets")
-        .select("*")
-        .eq("user_id", user_id)
-        .single()
-
-    if (walletError || !wallet) {
-      return NextResponse.json(
-        { error: "Wallet not found" },
-        { status: 404 }
       )
     }
 
@@ -46,8 +34,26 @@ export async function POST(req: Request) {
       )
     }
 
-    // ✅ BALANCE CHECK
-    if (Number(wallet.balance) < Number(amount)) {
+    // amount from frontend is in dollars; DB stores credits (1 credit = $0.01)
+    const amountCredits = Math.round(Number(amount) * 100)
+
+    // ✅ get wallet (correct column: balance_credits)
+    const { data: wallet, error: walletError } =
+      await supabase
+        .from("wallets")
+        .select("balance_credits")
+        .eq("user_id", user_id)
+        .single()
+
+    if (walletError || !wallet) {
+      return NextResponse.json(
+        { error: "Wallet not found" },
+        { status: 404 }
+      )
+    }
+
+    // ✅ BALANCE CHECK (compare credits to credits)
+    if (Number(wallet.balance_credits) < amountCredits) {
       return NextResponse.json(
         { error: "Insufficient balance" },
         { status: 400 }
@@ -72,12 +78,15 @@ export async function POST(req: Request) {
     }
 
     // ✅ create withdrawal request
+    // DB columns: amount_credits, upi_id, note (for crypto address)
     const { data, error } = await supabase
       .from("withdrawals")
       .insert({
         user_id,
-        amount,
-        status: "pending"
+        amount_credits: amountCredits,
+        status: "pending",
+        upi_id: method === "upi" ? upi_id : null,
+        note: method === "crypto" ? crypto_address : null,
       })
       .select()
       .single()

@@ -183,7 +183,7 @@ export async function PUT(req: Request) {
       // First, fetch the task to get its details
       const { data: task, error: fetchError } = await supabase
         .from("tasks")
-        .select("id, title, task_type, reward_credits, task_code")
+        .select("id, title, task_type, reward, task_code")
         .eq("id", taskId)
         .maybeSingle()
 
@@ -223,7 +223,7 @@ export async function PUT(req: Request) {
             id: task.id,
             title: task.title,
             task_type: task.task_type,
-            reward_credits: task.reward_credits,
+            reward_credits: task.reward,
             task_code: task.task_code,
           }),
         })
@@ -310,4 +310,7 @@ export async function PUT(req: Request) {
 
     return NextResponse.json(
       { error: message },
-      { 
+      { status: 500 }
+    )
+  }
+}

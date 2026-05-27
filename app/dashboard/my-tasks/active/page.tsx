@@ -171,6 +171,8 @@ export default function ActiveTasksPage() {
             "active",
             "submitted",
             "pending_review",
+            "approved",
+            "rejected",
             "completed",
             "expired",
           ])

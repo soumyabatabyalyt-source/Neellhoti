@@ -8,25 +8,53 @@ export default function WalletPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function fetchWallet() {
+    async function fetchAndSubscribeWallet() {
       const { data: userData } = await supabase.auth.getUser()
       const user = userData?.user
-      if (!user) return
+      if (!user) {
+        setLoading(false)
+        return
+      }
 
+      // Initial fetch — balance_credits is the correct column (1 credit = $0.01)
       const { data } = await supabase
         .from("wallets")
-        .select("balance")
+        .select("balance_credits")
         .eq("user_id", user.id)
         .single()
 
       if (data) {
-        setBalance(data.balance || 0)
+        setBalance(Number(data.balance_credits || 0))
       }
 
       setLoading(false)
+
+      // Subscribe to real-time updates on the wallets table for this user
+      const subscription = supabase
+        .channel(`wallets-${user.id}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "wallets",
+            filter: `user_id=eq.${user.id}`,
+          },
+          (payload: any) => {
+            if (payload.new?.balance_credits != null) {
+              setBalance(Number(payload.new.balance_credits))
+            }
+          }
+        )
+        .subscribe()
+
+      // Cleanup subscription on unmount
+      return () => {
+        subscription.unsubscribe()
+      }
     }
 
-    fetchWallet()
+    fetchAndSubscribeWallet()
   }, [])
 
   async function handleWithdraw() {
@@ -53,9 +81,10 @@ export default function WalletPage() {
       headers: {
         "Content-Type": "application/json",
       },
+      // send amount in dollars (balance_credits / 100)
       body: JSON.stringify({
         user_id: user.id,
-        amount: balance,
+        amount: balance / 100,
       }),
     })
 
@@ -84,7 +113,7 @@ export default function WalletPage() {
 
       <div className="border border-white/20 rounded-xl p-6">
         <p className="text-lg">Balance</p>
-        <p className="text-3xl font-bold text-emerald-400">${balance}</p>
+        <p className="text-3xl font-bold text-emerald-400">${(balance / 100).toFixed(2)}</p>
       </div>
 
       <button

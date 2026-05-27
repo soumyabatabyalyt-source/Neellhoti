@@ -249,4 +249,19 @@ export async function GET() {
     }
 
     console.log(
-      `Sync done — inserted: ${newTasks.length}, skipped: ${skipped.length}, invalid: ${invalid.length}
+      `Sync done — inserted: ${newTasks.length}, skipped: ${skipped.length}, invalid: ${invalid.length}`
+    )
+
+    return NextResponse.json({
+      success:  true,
+      inserted: newTasks.length,
+      skipped:  skipped.length,
+      invalid:  invalid.length,
+      message:  `Imported ${newTasks.length} new task(s). Skipped ${skipped.length} already imported${invalid.length ? `. ${invalid.length} rows skipped (missing required fields)` : ""}.`,
+    })
+
+  } catch (err: any) {
+    console.error("sync-tasks error:", err)
+    return NextResponse.json({ error: err.message }, { status: 500 })
+  }
+}

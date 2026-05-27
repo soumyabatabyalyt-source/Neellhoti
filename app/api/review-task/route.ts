@@ -49,63 +49,92 @@ export async function POST(req: Request) {
     // Use admin client for all database operations to bypass RLS
     const supabase = createAdminClient()
 
+    console.log("Step 1: Fetching task claim...", { claim_id })
+
     // Get the submission (claim_id is actually the task_claims ID, not submission ID)
     const { data: taskClaim, error: claimError } = await supabase
       .from("task_claims")
       .select("*")
       .eq("id", claim_id)
-      .eq("status", "submitted")
       .maybeSingle()
 
-    if (claimError) throw claimError
+    if (claimError) {
+      console.error("Step 1 failed:", claimError)
+      throw claimError
+    }
 
     if (!taskClaim) {
+      console.error("Task claim not found")
       return NextResponse.json({ error: "Claim not found" }, { status: 404 })
     }
+
+    console.log("Step 1 success:", { taskClaimStatus: taskClaim.status })
+    console.log("Step 2: Fetching submission...")
 
     // Get the submission from task_submissions
     const { data: submission, error: submissionError } = await supabase
       .from("task_submissions")
       .select("*")
       .eq("claim_id", claim_id)
-      .eq("status", "pending")
       .maybeSingle()
 
-    if (submissionError) throw submissionError
+    if (submissionError) {
+      console.error("Step 2 failed:", submissionError)
+      throw submissionError
+    }
 
     if (!submission) {
+      console.error("Submission not found for claim", claim_id)
       return NextResponse.json({ error: "Submission not found" }, { status: 404 })
     }
 
+    console.log("Step 2 success:", { submissionStatus: submission.status })
+    console.log("Step 3: Fetching task...")
+
     const task = await findTaskByClaimTaskId(supabase, taskClaim.task_id)
-    const rewardCredits = Number((task as any)?.reward_credits || 0)
+    console.log("Step 3 success:", { taskFound: !!task })
+
+    // Calculate reward_credits: 1 credit = $0.01, so $0.50 = 50 credits
+    const rewardAmount = Number((task as any)?.reward || 0)
+    const rewardCredits = Math.floor(rewardAmount * 100)
     const reviewedStatus = action as ReviewAction
+
+    console.log("Step 3: Updating task_submissions...")
 
     // Update task_submissions status
     const { data: reviewedSubmission, error: updateSubmissionError } = await supabase
       .from("task_submissions")
       .update({ status: reviewedStatus })
       .eq("id", submission.id)
-      .eq("status", "pending")
       .select("*")
       .maybeSingle()
 
-    if (updateSubmissionError) throw updateSubmissionError
+    if (updateSubmissionError) {
+      console.error("Step 3 failed:", updateSubmissionError)
+      throw updateSubmissionError
+    }
 
     if (!reviewedSubmission) {
+      console.error("Submission update returned no data")
       return NextResponse.json(
         { error: "Submission was already reviewed" },
         { status: 409 }
       )
     }
 
+    console.log("Step 3 success: Updated submission")
+
     // Update task_claims status — "approved" for approved, "rejected" for rejected
     // The task_claims status reflects the user's claim state
     const claimFinalStatus = reviewedStatus === "approved" ? "approved" : "rejected"
-    await supabase
+    const { error: claimUpdateError } = await supabase
       .from("task_claims")
       .update({ status: claimFinalStatus })
       .eq("id", claim_id)
+
+    if (claimUpdateError) {
+      throw claimUpdateError
+    }
 
     // NOTE: Wallet credit is now handled by database trigger on tasks.status = 'approved'
     // The trigger fn_credit_reward_on_approval() automatically updates wallets when task is approved
@@ -117,7 +146,6 @@ export async function POST(req: Request) {
       const taskFinalStatus = reviewedStatus === "approved" ? "approved" : "rejected"
       const taskUpdate: any = {
         status: taskFinalStatus,
-        approval_status: reviewedStatus,
       }
 
       // Add rejection reason if rejected
@@ -125,16 +153,30 @@ export async function POST(req: Request) {
         taskUpdate.rejection_reason = rejectionReason
       }
 
-      await supabase
+      console.log("Step 4: Updating tasks table...", { taskId: getTaskPrimaryId(task, taskClaim.task_id), taskUpdate })
+
+      const { error: taskUpdateError } = await supabase
         .from("tasks")
         .update(taskUpdate)
         .eq("id", getTaskPrimaryId(task, taskClaim.task_id))
+
+      if (taskUpdateError) {
+        console.error("Step 4 failed:", taskUpdateError)
+        throw taskUpdateError
+      }
+
+      console.log("Step 4 success: Updated tasks table")
+    } else {
+      console.warn("Task not found, skipping tasks table update")
     }
 
     return NextResponse.json({ success: true })
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Review failed"
-    console.error("Review task error:", error)
+    console.error("Review task error:", {
+      message,
+      error: error instanceof Error ? error.stack : error,
+    })
     return NextResponse.json(
       { error: message },
       { status: 500 }

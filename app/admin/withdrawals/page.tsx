@@ -18,9 +18,11 @@ import { supabase } from "@/lib/supabaseClient"
 type Withdrawal = {
   id: string
   user_id: string
-  amount: number
+  amount_credits: number
   status: string
   created_at: string
+  upi_id?: string
+  note?: string
 }
 
 export default function AdminWithdrawalsPage() {
@@ -60,23 +62,25 @@ export default function AdminWithdrawalsPage() {
 
   async function updateWithdrawal(
     id: string,
-    status: string
+    action: "approve" | "reject"
   ) {
     const confirmed = confirm(
-      `Mark withdrawal as ${status}?`
+      `Mark withdrawal as ${action === "approve" ? "approved" : "rejected"}?`
     )
 
     if (!confirmed) return
 
-    const { error } = await supabase
-      .from("withdrawals")
-      .update({
-        status,
-      })
-      .eq("id", id)
+    // Route through the action API so wallet balance is properly deducted on approval
+    const res = await fetch("/api/manager/withdrawals/action", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, action }),
+    })
 
-    if (error) {
-      alert(error.message)
+    const data = await res.json()
+
+    if (!res.ok) {
+      alert(data.error || "Action failed")
       return
     }
 
@@ -139,7 +143,7 @@ export default function AdminWithdrawalsPage() {
 
                     <div>
                       <h2 className="text-xl font-semibold">
-                        ${withdrawal.amount}
+                        ${(Number(withdrawal.amount_credits) / 100).toFixed(2)}
                       </h2>
 
                       <p className="text-sm text-zinc-400 mt-1 break-all">
@@ -162,7 +166,7 @@ export default function AdminWithdrawalsPage() {
                           onClick={() =>
                             updateWithdrawal(
                               withdrawal.id,
-                              "approved"
+                              "approve"
                             )
                           }
                           className="bg-green-500/10 hover:bg-green-500/20 text-green-400 px-4 py-2 rounded-xl flex items-center gap-2 transition"
@@ -175,7 +179,7 @@ export default function AdminWithdrawalsPage() {
                           onClick={() =>
                             updateWithdrawal(
                               withdrawal.id,
-                              "rejected"
+                              "reject"
                             )
                           }
                           className="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-4 py-2 rounded-xl flex items-center gap-2 transition"

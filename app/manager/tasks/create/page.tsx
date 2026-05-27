@@ -172,7 +172,8 @@ export default function CreateTaskPage() {
         return
       }
 
-      if (!title.trim()) {
+      // Title is only required for post tasks, not comment tasks
+      if (taskType === "post" && !title.trim()) {
         alert("Please enter a title")
         setLoading(false)
         return
@@ -521,11 +522,10 @@ export default function CreateTaskPage() {
               mb-6
             ">
               <button
-                onClick={() =>
-                  setManualSection(
-                    "posts"
-                  )
-                }
+                onClick={() => {
+                  setManualSection("posts")
+                  setTaskType("post")
+                }}
                 className={`
                   px-6
                   py-3
@@ -545,11 +545,10 @@ export default function CreateTaskPage() {
                 Create Post
               </button>
               <button
-                onClick={() =>
-                  setManualSection(
-                    "comments"
-                  )
-                }
+                onClick={() => {
+                  setManualSection("comments")
+                  setTaskType("comment")
+                }}
                 className={`
                   px-6
                   py-3
@@ -684,13 +683,6 @@ export default function CreateTaskPage() {
                   value={taskCode}
                   setValue={setTaskCode}
                   placeholder="e.g., B-2-1002"
-                />
-
-                <Input
-                  label="Subreddit"
-                  value={subreddit}
-                  setValue={setSubreddit}
-                  placeholder="r/AskReddit"
                 />
 
                 <div className="
@@ -1362,4 +1354,18 @@ function Textarea({
           border-2
           border-white/15
           hover:border-white/20
-          fo
+          focus:border-blue-500/50
+          focus:bg-white/[0.05]
+          rounded-2xl
+          p-4
+          text-white
+          placeholder:text-slate-500
+          outline-none
+          resize-none
+          transition-all
+        "
+      />
+
+    </div>
+  )
+}
