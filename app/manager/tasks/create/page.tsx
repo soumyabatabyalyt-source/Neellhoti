@@ -79,6 +79,9 @@ export default function CreateTaskPage() {
   const [commentType, setCommentType] =
     useState("comment")
 
+  const [postLink, setPostLink] =
+    useState("")
+
   // =========================================
   // FETCH DRAFTS
   // =========================================
@@ -186,7 +189,7 @@ export default function CreateTaskPage() {
           "reddit",
 
         reward:
-          Number(reward) || 0,
+          parseFloat(reward) || 0,
 
         status:
           "draft",
@@ -210,7 +213,10 @@ export default function CreateTaskPage() {
           Number(timeLimit),
 
         task_code:
-          taskCode
+          taskCode,
+
+        post_link:
+          taskType === "comment" && postLink ? postLink : null
       }
 
       const { error } =
@@ -235,6 +241,7 @@ export default function CreateTaskPage() {
       setSubreddit("")
       setReward("")
       setTimeLimit("30")
+      setPostLink("")
 
       fetchDrafts()
 
@@ -615,8 +622,9 @@ export default function CreateTaskPage() {
                     label="Reward ($)"
                     value={reward}
                     setValue={setReward}
-                    placeholder="50"
+                    placeholder="0.50, 0.15, 0.4, etc"
                     type="number"
+                    step="0.01"
                   />
                   <Input
                     label="Time Limit (minutes)"
@@ -733,8 +741,8 @@ export default function CreateTaskPage() {
                   </div>
                   <Input
                     label="Post Link"
-                    value={subreddit}
-                    setValue={setSubreddit}
+                    value={postLink}
+                    setValue={setPostLink}
                     placeholder="https://reddit.com/r/..."
                   />
                 </div>
@@ -755,8 +763,9 @@ export default function CreateTaskPage() {
                     label="Reward ($)"
                     value={reward}
                     setValue={setReward}
-                    placeholder="50"
+                    placeholder="0.50, 0.15, 0.4, etc"
                     type="number"
+                    step="0.01"
                   />
                   <Input
                     label="Time Limit (minutes)"
@@ -1353,18 +1362,4 @@ function Textarea({
           border-2
           border-white/15
           hover:border-white/20
-          focus:border-blue-500/50
-          focus:bg-white/[0.05]
-          rounded-2xl
-          p-4
-          text-white
-          placeholder:text-slate-500
-          outline-none
-          resize-none
-          transition-all
-        "
-      />
-
-    </div>
-  )
-}
+          fo

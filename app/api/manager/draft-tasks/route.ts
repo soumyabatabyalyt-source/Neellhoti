@@ -203,6 +203,7 @@ export async function PUT(req: Request) {
         .from("tasks")
         .update({
           draft: false,
+          status: "open",
           approval_status:
             "approved",
         })
@@ -309,7 +310,4 @@ export async function PUT(req: Request) {
 
     return NextResponse.json(
       { error: message },
-      { status: 500 }
-    )
-  }
-}
+      { 

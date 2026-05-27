@@ -168,7 +168,7 @@ export async function GET() {
         : null
 
       // ── numeric fields ─────────────────────────────────
-      const reward    = row.reward     ? parseInt(String(row.reward), 10)     : 0
+      const reward    = row.reward     ? parseFloat(String(row.reward))     : 0
       const timeLimit = row.time_limit ? parseInt(String(row.time_limit), 10) : 30
 
       // POST tasks: karma/age eligibility gates apply
@@ -206,6 +206,14 @@ export async function GET() {
         taskTitle = String(row.title).trim()
       }
 
+      // ── resolve post_link for comment tasks ────────────
+      // Comment tasks need the post_link from the sheet (where to make the comment)
+      // Post tasks: post_link is null (tasker submits their post URL)
+      const postLinkFromSheet = row.post_link ? String(row.post_link).trim() : null
+      const resolvedPostLink = isComment
+        ? (postLinkFromSheet ? cleanUrl(postLinkFromSheet) : null)
+        : null
+
       newTasks.push({
         task_code:            codeForDB,
         task_type:            taskType,
@@ -214,7 +222,7 @@ export async function GET() {
         subreddit:            row.subreddit ? String(row.subreddit).trim() : null,
         reward:               isNaN(reward) ? 0 : reward,
         time_limit:           isNaN(timeLimit) ? 30 : timeLimit,
-        post_link:            null,  // filled by tasker on submission
+        post_link:            resolvedPostLink,  // For comment tasks: URL of post to comment on; for post tasks: null
         comment_link:         null,  // filled by tasker on submission (comment tasks)
         comment_type:         resolvedCommentType,
         min_karma:            minKarma !== null && !isNaN(minKarma as number) ? minKarma : null,
@@ -241,19 +249,4 @@ export async function GET() {
     }
 
     console.log(
-      `Sync done — inserted: ${newTasks.length}, skipped: ${skipped.length}, invalid: ${invalid.length}`
-    )
-
-    return NextResponse.json({
-      success:  true,
-      inserted: newTasks.length,
-      skipped:  skipped.length,
-      invalid:  invalid.length,
-      message:  `Imported ${newTasks.length} new task(s). Skipped ${skipped.length} already imported${invalid.length ? `. ${invalid.length} rows skipped (missing required fields)` : ""}.`,
-    })
-
-  } catch (err: any) {
-    console.error("sync-tasks error:", err)
-    return NextResponse.json({ error: err.message }, { status: 500 })
-  }
-}
+      `Sync done — inserted: ${newTasks.length}, skipped: ${skipped.length}, invalid: ${invalid.length}
