@@ -69,7 +69,7 @@ export async function GET() {
     // ── load existing codes for dedup ──────────────────────
     const { data: existingTasks, error: fetchError } = await supabase
       .from("tasks")
-      .select("task_code, task_type, post_link, subreddit")
+      .select("task_code, task_type, post_link")
 
     if (fetchError) throw new Error(`Failed to load existing tasks: ${fetchError.message}`)
 
@@ -83,9 +83,9 @@ export async function GET() {
     )
 
     // ── process rows ───────────────────────────────────────
-    const newTasks: any[]   = []
-    const skipped: string[] = []
-    const invalid: string[] = []
+    const newTasks: any[]        = []
+    const skipped: string[]      = []
+    const invalid: string[]      = []
     const patchedLinks: string[] = []
 
     for (const row of rows) {
@@ -110,11 +110,11 @@ export async function GET() {
         (taskId   && existingCodes.has(taskId)) ||
         (taskCode && existingCodes.has(taskCode))
       ) {
-        // ── patch comment tasks missing post_link ────────────
+        // ── patch comment tasks missing post_link ──────────
         const existing = existingMap.get(codeForDB)
         if (existing?.task_type === "comment" && !existing.post_link) {
-          const rawPostLink  = row.post_link  ? String(row.post_link).trim()  : null
-          const rawSubreddit = row.subreddit  ? String(row.subreddit).trim()  : null
+          const rawPostLink  = row.post_link ? String(row.post_link).trim() : null
+          const rawSubreddit = row.subreddit ? String(row.subreddit).trim() : null
           const subredditIsUrl = rawSubreddit?.startsWith("http") ?? false
           const linkSource = rawPostLink || (subredditIsUrl ? rawSubreddit : null)
           const patchedLink = linkSource ? cleanUrl(linkSource) : null
@@ -124,7 +124,6 @@ export async function GET() {
               .from("tasks")
               .update({ post_link: patchedLink })
               .eq("task_code", codeForDB)
-
             patchedLinks.push(codeForDB)
           } else {
             skipped.push(codeForDB)
@@ -188,8 +187,8 @@ export async function GET() {
 
       if (isComment) {
         // post_link is in its own column on the Comments tab.
-        // Fallback: if post_link ended up in the subreddit column (old single-tab data),
-        // detect and rescue it automatically. Subreddit is not stored for comment tasks.
+        // Fallback: if it ended up in the subreddit column (old single-tab data),
+        // detect and rescue it automatically.
         const rawPostLink   = row.post_link  ? String(row.post_link).trim()  : null
         const rawSubreddit  = row.subreddit  ? String(row.subreddit).trim()  : null
         const subredditIsUrl = rawSubreddit?.startsWith("http") ?? false
@@ -231,4 +230,33 @@ export async function GET() {
         post_link:            resolvedPostLink,
         comment_link:         null,
         comment_type:         resolvedCommentType,
-        min_karma:            minKa
+        min_karma:            minKarma    !== null && !isNaN(minKarma)    ? minKarma    : null,
+        min_account_age_days: minAccountAge !== null && !isNaN(minAccountAge) ? minAccountAge : null,
+        sheet_row_link:       row.sheet_row_link ?? null,
+        platform:             "reddit",
+        status:               "draft",
+        draft:                true,
+        source:               "google_sheets",
+      })
+    }
+
+    // ── insert ─────────────────────────────────────────────
+    if (newTasks.length > 0) {
+      const { error: insertError } = await supabase.from("tasks").insert(newTasks)
+      if (insertError) throw new Error(`DB insert failed: ${insertError.message}`)
+    }
+
+    return NextResponse.json({
+      success:  true,
+      inserted: newTasks.length,
+      patched:  patchedLinks.length,
+      skipped:  skipped.length,
+      invalid:  invalid.length,
+      message:  `Imported ${newTasks.length} new task(s). Patched ${patchedLinks.length} comment task(s) with missing post_link. Skipped ${skipped.length} already imported${invalid.length ? `. ${invalid.length} rows had missing required fields.` : ""}.`,
+    })
+
+  } catch (err: any) {
+    console.error("sync-tasks error:", err)
+    return NextResponse.json({ error: err.message }, { status: 500 })
+  }
+}

@@ -456,10 +456,7 @@ function Section({
                   {claim.task_type !== "comment" && (
                     <Detail
                       label="Subreddit"
-                      value={
-                        claim.subreddit ||
-                        "N/A"
-                      }
+                      value={claim.subreddit || "N/A"}
                     />
                   )}
                   <Detail
@@ -598,4 +595,11 @@ function Detail({
         text-left
         sm:text-right
         break-all
-        m
+        max-w-full
+        sm:max-w-[65%]
+      ">
+        {value}
+      </span>
+    </div>
+  )
+}
