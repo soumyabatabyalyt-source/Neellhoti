@@ -369,10 +369,10 @@ export default function TaskPool() {
                         Reddit Post
                       </p>
 
-                      {task.post_link ? (
+                      {task.subreddit ? (
 
                         <a
-                          href={task.post_link}
+                          href={task.subreddit}
                           target="_blank"
                           rel="noreferrer"
                           className="

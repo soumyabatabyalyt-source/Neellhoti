@@ -453,7 +453,12 @@ function Section({
                 <div className="
                   space-y-3
                 ">
-                  {claim.task_type !== "comment" && (
+                  {claim.task_type === "comment" ? (
+                    <Detail
+                      label="Post Link"
+                      value={claim.subreddit || "No post link"}
+                    />
+                  ) : (
                     <Detail
                       label="Subreddit"
                       value={claim.subreddit || "N/A"}

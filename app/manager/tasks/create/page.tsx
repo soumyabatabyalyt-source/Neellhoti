@@ -210,7 +210,8 @@ export default function CreateTaskPage() {
         task_type:
           taskType,
 
-        subreddit,
+        subreddit:
+          taskType === "comment" ? postLink : subreddit,
 
         body,
 
@@ -223,8 +224,7 @@ export default function CreateTaskPage() {
         task_code:
           taskCode,
 
-        post_link:
-          taskType === "comment" && postLink ? postLink : null
+        post_link: null
       }
 
       const { error } =
@@ -1051,13 +1051,12 @@ export default function CreateTaskPage() {
                       text-sm
                     ">
 
-                      <Detail
-                        label="Subreddit"
-                        value={
-                          task.subreddit ||
-                          "N/A"
-                        }
-                      />
+                      {task.task_type !== "comment" && (
+                        <Detail
+                          label="Subreddit"
+                          value={task.subreddit || "N/A"}
+                        />
+                      )}
 
                       <Detail
                         label="Reward"
@@ -1073,6 +1072,37 @@ export default function CreateTaskPage() {
                         label="Type"
                         value={task.task_type}
                       />
+
+                      {task.task_type === "comment" && task.subreddit && (
+                        <a
+                          href={task.subreddit}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="
+                            inline-flex
+                            items-center
+                            gap-2
+                            px-3
+                            py-2
+                            rounded-xl
+                            bg-blue-500/10
+                            border
+                            border-blue-500/20
+                            hover:border-blue-500/40
+                            text-blue-400
+                            text-xs
+                            font-medium
+                            transition-all
+                            mt-1
+                          "
+                        >
+                          <span>🔗 Open Reddit Post</span>
+                        </a>
+                      )}
+
+                      {task.task_type === "comment" && !task.subreddit && (
+                        <p className="text-zinc-500 text-xs italic">No post link yet</p>
+                      )}
 
                       {task.body && (
                         <Detail

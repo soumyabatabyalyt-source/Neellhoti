@@ -47,7 +47,10 @@ export async function GET() {
     }
 
     // ── fetch from Apps Script ─────────────────────────────
-    const res = await fetch(process.env.GOOGLE_SCRIPT_URL)
+    const res = await fetch(process.env.GOOGLE_SCRIPT_URL, {
+      redirect: "follow",
+      cache: "no-store",
+    })
     if (!res.ok) {
       throw new Error(`Apps Script returned HTTP ${res.status}.`)
     }
@@ -69,7 +72,7 @@ export async function GET() {
     // ── load existing codes for dedup ──────────────────────
     const { data: existingTasks, error: fetchError } = await supabase
       .from("tasks")
-      .select("task_code, task_type, post_link")
+      .select("task_code, task_type, subreddit")
 
     if (fetchError) throw new Error(`Failed to load existing tasks: ${fetchError.message}`)
 
@@ -112,7 +115,7 @@ export async function GET() {
       ) {
         // ── patch comment tasks missing post_link ──────────
         const existing = existingMap.get(codeForDB)
-        if (existing?.task_type === "comment" && !existing.post_link) {
+        if (existing?.task_type === "comment" && !existing.subreddit) {
           const rawPostLink  = row.post_link ? String(row.post_link).trim() : null
           const rawSubreddit = row.subreddit ? String(row.subreddit).trim() : null
           const subredditIsUrl = rawSubreddit?.startsWith("http") ?? false
@@ -120,11 +123,16 @@ export async function GET() {
           const patchedLink = linkSource ? cleanUrl(linkSource) : null
 
           if (patchedLink) {
-            await supabase
+            const { error: patchError } = await supabase
               .from("tasks")
-              .update({ post_link: patchedLink })
+              .update({ subreddit: patchedLink, post_link: null })
               .eq("task_code", codeForDB)
-            patchedLinks.push(codeForDB)
+            if (patchError) {
+              console.error(`Patch failed for ${codeForDB}: ${patchError.message}`)
+              skipped.push(codeForDB)
+            } else {
+              patchedLinks.push(codeForDB)
+            }
           } else {
             skipped.push(codeForDB)
           }
@@ -196,8 +204,9 @@ export async function GET() {
         const linkSource = rawPostLink || (subredditIsUrl ? rawSubreddit : null)
         resolvedPostLink = linkSource ? cleanUrl(linkSource) : null
 
-        // Subreddit is not required for comment tasks — leave it null
-        resolvedSubreddit = null
+        // For comment tasks, store the post URL in the subreddit column
+        // (post_link column stays null — subreddit is the unified field)
+        resolvedSubreddit = resolvedPostLink
 
         const validCommentTypes = ["comment", "reply", "hyperlink"]
         const rawCommentType = row.comment_type

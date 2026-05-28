@@ -32,7 +32,9 @@ function doGet() {
   }
 
   // ── Comments tab ───────────────────────────────────────────
-  // Columns: task_id | task_code | post_link | body | reward | time_limit | comment_type
+  // Columns: task_id | task_code | post_link | body | reward | time_limit | comment_type | comment_link
+  // post_link  = the Reddit post URL where the comment should be made (stored in DB subreddit column)
+  // comment_link = filled in after tasker submits their comment URL (written back by submit-task)
   const commentsSheet = ss.getSheetByName("Comments");
   if (commentsSheet) {
     const data = commentsSheet.getDataRange().getValues();
@@ -74,8 +76,8 @@ function setupTabs() {
   } else {
     commentsSheet.clearContents();
   }
-  commentsSheet.getRange(1, 1, 1, 7).setValues([[
-    'task_id', 'task_code', 'post_link', 'body', 'reward', 'time_limit', 'comment_type'
+  commentsSheet.getRange(1, 1, 1, 8).setValues([[
+    'task_id', 'task_code', 'post_link', 'body', 'reward', 'time_limit', 'comment_type', 'comment_link'
   ]]);
 
   Logger.log('setupTabs complete!');

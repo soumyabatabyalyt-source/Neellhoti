@@ -659,13 +659,15 @@ export default function TasksPage() {
                     space-y-4
                   ">
 
-                    <Detail
-                      label="Subreddit"
-                      value={
-                        task.subreddit ||
-                        "N/A"
-                      }
-                    />
+                    {!isComment && (
+                      <Detail
+                        label="Subreddit"
+                        value={
+                          task.subreddit ||
+                          "N/A"
+                        }
+                      />
+                    )}
 
                     <Detail
                       label="Reward"

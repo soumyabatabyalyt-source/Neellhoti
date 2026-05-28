@@ -54,7 +54,7 @@ export async function GET(req: Request) {
     // FETCH ASSOCIATED TASK
     const { data: task, error: taskError } = await supabase
       .from("tasks")
-      .select("id, title, description, reward")
+      .select("id, task_code, title, description, body, task_type, comment_type, post_link, reward, time_limit, subreddit")
       .eq("id", claim.task_id)
       .maybeSingle()
 

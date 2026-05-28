@@ -1049,7 +1049,7 @@ export default function ActiveTasksPage() {
                 ">
 
                   {/* SUBREDDIT */}
-                  {task.subreddit && (
+                  {!isComment && task.subreddit && (
 
                     <SectionCard
                       title="Subreddit"
@@ -1195,7 +1195,7 @@ export default function ActiveTasksPage() {
                   )}
 
                   {/* POST LINK */}
-                  {task.post_link && (
+                  {isComment && task.subreddit && (
 
                     <SectionCard
                       title="Post Link"
@@ -1216,7 +1216,7 @@ export default function ActiveTasksPage() {
 
                         <a
                           href={
-                            task.post_link
+                            task.subreddit
                           }
                           target="_blank"
                           rel="noreferrer"
