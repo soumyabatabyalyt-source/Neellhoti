@@ -42,6 +42,9 @@ export default function CreateTaskPage() {
   const [publishingAll, setPublishingAll] =
     useState(false)
 
+  const [deletingAll, setDeletingAll] =
+    useState(false)
+
   const [publishingId, setPublishingId] =
     useState<string | null>(null)
 
@@ -305,6 +308,22 @@ export default function CreateTaskPage() {
         return
       }
 
+      // Send Discord notification (fire-and-forget)
+      const publishedTask = data[0]
+      if (publishedTask) {
+        fetch("/api/send-notification", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: publishedTask.id,
+            title: publishedTask.title,
+            task_type: publishedTask.task_type,
+            reward_credits: publishedTask.reward != null ? Math.round(Number(publishedTask.reward) * 100) : null,
+            task_code: publishedTask.task_code,
+          }),
+        }).catch(err => console.warn("[Discord] Notification failed:", err))
+      }
+
       // Wait briefly for DB to sync
       await new Promise(
         resolve =>
@@ -388,6 +407,9 @@ export default function CreateTaskPage() {
 
       setPublishingAll(true)
 
+      // Snapshot drafts before updating (for notifications)
+      const tasksToPublish = [...drafts]
+
       await supabase
         .from("tasks")
         .update({
@@ -397,6 +419,21 @@ export default function CreateTaskPage() {
           published_at: new Date().toISOString()
         })
         .eq("draft", true)
+
+      // Send Discord notification for each published task (fire-and-forget)
+      for (const task of tasksToPublish) {
+        fetch("/api/send-notification", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: task.id,
+            title: task.title,
+            task_type: task.task_type,
+            reward_credits: task.reward != null ? Math.round(Number(task.reward) * 100) : null,
+            task_code: task.task_code,
+          }),
+        }).catch(err => console.warn("[Discord] Notification failed:", err))
+      }
 
       fetchDrafts()
 
@@ -411,6 +448,50 @@ export default function CreateTaskPage() {
     } finally {
 
       setPublishingAll(false)
+    }
+  }
+
+  // =========================================
+  // DELETE ALL DRAFTS
+  // =========================================
+
+  async function handleDeleteAll() {
+
+    const confirmed =
+      confirm(
+        `Delete all ${drafts.length} drafts? This cannot be undone.`
+      )
+
+    if (!confirmed) return
+
+    try {
+
+      setDeletingAll(true)
+
+      const ids = drafts.map((t) => t.id)
+
+      const { error } =
+        await supabase
+          .from("tasks")
+          .delete()
+          .in("id", ids)
+
+      if (error) {
+        alert(`Error deleting: ${error.message}`)
+        return
+      }
+
+      fetchDrafts()
+
+      alert("All drafts deleted")
+
+    } catch (err) {
+
+      console.error(err)
+
+    } finally {
+
+      setDeletingAll(false)
     }
   }
 
@@ -924,34 +1005,61 @@ export default function CreateTaskPage() {
 
               </div>
 
-              <button
-                onClick={
-                  handlePublishAll
-                }
-                disabled={publishingAll}
-                className="
-                  bg-gradient-to-r
-                  from-emerald-500
-                  to-emerald-600
-                  hover:from-emerald-600
-                  hover:to-emerald-700
-                  transition-all
-                  px-8
-                  py-4
-                  rounded-2xl
-                  font-semibold
-                  text-white
-                  shadow-lg
-                  shadow-emerald-500/20
-                  disabled:opacity-50
-                "
-              >
+              <div className="flex gap-3">
 
-                {publishingAll
-                  ? "Publishing..."
-                  : "Publish All"}
+                <button
+                  onClick={
+                    handlePublishAll
+                  }
+                  disabled={publishingAll || deletingAll || drafts.length === 0}
+                  className="
+                    bg-gradient-to-r
+                    from-emerald-500
+                    to-emerald-600
+                    hover:from-emerald-600
+                    hover:to-emerald-700
+                    transition-all
+                    px-8
+                    py-4
+                    rounded-2xl
+                    font-semibold
+                    text-white
+                    shadow-lg
+                    shadow-emerald-500/20
+                    disabled:opacity-50
+                  "
+                >
+                  {publishingAll
+                    ? "Publishing..."
+                    : "Publish All"}
+                </button>
 
-              </button>
+                <button
+                  onClick={
+                    handleDeleteAll
+                  }
+                  disabled={deletingAll || publishingAll || drafts.length === 0}
+                  className="
+                    bg-red-500/10
+                    border-2
+                    border-red-500/30
+                    hover:bg-red-500/20
+                    hover:border-red-500/50
+                    transition-all
+                    px-8
+                    py-4
+                    rounded-2xl
+                    font-semibold
+                    text-red-300
+                    disabled:opacity-50
+                  "
+                >
+                  {deletingAll
+                    ? "Deleting..."
+                    : "Delete All"}
+                </button>
+
+              </div>
 
             </div>
 
