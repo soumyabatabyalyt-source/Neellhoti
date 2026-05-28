@@ -453,13 +453,15 @@ function Section({
                 <div className="
                   space-y-3
                 ">
-                  <Detail
-                    label="Subreddit"
-                    value={
-                      claim.subreddit ||
-                      "N/A"
-                    }
-                  />
+                  {claim.task_type !== "comment" && (
+                    <Detail
+                      label="Subreddit"
+                      value={
+                        claim.subreddit ||
+                        "N/A"
+                      }
+                    />
+                  )}
                   <Detail
                     label="Reward"
                     value={`$${claim.reward || 0}`}
@@ -596,11 +598,4 @@ function Detail({
         text-left
         sm:text-right
         break-all
-        max-w-full
-        sm:max-w-[65%]
-      ">
-        {value}
-      </span>
-    </div>
-  )
-}
+        m

@@ -179,6 +179,13 @@ export default function CreateTaskPage() {
         return
       }
 
+      // Subreddit is required for post tasks
+      if (taskType === "post" && !subreddit.trim()) {
+        alert("Please enter a subreddit for this post task")
+        setLoading(false)
+        return
+      }
+
       const payload = {
 
         title,
@@ -1355,17 +1362,4 @@ function Textarea({
           border-white/15
           hover:border-white/20
           focus:border-blue-500/50
-          focus:bg-white/[0.05]
-          rounded-2xl
-          p-4
-          text-white
-          placeholder:text-slate-500
-          outline-none
-          resize-none
-          transition-all
-        "
-      />
-
-    </div>
-  )
-}
+          focus:bg-white/[0

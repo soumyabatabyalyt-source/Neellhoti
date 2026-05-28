@@ -69,7 +69,7 @@ export async function GET() {
     // ── load existing codes for dedup ──────────────────────
     const { data: existingTasks, error: fetchError } = await supabase
       .from("tasks")
-      .select("task_code")
+      .select("task_code, task_type, post_link, subreddit")
 
     if (fetchError) throw new Error(`Failed to load existing tasks: ${fetchError.message}`)
 
@@ -77,10 +77,16 @@ export async function GET() {
       (existingTasks ?? []).map((t) => t.task_code).filter(Boolean)
     )
 
+    // Map of task_code → existing row (for patch logic)
+    const existingMap = new Map(
+      (existingTasks ?? []).map((t) => [t.task_code, t])
+    )
+
     // ── process rows ───────────────────────────────────────
     const newTasks: any[]   = []
     const skipped: string[] = []
     const invalid: string[] = []
+    const patchedLinks: string[] = []
 
     for (const row of rows) {
 
@@ -104,7 +110,28 @@ export async function GET() {
         (taskId   && existingCodes.has(taskId)) ||
         (taskCode && existingCodes.has(taskCode))
       ) {
-        skipped.push(codeForDB)
+        // ── patch comment tasks missing post_link ────────────
+        const existing = existingMap.get(codeForDB)
+        if (existing?.task_type === "comment" && !existing.post_link) {
+          const rawPostLink  = row.post_link  ? String(row.post_link).trim()  : null
+          const rawSubreddit = row.subreddit  ? String(row.subreddit).trim()  : null
+          const subredditIsUrl = rawSubreddit?.startsWith("http") ?? false
+          const linkSource = rawPostLink || (subredditIsUrl ? rawSubreddit : null)
+          const patchedLink = linkSource ? cleanUrl(linkSource) : null
+
+          if (patchedLink) {
+            await supabase
+              .from("tasks")
+              .update({ post_link: patchedLink })
+              .eq("task_code", codeForDB)
+
+            patchedLinks.push(codeForDB)
+          } else {
+            skipped.push(codeForDB)
+          }
+        } else {
+          skipped.push(codeForDB)
+        }
         continue
       }
 
@@ -144,6 +171,11 @@ export async function GET() {
         }
         taskTitle         = rawTitle
         resolvedSubreddit = row.subreddit ? String(row.subreddit).trim() : null
+        if (!resolvedSubreddit) {
+          console.warn(`Row ${codeForDB}: post task missing subreddit — skipping`)
+          invalid.push(codeForDB)
+          continue
+        }
         minKarma          = row.min_karma ? parseInt(String(row.min_karma), 10) : null
         minAccountAge     = row.min_account_age_days
           ? parseInt(String(row.min_account_age_days), 10)
@@ -156,8 +188,8 @@ export async function GET() {
 
       if (isComment) {
         // post_link is in its own column on the Comments tab.
-        // Fallback: if it ended up in the subreddit column (old single-tab data),
-        // detect and rescue it automatically.
+        // Fallback: if post_link ended up in the subreddit column (old single-tab data),
+        // detect and rescue it automatically. Subreddit is not stored for comment tasks.
         const rawPostLink   = row.post_link  ? String(row.post_link).trim()  : null
         const rawSubreddit  = row.subreddit  ? String(row.subreddit).trim()  : null
         const subredditIsUrl = rawSubreddit?.startsWith("http") ?? false
@@ -165,10 +197,8 @@ export async function GET() {
         const linkSource = rawPostLink || (subredditIsUrl ? rawSubreddit : null)
         resolvedPostLink = linkSource ? cleanUrl(linkSource) : null
 
-        // Extract subreddit from the URL if not provided as plain text
-        resolvedSubreddit = subredditIsUrl
-          ? subredditFromUrl(rawSubreddit!)
-          : (rawSubreddit ?? (resolvedPostLink ? subredditFromUrl(resolvedPostLink) : null))
+        // Subreddit is not required for comment tasks — leave it null
+        resolvedSubreddit = null
 
         const validCommentTypes = ["comment", "reply", "hyperlink"]
         const rawCommentType = row.comment_type
@@ -201,32 +231,4 @@ export async function GET() {
         post_link:            resolvedPostLink,
         comment_link:         null,
         comment_type:         resolvedCommentType,
-        min_karma:            minKarma    !== null && !isNaN(minKarma)    ? minKarma    : null,
-        min_account_age_days: minAccountAge !== null && !isNaN(minAccountAge) ? minAccountAge : null,
-        sheet_row_link:       row.sheet_row_link ?? null,
-        platform:             "reddit",
-        status:               "draft",
-        draft:                true,
-        source:               "google_sheets",
-      })
-    }
-
-    // ── insert ─────────────────────────────────────────────
-    if (newTasks.length > 0) {
-      const { error: insertError } = await supabase.from("tasks").insert(newTasks)
-      if (insertError) throw new Error(`DB insert failed: ${insertError.message}`)
-    }
-
-    return NextResponse.json({
-      success:  true,
-      inserted: newTasks.length,
-      skipped:  skipped.length,
-      invalid:  invalid.length,
-      message:  `Imported ${newTasks.length} new task(s). Skipped ${skipped.length} already imported${invalid.length ? `. ${invalid.length} rows had missing required fields.` : ""}.`,
-    })
-
-  } catch (err: any) {
-    console.error("sync-tasks error:", err)
-    return NextResponse.json({ error: err.message }, { status: 500 })
-  }
-}
+        min_karma:            minKa
