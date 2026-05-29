@@ -95,67 +95,43 @@ export default function ManagerLayout({
   // ROLE CHECK & AUTH LISTENER
   useEffect(() => {
 
-    const check = async () => {
-
-      const { data } =
-        await supabase.auth.getUser()
-
-      const user =
-        data.user
-
-      if (!user) {
-
-        router.push("/auth")
-
-        return
-      }
-
-      const {
-        data: profile,
-        error,
-      } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single()
-
-      if (error) {
-
-        console.error(error)
-
-        router.push("/auth")
-
-        return
-      }
-
-      const role = profile?.role?.trim()?.toLowerCase()
-
-      // MANAGER ONLY
-      if (role === "manager") {
-
-        setAllowed(true)
-
-      } else {
-
-        router.push(
-          "/dashboard/tasks"
-        )
-      }
-
-      setLoading(false)
-    }
-
-    check()
-
-    // LISTEN FOR AUTH CHANGES
+    // Wait for auth client to fully initialize (restores session from localStorage + refreshes if needed)
     const { data: { subscription } } =
       supabase.auth.onAuthStateChange(
-        (event, session) => {
+        async (event, session) => {
 
-          if (!session) {
+          if (event === "INITIAL_SESSION") {
+
+            if (!session) {
+              router.push("/auth")
+              return
+            }
+
+            const { data: profile, error } = await supabase
+              .from("profiles")
+              .select("role")
+              .eq("id", session.user.id)
+              .single()
+
+            if (error) {
+              console.error(error)
+              router.push("/auth")
+              return
+            }
+
+            const role = profile?.role?.trim()?.toLowerCase()
+
+            if (role === "manager" || role === "admin") {
+              setAllowed(true)
+            } else {
+              router.push("/dashboard/tasks")
+            }
+
+            setLoading(false)
+
+          } else if (event === "SIGNED_OUT") {
 
             setAllowed(false)
-
             router.push("/auth")
           }
         }
@@ -738,12 +714,4 @@ export default function ManagerLayout({
           `}
         >
 
-          {children}
-
-        </div>
-
-      </main>
-
-    </div>
-  )
-}
+          {children}

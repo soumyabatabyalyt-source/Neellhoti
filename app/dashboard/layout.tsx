@@ -17,32 +17,21 @@ export default function DashboardLayout({
   const [mounted, setMounted] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
 
-  // Check authentication on mount and whenever session changes
+  // Wait for auth client to fully initialize (restores session from localStorage + refreshes if needed)
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession()
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "INITIAL_SESSION") {
+        // Fires once after client loads from localStorage & refreshes token if expired
         if (!session) {
           router.push("/login")
           setIsAuthenticated(false)
-          return
+        } else {
+          setIsAuthenticated(true)
         }
-        setIsAuthenticated(true)
-      } catch (error) {
-        console.error("Auth check error:", error)
+      } else if (event === "SIGNED_OUT") {
         router.push("/login")
         setIsAuthenticated(false)
-      }
-    }
-
-    checkAuth()
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!session) {
-        router.push("/login")
-        setIsAuthenticated(false)
-      } else {
+      } else if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
         setIsAuthenticated(true)
       }
     })
