@@ -143,14 +143,31 @@ export async function GET() {
       }
 
       // ── task_type (injected by Apps Script from tab name) ─
-      const taskType = row.task_type
+      let taskType = row.task_type
         ? String(row.task_type).toLowerCase().trim()
         : null
 
+      // Fallback: infer task_type from available fields if Apps Script didn't inject it
       if (!taskType || !["post", "comment"].includes(taskType)) {
-        console.warn(`Row ${codeForDB}: missing or invalid task_type — skipping`)
-        invalid.push(codeForDB)
-        continue
+        const hasCommentFields =
+          row.comment_type ||
+          (row.post_link && String(row.post_link).trim()) ||
+          (row.subreddit && String(row.subreddit).startsWith("http"))
+        const hasPostFields =
+          row.title &&
+          row.subreddit &&
+          !String(row.subreddit).startsWith("http")
+        if (hasCommentFields) {
+          taskType = "comment"
+          console.warn(`Row ${codeForDB}: inferred task_type=comment from fields`)
+        } else if (hasPostFields) {
+          taskType = "post"
+          console.warn(`Row ${codeForDB}: inferred task_type=post from fields`)
+        } else {
+          console.warn(`Row ${codeForDB}: missing or invalid task_type — skipping`)
+          invalid.push(codeForDB)
+          continue
+        }
       }
 
       const isComment = taskType === "comment"
@@ -251,21 +268,4 @@ export async function GET() {
 
     // ── insert ─────────────────────────────────────────────
     if (newTasks.length > 0) {
-      const { error: insertError } = await supabase.from("tasks").insert(newTasks)
-      if (insertError) throw new Error(`DB insert failed: ${insertError.message}`)
-    }
-
-    return NextResponse.json({
-      success:  true,
-      inserted: newTasks.length,
-      patched:  patchedLinks.length,
-      skipped:  skipped.length,
-      invalid:  invalid.length,
-      message:  `Imported ${newTasks.length} new task(s). Patched ${patchedLinks.length} comment task(s) with missing post_link. Skipped ${skipped.length} already imported${invalid.length ? `. ${invalid.length} rows had missing required fields.` : ""}.`,
-    })
-
-  } catch (err: any) {
-    console.error("sync-tasks error:", err)
-    return NextResponse.json({ error: err.message }, { status: 500 })
-  }
-}
+      const { error: insertErr
