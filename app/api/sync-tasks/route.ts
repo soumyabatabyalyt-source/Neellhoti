@@ -268,4 +268,21 @@ export async function GET() {
 
     // ── insert ─────────────────────────────────────────────
     if (newTasks.length > 0) {
-      const { error: insertErr
+      const { error: insertError } = await supabase.from("tasks").insert(newTasks)
+      if (insertError) throw new Error(`DB insert failed: ${insertError.message}`)
+    }
+
+    return NextResponse.json({
+      success:  true,
+      inserted: newTasks.length,
+      patched:  patchedLinks.length,
+      skipped:  skipped.length,
+      invalid:  invalid.length,
+      message:  `Imported ${newTasks.length} new task(s). Patched ${patchedLinks.length} comment task(s) with missing post_link. Skipped ${skipped.length} already imported${invalid.length ? `. ${invalid.length} rows had missing required fields.` : ""}.`,
+    })
+
+  } catch (err: any) {
+    console.error("sync-tasks error:", err)
+    return NextResponse.json({ error: err.message }, { status: 500 })
+  }
+}

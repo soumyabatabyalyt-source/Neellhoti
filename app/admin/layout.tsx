@@ -206,4 +206,16 @@ export default function AdminLayout({
                 className="w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 py-3 rounded-2xl transition"
               >
                 <LogOut className="w-4 h-4" />
-               
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      <main className="flex-1 overflow-auto md:ml-0 mt-16 md:mt-0">
+        {children}
+      </main>
+    </div>
+  )
+}

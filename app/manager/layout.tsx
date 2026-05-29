@@ -714,4 +714,12 @@ export default function ManagerLayout({
           `}
         >
 
-          {children}
+          {children}
+
+        </div>
+
+      </main>
+
+    </div>
+  )
+}
