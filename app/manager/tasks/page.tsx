@@ -25,6 +25,7 @@ type Claim = {
 
 type Task = {
   id: string
+  task_code?: string
   title: string
   description?: string
   subreddit?: string
@@ -137,13 +138,12 @@ export default function ManagerTasksPage() {
   const filteredTasks =
     useMemo(() => {
 
+      const q = search.toLowerCase()
       return tasks.filter(
         (task) =>
-          task.id
-            .toLowerCase()
-            .includes(
-              search.toLowerCase()
-            )
+          task.id.toLowerCase().includes(q) ||
+          (task.task_code ?? "").toLowerCase().includes(q) ||
+          task.title.toLowerCase().includes(q)
       )
 
     }, [tasks, search])
@@ -203,7 +203,7 @@ export default function ManagerTasksPage() {
 
           <input
             type="text"
-            placeholder="Search by Task ID..."
+            placeholder="Search by code, title, or ID..."
             value={search}
             onChange={(e) =>
               setSearch(
@@ -286,6 +286,12 @@ export default function ManagerTasksPage() {
                       <div>
 
                         <div className="flex items-center gap-2 mb-1.5">
+
+                          {task.task_code && (
+                            <span className="font-mono text-xs text-white bg-violet-500/20 border border-violet-500/40 px-2.5 py-0.5 rounded-md font-semibold tracking-wide">
+                              {task.task_code}
+                            </span>
+                          )}
 
                           <span className="font-mono text-[10px] text-slate-500 bg-black/40 px-2 py-0.5 rounded-md border border-white/5">
                             ID: {task.id}
