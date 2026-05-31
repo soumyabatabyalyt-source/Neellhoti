@@ -123,10 +123,11 @@ export default function ReviewActions({
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-rose-500/50"
+                style={{ colorScheme: "dark" }}
               >
-                <option value="">Choose a reason...</option>
+                <option value="" className="bg-white text-black">Choose a reason...</option>
                 {REJECTION_REASONS.map((reason) => (
-                  <option key={reason} value={reason}>
+                  <option key={reason} value={reason} className="bg-white text-black">
                     {reason}
                   </option>
                 ))}
