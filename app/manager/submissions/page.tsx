@@ -1000,7 +1000,9 @@ export default function SubmissionsPage() {
 
                               <a
                                 href={
-                                  item.submission_link
+                                  item.submission_link?.startsWith("http")
+                                    ? item.submission_link
+                                    : `https://${item.submission_link}`
                                 }
                                 target="_blank"
                                 rel="noreferrer"

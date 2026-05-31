@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, X, Printer, FileText, ChevronDown, ChevronRight } from "lucide-react"
+import { Plus, X, Printer, FileText, ChevronDown, ChevronRight, Send } from "lucide-react"
 
 type Service = {
   id: number
@@ -166,6 +166,36 @@ export default function BillingPage() {
   const [cryptoWallet,      setCryptoWallet]      = useState("")
   const [cryptoNetwork,     setCryptoNetwork]     = useState("BEP-20 (BSC)")
   const [cryptoCoins,       setCryptoCoins]       = useState("USDT, USDC, BNB")
+
+  // ── email sending ──
+  const [sendStatus, setSendStatus] = useState<"idle" | "sending" | "sent" | "error">("idle")
+  const [sendError, setSendError] = useState("")
+
+  async function handleSendEmail() {
+    if (!toEmail) {
+      setSendError("Please enter a client email address first.")
+      setSendStatus("error")
+      return
+    }
+    setSendStatus("sending")
+    setSendError("")
+    try {
+      const invoiceEl = document.getElementById("invoice-doc")
+      const invoiceHtml = invoiceEl ? invoiceEl.innerHTML : ""
+      const res = await fetch("/api/send-invoice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to: toEmail, invoiceNo: invNo, invoiceHtml }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error ?? "Failed to send")
+      setSendStatus("sent")
+      setTimeout(() => setSendStatus("idle"), 4000)
+    } catch (err: unknown) {
+      setSendError(err instanceof Error ? err.message : "Unknown error")
+      setSendStatus("error")
+    }
+  }
 
   // ── computed ──
   const totalServices   = services.reduce((s, r) => s + r.qty * r.price, 0)
@@ -440,8 +470,8 @@ export default function BillingPage() {
           <div className="h-4" />
         </div>
 
-        {/* Footer: print button */}
-        <div className="px-5 py-4 bg-zinc-950 border-t border-zinc-800">
+        {/* Footer: print + send buttons */}
+        <div className="px-5 py-4 bg-zinc-950 border-t border-zinc-800 space-y-2">
           <button
             onClick={() => window.print()}
             className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition-colors text-sm"
@@ -449,6 +479,26 @@ export default function BillingPage() {
             <Printer className="w-4 h-4" />
             Download / Print as PDF
           </button>
+          <button
+            onClick={handleSendEmail}
+            disabled={sendStatus === "sending"}
+            className={`w-full flex items-center justify-center gap-2 font-bold py-3 rounded-xl transition-colors text-sm ${
+              sendStatus === "sent"
+                ? "bg-green-600 text-white"
+                : sendStatus === "error"
+                ? "bg-yellow-600 text-white"
+                : "bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-60"
+            }`}
+          >
+            <Send className="w-4 h-4" />
+            {sendStatus === "sending" ? "Sending…"
+              : sendStatus === "sent" ? "Sent ✓"
+              : sendStatus === "error" ? "Retry Send"
+              : "Send Invoice to Client"}
+          </button>
+          {sendStatus === "error" && sendError && (
+            <p className="text-xs text-red-400 text-center">{sendError}</p>
+          )}
         </div>
       </div>
 

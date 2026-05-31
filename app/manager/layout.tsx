@@ -18,6 +18,7 @@ import {
   ShieldAlert,
   PlusSquare,
   FileText,
+  Link2,
 } from "lucide-react"
 
 const tabs = [
@@ -28,7 +29,6 @@ const tabs = [
     key: "tasks",
   },
 
-  // ✅ CREATE TASK PAGE
   {
     name: "Create Task",
     path: "/manager/tasks/create",
@@ -41,6 +41,13 @@ const tabs = [
     path: "/manager/submissions",
     icon: LayoutDashboard,
     key: "submissions",
+  },
+
+  {
+    name: "Link Checker",
+    path: "/manager/links",
+    icon: Link2,
+    key: "links",
   },
 
   {

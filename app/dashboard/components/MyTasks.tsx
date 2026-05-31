@@ -74,7 +74,14 @@ function Section({ title, tasks, submitTask }: any) {
           )}
 
           {task.submission_link && (
-            <a href={task.submission_link} target="_blank">
+            <a
+              href={
+                task.submission_link.startsWith("http")
+                  ? task.submission_link
+                  : `https://${task.submission_link}`
+              }
+              target="_blank"
+            >
               View
             </a>
           )}

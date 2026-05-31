@@ -10,7 +10,7 @@ function normalizeRedditUrl(
   url: string
 ) {
 
-  return url
+  let normalized = url
     .trim()
     .toLowerCase()
 
@@ -40,6 +40,17 @@ function normalizeRedditUrl(
 
     // REMOVE TRAILING SLASH
     .replace(/\/$/, "")
+
+  // ENSURE PROTOCOL — without https:// the browser treats
+  // the link as a relative path and navigates to the wrong page
+  if (
+    !normalized.startsWith("https://") &&
+    !normalized.startsWith("http://")
+  ) {
+    normalized = "https://" + normalized
+  }
+
+  return normalized
 }
 
 // =========================================

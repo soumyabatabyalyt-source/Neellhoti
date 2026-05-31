@@ -58,7 +58,11 @@ function Section({ title, items }: { title: string; items: any[] }) {
                 </div>
 
                 <a
-                  href={item.submission_link}
+                  href={
+                    item.submission_link?.startsWith("http")
+                      ? item.submission_link
+                      : `https://${item.submission_link}`
+                  }
                   target="_blank"
                   className="text-blue-500 text-sm"
                 >
