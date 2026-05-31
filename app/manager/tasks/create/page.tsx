@@ -420,19 +420,36 @@ export default function CreateTaskPage() {
         })
         .eq("draft", true)
 
-      // Send Discord notification for each published task (fire-and-forget)
-      for (const task of tasksToPublish) {
+      // Send a single consolidated Discord notification for all published tasks
+      if (tasksToPublish.length === 1) {
+        // Single task — use the individual ping
+        const t = tasksToPublish[0]
         fetch("/api/send-notification", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            id: task.id,
-            title: task.title,
-            task_type: task.task_type,
-            reward_credits: task.reward != null ? Math.round(Number(task.reward) * 100) : null,
-            task_code: task.task_code,
+            id: t.id,
+            title: t.title,
+            task_type: t.task_type,
+            reward_credits: t.reward != null ? Math.round(Number(t.reward) * 100) : null,
+            task_code: t.task_code,
           }),
         }).catch(err => console.warn("[Discord] Notification failed:", err))
+      } else {
+        // Multiple tasks — send one summary instead of N individual pings
+        fetch("/api/send-summary-notification", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            tasks: tasksToPublish.map((t) => ({
+              id: t.id,
+              title: t.title,
+              task_type: t.task_type,
+              reward_credits: t.reward != null ? Math.round(Number(t.reward) * 100) : null,
+              task_code: t.task_code,
+            })),
+          }),
+        }).catch(err => console.warn("[Discord] Summary notification failed:", err))
       }
 
       fetchDrafts()
