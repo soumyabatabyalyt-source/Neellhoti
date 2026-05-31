@@ -811,6 +811,7 @@ export default function CreateTaskPage() {
                           e.target.value
                         )
                       }
+                      style={{ colorScheme: "dark" }}
                       className="
                         w-full
                         bg-white/[0.03]
@@ -825,15 +826,9 @@ export default function CreateTaskPage() {
                         transition-all
                       "
                     >
-                      <option value="comment">
-                        Comment
-                      </option>
-                      <option value="reply">
-                        Reply
-                      </option>
-                      <option value="hyperlink">
-                        Hyperlink
-                      </option>
+                      <option value="comment" className="bg-white text-black">Comment</option>
+                      <option value="reply" className="bg-white text-black">Reply</option>
+                      <option value="hyperlink" className="bg-white text-black">Hyperlink</option>
                     </select>
                   </div>
                   <Input

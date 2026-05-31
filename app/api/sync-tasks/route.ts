@@ -113,16 +113,19 @@ export async function GET() {
         (taskId   && existingCodes.has(taskId)) ||
         (taskCode && existingCodes.has(taskCode))
       ) {
-        // ── patch comment tasks missing post_link ──────────
+        // ── patch comment tasks: sync latest post_link from sheet ──────────
         const existing = existingMap.get(codeForDB)
-        if (existing?.task_type === "comment" && !existing.subreddit) {
+          ?? existingMap.get(taskCode ?? "")
+          ?? existingMap.get(taskId ?? "")
+        if (existing?.task_type === "comment") {
           const rawPostLink  = row.post_link ? String(row.post_link).trim() : null
           const rawSubreddit = row.subreddit ? String(row.subreddit).trim() : null
           const subredditIsUrl = rawSubreddit?.startsWith("http") ?? false
           const linkSource = rawPostLink || (subredditIsUrl ? rawSubreddit : null)
           const patchedLink = linkSource ? cleanUrl(linkSource) : null
 
-          if (patchedLink) {
+          // Patch if sheet has a link AND it differs from what's stored
+          if (patchedLink && patchedLink !== existing.subreddit) {
             const { error: patchError } = await supabase
               .from("tasks")
               .update({ subreddit: patchedLink, post_link: null })
@@ -133,6 +136,9 @@ export async function GET() {
             } else {
               patchedLinks.push(codeForDB)
             }
+          } else if (!patchedLink && !existing.subreddit) {
+            // post_link still missing in both sheet and DB
+            invalid.push(codeForDB)
           } else {
             skipped.push(codeForDB)
           }
@@ -239,6 +245,13 @@ export async function GET() {
           case "hyperlink": taskTitle = "Hyperlink Comment"; break
           default:          taskTitle = "Comment";           break
         }
+
+        // post_link is required for comment tasks
+        if (!resolvedPostLink) {
+          console.warn(`Row ${codeForDB}: comment task missing post_link — skipping`)
+          invalid.push(codeForDB)
+          continue
+        }
       }
 
       // ── numeric fields ─────────────────────────────────────
@@ -278,7 +291,7 @@ export async function GET() {
       patched:  patchedLinks.length,
       skipped:  skipped.length,
       invalid:  invalid.length,
-      message:  `Imported ${newTasks.length} new task(s). Patched ${patchedLinks.length} comment task(s) with missing post_link. Skipped ${skipped.length} already imported${invalid.length ? `. ${invalid.length} rows had missing required fields.` : ""}.`,
+      message:  `Imported ${newTasks.length} new task(s). Updated ${patchedLinks.length} comment task(s) with latest post_link. Skipped ${skipped.length} (already up to date)${invalid.length ? `. ⚠️ ${invalid.length} row(s) missing required fields — comment tasks need post_link filled in the sheet.` : ""}.`,
     })
 
   } catch (err: any) {
