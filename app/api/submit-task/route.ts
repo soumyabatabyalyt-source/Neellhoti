@@ -2,56 +2,6 @@ import { NextResponse } from "next/server"
 
 import { createUserClient } from "@/lib/taskLifecycle"
 
-// =========================================
-// NORMALIZE REDDIT URL
-// =========================================
-
-function normalizeRedditUrl(
-  url: string
-) {
-
-  let normalized = url
-    .trim()
-    .toLowerCase()
-
-    // DOMAIN NORMALIZATION
-    .replace(
-      "old.reddit.com",
-      "reddit.com"
-    )
-
-    .replace(
-      "www.reddit.com",
-      "reddit.com"
-    )
-
-    .replace(
-      "new.reddit.com",
-      "reddit.com"
-    )
-
-    .replace(
-      "m.reddit.com",
-      "reddit.com"
-    )
-
-    // REMOVE QUERY PARAMS
-    .split("?")[0]
-
-    // REMOVE TRAILING SLASH
-    .replace(/\/$/, "")
-
-  // ENSURE PROTOCOL — without https:// the browser treats
-  // the link as a relative path and navigates to the wrong page
-  if (
-    !normalized.startsWith("https://") &&
-    !normalized.startsWith("http://")
-  ) {
-    normalized = "https://" + normalized
-  }
-
-  return normalized
-}
 
 // =========================================
 // POST
@@ -152,13 +102,10 @@ export async function POST(
     }
 
     // =====================================
-    // NORMALIZED URL
+    // RAW SUBMISSION LINK (trimmed only)
     // =====================================
 
-    const normalizedSubmission =
-      normalizeRedditUrl(
-        submission_link
-      )
+    const rawSubmission = submission_link.trim()
 
     // =====================================
     // FIND CLAIM
@@ -306,15 +253,9 @@ export async function POST(
         []
       ).find(
         (submission) => {
-
-          const normalized =
-            normalizeRedditUrl(
-              submission.submission_link
-            )
-
           return (
-            normalized ===
-            normalizedSubmission
+            submission.submission_link.trim() ===
+            rawSubmission
           )
         }
       )
@@ -354,7 +295,7 @@ export async function POST(
           user.id,
 
         submission_link:
-          normalizedSubmission,
+          rawSubmission,
 
         status:
           "pending",
@@ -436,9 +377,9 @@ export async function POST(
     }
 
     if (isCommentTask) {
-      taskUpdatePayload.comment_link = normalizedSubmission
+      taskUpdatePayload.comment_link = rawSubmission
     } else {
-      taskUpdatePayload.post_link = normalizedSubmission
+      taskUpdatePayload.post_link = rawSubmission
     }
 
     const {
@@ -486,7 +427,7 @@ export async function POST(
         body: JSON.stringify({
           task_code: taskRow?.task_code,
           field: linkField,
-          value: normalizedSubmission,
+          value: rawSubmission,
         }),
       })
       // Note: We don't await or check the response - sheet updates are best-effort
@@ -551,3 +492,4 @@ export async function POST(
     )
   }
 }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
